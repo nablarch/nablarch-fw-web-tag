@@ -1,0 +1,46 @@
+group = 'com.nablarch.framework'
+version = '1.0.3'
+description = '画面オンライン処理方式を実現する。'
+
+
+
+buildscript {
+  repositories {
+    mavenLocal()
+    maven { url "${developLibUrl}" }
+    jcenter()
+  }
+  dependencies {
+    classpath "com.nablarch.dev:nablarch-gradle-plugin:${nablarchGradlePluginVersion}"
+  }
+}
+apply plugin: 'com.nablarch.dev.nablarch-build'
+apply plugin: 'com.nablarch.dev.nablarch-maven-deploy'
+apply plugin: 'com.nablarch.dev.nablarch-sonarqube'
+apply plugin: 'com.nablarch.dev.nablarch-version'
+
+// ビルド時のJavaバージョンを指定する
+sourceCompatibility=JavaVersion.VERSION_1_6
+targetCompatibility=JavaVersion.VERSION_1_6
+
+dependencies {
+  compile "com.nablarch.framework:nablarch-fw-web:${nablarchFwWebVersion}"
+  compile "com.nablarch.framework:nablarch-common-code:${nablarchCommonCodeVersion}"
+  compile "com.nablarch.framework:nablarch-common-exclusivecontrol:${nablarchCommonExclusivecontrolVersion}"
+  compile "com.nablarch.framework:nablarch-common-encryption:${nablarchCommonEncryptionVersion}"
+  compile "com.nablarch.framework:nablarch-common-auth:${nablarchCommonAuthVersion}"
+
+  // Servlet/JSP dependencies.
+  provided 'javax.servlet.jsp:jsp-api:2.1'
+  provided 'javax.servlet:servlet-api:2.5'
+  runtime 'taglibs:standard:1.1.2'
+
+  // test api
+  testCompile 'junit:junit:4.10'
+  testCompile 'com.nablarch.dev:nablarch-test-support:0.0.5'
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.13'
+}
+
