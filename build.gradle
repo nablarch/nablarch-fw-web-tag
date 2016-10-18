@@ -38,6 +38,17 @@ dependencies {
   // test api
   testCompile 'junit:junit:4.10'
   testCompile 'com.nablarch.dev:nablarch-test-support:0.0.5'
+  testCompile "com.nablarch.framework:nablarch-common-auth-jdbc:${nablarchCommonAuthJdbcVersion}"
+  testCompile "com.nablarch.framework:nablarch-core-transaction:${nablarchCoreTransactionVersion}"
+  testCompile "com.nablarch.framework:nablarch-fw-standalone:${nablarchFwStandaloneVersion}"
+  testCompile "com.nablarch.framework:nablarch-fw-batch:${nablarchFwBatchVersion}"
+  testCompile "com.nablarch.framework:nablarch-common-exclusivecontrol-jdbc:${nablarchCommonExclusivecontrolVersion}"
+  testCompile 'com.nablarch.framework:nablarch-testing:1.0.6'
+  testCompile 'org.jmockit:jmockit:1.13'
+
+  //test JDBC Driver
+  testCompile 'com.oracle:ucp:11.2.0.3.0'
+  testCompile 'com.oracle:ojdbc6:11.2.0.2.0'
 }
 
 task wrapper(type: Wrapper) {
