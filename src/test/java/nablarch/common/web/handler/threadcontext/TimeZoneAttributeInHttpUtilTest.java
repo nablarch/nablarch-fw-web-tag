@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNull;
  * {@link TimeZoneAttributeInHttpUtilTest} のテスト。
  *
  */
-@RunWith(JMockit.class)
 public class TimeZoneAttributeInHttpUtilTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
