@@ -41,7 +41,6 @@ dependencies {
   testCompile 'com.nablarch.dev:nablarch-test-support:0.0.5'
   testCompile "com.nablarch.framework:nablarch-common-auth-jdbc:${nablarchCommonAuthJdbcVersion}"
   testCompile "com.nablarch.framework:nablarch-core-transaction:${nablarchCoreTransactionVersion}"
-  testCompile "com.nablarch.framework:nablarch-fw-standalone:${nablarchFwStandaloneVersion}"
   testCompile "com.nablarch.framework:nablarch-fw-batch:${nablarchFwBatchVersion}"
   testCompile "com.nablarch.framework:nablarch-common-exclusivecontrol-jdbc:${nablarchCommonExclusivecontrolVersion}"
   testCompile 'com.nablarch.framework:nablarch-testing:1.0.6'
