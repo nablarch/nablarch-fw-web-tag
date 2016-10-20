@@ -88,8 +88,9 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
                 "onfocus=\"onfocus_test\"",
                 "onblur=\"onblur_test\"",
                 "autofocus=\"autofocus\"",
-                "placeholder=\"placeholder_test\">$value$</textarea>")
-                .replace(Builder.LS, " ").replace("$value$", "aaaaa\nbbbbb\nccccc");
+                "placeholder=\"placeholder_test\">").replace(Builder.LS, " ")
+                 + "\n$value$</textarea>"
+                .replace("$value$", "aaaaa\nbbbbb\nccccc");
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertTrue(formContext.getInputNames().contains("name_test"));
@@ -162,8 +163,9 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
                 "onfocus=\"onfocus_test" + TagTestUtil.ESC_HTML + "\"",
                 "onblur=\"onblur_test" + TagTestUtil.ESC_HTML + "\"",
                 "autofocus=\"autofocus\"",
-                "placeholder=\"placeholder_test" + TagTestUtil.ESC_HTML + "\">$value$</textarea>")
-                .replace(Builder.LS, " ").replace("$value$", "aaaaa\nbbbbb\nccccc" + TagTestUtil.ESC_HTML);
+                "placeholder=\"placeholder_test" + TagTestUtil.ESC_HTML + "\">").replace(Builder.LS, " ")
+                + "\n$value$</textarea>"
+                .replace("$value$", "aaaaa\nbbbbb\nccccc" + TagTestUtil.ESC_HTML);
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertTrue(formContext.getInputNames().contains("name_test" + TagTestUtil.HTML));
@@ -190,8 +192,9 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
                 "<textarea",
                 "name=\"name_test\"",
                 "rows=\"5\"",
-                "cols=\"40\">$value$</textarea>")
-                .replace(Builder.LS, " ").replace("$value$", "aaaaa\nbbbbb\nccccc");
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\n$value$</textarea>"
+                .replace("$value$", "aaaaa\nbbbbb\nccccc");
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertTrue(formContext.getInputNames().contains("name_test"));
@@ -216,8 +219,8 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
                 "<textarea",
                 "name=\"name_test\"",
                 "rows=\"5\"",
-                "cols=\"40\"></textarea>")
-                .replace(Builder.LS, " ");
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\n</textarea>";
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertTrue(formContext.getInputNames().contains("name_test"));
@@ -226,7 +229,7 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
     @Test
     public void testInputPageWithDefaultConfig() throws Exception {
         
-        TagTestUtil.setUpDefaultConfig();
+        TagTestUtil.setUpDefaultConfigWithLS();
         TagTestUtil.setErrorMessages(pageContext);
         
         FormContext formContext = TagTestUtil.createFormContext();
@@ -251,8 +254,9 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
                 "class=\"cssClass_test default_error\"",
                 "name=\"entity.bbb\"",
                 "rows=\"5\"",
-                "cols=\"40\">$value$</textarea>")
-                .replace(Builder.LS, " ").replace("$value$", "aaaaa\nbbbbb\nccccc");
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\r$value$</textarea>"
+                .replace("$value$", "aaaaa\nbbbbb\nccccc");
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertTrue(formContext.getInputNames().contains("entity.bbb"));
@@ -285,8 +289,9 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
                 "class=\"cssClass_test nablarch_error\"",
                 "name=\"entity.bbb\"",
                 "rows=\"5\"",
-                "cols=\"40\">$value$</textarea>")
-                .replace(Builder.LS, " ").replace("$value$", "aaaaa\nbbbbb\nccccc");
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\n$value$</textarea>"
+                .replace("$value$", "aaaaa\nbbbbb\nccccc");
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertTrue(formContext.getInputNames().contains("entity.bbb"));
@@ -320,8 +325,9 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
                 "class=\"cssClass_test nablarch_error\"",
                 "name=\"name_test\"",
                 "rows=\"5\"",
-                "cols=\"40\">$value$</textarea>")
-                .replace(Builder.LS, " ").replace("$value$", "aaaaa\nbbbbb\nccccc");
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\n$value$</textarea>"
+                .replace("$value$", "aaaaa\nbbbbb\nccccc");
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertTrue(formContext.getInputNames().contains("name_test"));
