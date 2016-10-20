@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration xmlns="http://tis.co.jp/nablarch/component-configuration"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration ./component-configuration.xsd">
+
+    <component name="customTagConfig" class="nablarch.common.web.tag.CustomTagConfig">
+        <property name="errorCss" value="default_error" />
+        <property name="messageFormat" value="span" />
+        <property name="elementLabelPattern" value="default_$LABEL$" />
+        <property name="listFormat" value="sp" />
+        <property name="codeLabelPattern" value="default_$NAME$" />
+        <property name="codeListFormat" value="span" />
+        <property name="host" value="nablarch.co.jp" />
+        <property name="datePattern" value="yyyy-MM-dd" />
+        <property name="dateTimePattern" value="yyyy:MM:dd HH:mm:ss" />
+    </component>
+
+</component-configuration>
