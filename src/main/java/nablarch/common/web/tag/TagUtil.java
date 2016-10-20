@@ -997,10 +997,7 @@ public final class TagUtil {
         }
 
         if (!isSingleValue) {
-            if (value.getClass().isArray()) {
-                value = Arrays.asList((Object[]) value);
-            }
-            LOGGER.logInfo(String.format("value wasn't single value. name = [%s], value = [%s]", name, value));
+            LOGGER.logInfo(String.format("value wasn't single value. name = [%s]", name));
             value = null;
         }
 
@@ -1045,7 +1042,16 @@ public final class TagUtil {
         }
 
         if (value.getClass().isArray()) {
-            return Arrays.asList((Object[]) value);
+            if (value instanceof Object[]) {
+                return Arrays.asList((Object[]) value);
+            } else {
+                final int length = Array.getLength(value);
+                final Object[] objects = new Object[length];
+                for (int i = 0; i < length; i++) {
+                    objects[i] = Array.get(value, i);
+                }
+                return Arrays.asList(objects);
+            }
         } else if (value instanceof Collection<?>) {
             return (Collection<?>) value;
         } else {

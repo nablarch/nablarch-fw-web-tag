@@ -48,6 +48,7 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertFalse;
@@ -55,7 +56,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
+
+import org.hamcrest.Matchers;
 
 /**
  * @author Kiyohito Itoh
@@ -581,11 +583,11 @@ public class TagUtilTest {
 
         assertNull(TagUtil.getSingleValue(pageContext, "array"));
         assertThat(OnMemoryLogWriter.getMessages("writer.appLog").get(0),
-                   containsString("value wasn't single value. name = [array], value = [[aaa, aaa2]]"));
+                   containsString("value wasn't single value. name = [array]"));
 
         assertNull(TagUtil.getSingleValue(pageContext, "collection"));
         assertThat(OnMemoryLogWriter.getMessages("writer.appLog").get(1),
-                   containsString("value wasn't single value. name = [collection], value = [[bbb, bbb2]]"));
+                   containsString("value wasn't single value. name = [collection]"));
     }
     
     /**
@@ -612,11 +614,11 @@ public class TagUtilTest {
 
         assertNull(TagUtil.getSingleValueOnScope(pageContext, "array"));
         assertThat(OnMemoryLogWriter.getMessages("writer.appLog").get(0),
-                   containsString("value wasn't single value. name = [array], value = [[aaa, aaa2]]"));
+                   containsString("value wasn't single value. name = [array]"));
 
         assertNull(TagUtil.getSingleValueOnScope(pageContext, "collection"));
         assertThat(OnMemoryLogWriter.getMessages("writer.appLog").get(1),
-                   containsString("value wasn't single value. name = [collection], value = [[bbb, bbb2]]"));
+                   containsString("value wasn't single value. name = [collection]"));
     }
 
     @SuppressWarnings({ "serial", "unchecked" })
@@ -639,13 +641,10 @@ public class TagUtilTest {
         assertThat(values.size(), is(1));
         assertThat(values.get(0), is("bbb"));
 
-        pageContext.setAttribute("array", new String[] {"aaa", "aaa2"});
+        pageContext.setAttribute("array", new int[] {1, 11});
         pageContext.setAttribute("collection", new ArrayList<String>() { { this.add("bbb"); this.add("bbb2"); } });
 
-        values = (List<String>) TagUtil.getMultipleValues(pageContext, "array");
-        assertThat(values.size(), is(2));
-        assertThat(values.get(0), is("aaa"));
-        assertThat(values.get(1), is("aaa2"));
+        assertThat(TagUtil.getMultipleValues(pageContext, "array"), Matchers.<Object>contains(1, 11));
 
         values = (List<String>) TagUtil.getMultipleValues(pageContext, "collection");
         assertThat(values.size(), is(2));
