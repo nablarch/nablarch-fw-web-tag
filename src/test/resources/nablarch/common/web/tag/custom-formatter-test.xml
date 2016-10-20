@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration xmlns="http://tis.co.jp/nablarch/component-configuration"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration ./component-configuration.xsd">
+
+    <component name="customTagConfig" class="nablarch.common.web.tag.CustomTagConfig">
+        <property name="errorCss" value="default_error" />
+        <property name="messageFormat" value="span" />
+        <property name="elementLabelPattern" value="default_$LABEL$" />
+        <property name="listFormat" value="sp" />
+        <property name="codeLabelPattern" value="default_$NAME$" />
+        <property name="codeListFormat" value="span" />
+    </component>
+
+    <map name="valueFormatters">
+        <entry key="dateString">
+            <value-component class="nablarch.common.web.tag.DateStringFormatter" />
+        </entry>
+        <entry key="yyyymmdd">
+            <value-component class="nablarch.common.web.tag.YYYYMMDDFormatter" />
+        </entry>
+        <entry key="yyyymm">
+            <value-component class="nablarch.common.web.tag.YYYYMMFormatter" />
+        </entry>
+        <entry key="dateTime">
+            <value-component class="nablarch.common.web.tag.DateTimeFormatter" />
+        </entry>
+        <entry key="decimal">
+            <value-component class="nablarch.common.web.tag.DecimalFormatter" />
+        </entry>
+        <entry key="custom">
+            <value-component class="nablarch.common.web.tag.CustomFormatter" />
+        </entry>
+    </map>
+
+</component-configuration>
