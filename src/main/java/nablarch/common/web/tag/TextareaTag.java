@@ -161,7 +161,7 @@ public class TextareaTag extends FocusAttributesTagSupport {
             // 開始タグ直後の改行はレンダリング時に削除されてしまう。
             // 入力データの先頭に改行を表示出来るようにするため、先頭に削除用の改行を設定。
             String s = new StringBuilder()
-                    .append("\r\n")
+                    .append(TagUtil.getCustomTagConfig().getLineSeparator())
                     .append(StringUtil.toString(value))
                     .toString();
             return TagUtil.createTagWithBody(getTagName(), attributes, TagUtil.escapeHtml(s, false));
