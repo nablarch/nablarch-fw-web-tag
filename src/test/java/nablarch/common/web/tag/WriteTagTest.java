@@ -1,20 +1,22 @@
 package nablarch.common.web.tag;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
+
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.Tag;
+
 import nablarch.core.ThreadContext;
 import nablarch.core.repository.SystemRepository;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Locale;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author Kiyohito Itoh
@@ -364,6 +366,42 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
     }
 
     /**
+     * 入力画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageArrayWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("array", new String[] {null});
+
+        target.setName("array");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+    }
+    
+    /**
+     * 入力画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageListWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("list", Collections.singletonList(null));
+
+        target.setName("list");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+    }
+
+    /**
      * 入力画面で、値がBigDecimal型かつエスケープしない場合に指数表記にならないこと。
      * @throws Exception
      */
@@ -445,5 +483,44 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
         String actual = TagTestUtil.getOutput(pageContext);
         String expected = "0.0000000001";
         TagTestUtil.assertTag(actual, expected, " ");
+    }
+    
+    /**
+     * 確認画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testConfirmationPageArrayWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("array", new String[] {null});
+
+        target.setName("array");
+        
+        TagUtil.setConfirmationPage(pageContext);
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+    }
+
+    /**
+     * 確認画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testConfirmationPageListWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("list", Collections.singletonList(null));
+
+        target.setName("list");
+
+        TagUtil.setConfirmationPage(pageContext);
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
     }
 }
