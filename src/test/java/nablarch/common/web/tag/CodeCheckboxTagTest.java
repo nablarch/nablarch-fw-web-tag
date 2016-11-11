@@ -5,8 +5,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.Locale;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import nablarch.core.ThreadContext;
@@ -493,6 +495,90 @@ public class CodeCheckboxTagTest extends TagTestSupport<CodeCheckboxTag> {
     }
 
     @Test
+    public void testInputPageWithArrayNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0005");
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_checkbox1\"",
+                "type=\"checkbox\"",
+                "name=\"name_test\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_checkbox1\">%s</label>").replace(Builder.LS, " ");
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String expected = Builder.lines(String.format(temp, "1", "unchecked", "はいはい"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.NAME), is("nablarch_cbx_off_param_name_test"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.VALUE), is("0"));
+    }
+
+
+    @Test
+    public void testInputPageWithListNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0005");
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_checkbox1\"",
+                "type=\"checkbox\"",
+                "name=\"name_test\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_checkbox1\">%s</label>").replace(Builder.LS, " ");
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String expected = Builder.lines(String.format(temp, "1", "unchecked", "はいはい"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.NAME), is("nablarch_cbx_off_param_name_test"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.VALUE), is("0"));
+    }
+
+    @Test
     public void testInputPageForError() throws Exception {
 
         TagTestUtil.setUpCodeTagTest();
@@ -711,6 +797,87 @@ public class CodeCheckboxTagTest extends TagTestSupport<CodeCheckboxTag> {
         expected = "いいえいいえ" + TagTestUtil.ESC_HTML_WITH_HTML_FORMAT;
         TagTestUtil.assertTag(actual, expected, " ");
 
+    }
+
+    @Test
+    public void testConfirmationPageWithoutValue() throws Exception {
+
+        TagUtil.setConfirmationPage(pageContext);
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0005");
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "いいえいいえ";
+        TagTestUtil.assertTag(actual, expected, " ");
+    }
+
+    @Test
+    public void testConfirmationPageWithArrayNull() throws Exception {
+
+        TagUtil.setConfirmationPage(pageContext);
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0005");
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "いいえいいえ";
+        TagTestUtil.assertTag(actual, expected, " ");
+    }
+
+    @Test
+    public void testConfirmationPageWithListNull() throws Exception {
+
+        TagUtil.setConfirmationPage(pageContext);
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0005");
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "いいえいいえ";
+        TagTestUtil.assertTag(actual, expected, " ");
     }
 
     @Test
