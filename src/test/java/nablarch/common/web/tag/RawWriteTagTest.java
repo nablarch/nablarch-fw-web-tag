@@ -39,7 +39,7 @@ public class RawWriteTagTest extends TagTestSupport<RawWriteTag> {
     }
     
     /**
-     * 入力画面で配列の要素がnullの場合は空文字列が出力されること
+     * 入力画面で配列の要素が非nullの場合その値が出力されること
      * @throws Exception
      */
     @Test
