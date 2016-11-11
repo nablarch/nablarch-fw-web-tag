@@ -6,8 +6,10 @@ import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import org.junit.Test;
@@ -202,6 +204,52 @@ public class IncludeParamTagTest extends TagTestSupport<IncludeParamTag> {
     }
 
     @Test
+    public void testInputPageArrayWithNull() throws Exception {
+        IncludeContext includeContext = new IncludeContext();
+        IncludeContext.setIncludeContext(pageContext, includeContext);
+        pageContext.getMockReq().getParams().put("entity.bbb", new String[] {null});
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setParamName("paramName_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(includeContext.getParams().size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").get(0), is(""));
+    }
+    
+    @Test
+    public void testInputPageListWithNull() throws Exception {
+        IncludeContext includeContext = new IncludeContext();
+        IncludeContext.setIncludeContext(pageContext, includeContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("list", Collections.singletonList(null));
+
+        // nablarch
+        target.setName("list");
+        target.setParamName("paramName_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(includeContext.getParams().size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").get(0), is(""));
+    }
+
+    @Test
     public void testConfirmationPageUsingName() throws Exception {
 
         IncludeContext includeContext = new IncludeContext();
@@ -315,5 +363,56 @@ public class IncludeParamTagTest extends TagTestSupport<IncludeParamTag> {
         for (int i = 0; i < 3; i++) {
             assertThat(includeContext.getParams().get("paramName_test").get(i), is("val" + (i + 1)));
         }
+    }
+    
+    @Test
+    public void testConfirmationPageArrayWithNull() throws Exception {
+        IncludeContext includeContext = new IncludeContext();
+        IncludeContext.setIncludeContext(pageContext, includeContext);
+        TagUtil.setConfirmationPage(pageContext);
+
+        pageContext.getMockReq()
+                   .getParams()
+                   .put("entity.bbb", new String[] {null});
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setParamName("paramName_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(includeContext.getParams().size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").get(0), is(""));
+    }
+
+    @Test
+    public void testConfirmationPageListWithNull() throws Exception {
+        IncludeContext includeContext = new IncludeContext();
+        IncludeContext.setIncludeContext(pageContext, includeContext);
+        TagUtil.setConfirmationPage(pageContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("list", Collections.singletonList(null));
+
+        // nablarch
+        target.setName("list");
+        target.setParamName("paramName_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(includeContext.getParams().size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").size(), is(1));
+        assertThat(includeContext.getParams().get("paramName_test").get(0), is(""));
     }
 }

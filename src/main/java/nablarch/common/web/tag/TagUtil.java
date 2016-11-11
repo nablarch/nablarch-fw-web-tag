@@ -1233,7 +1233,7 @@ public final class TagUtil {
         }
         String strValue = value.toString();
         for (Object element : values) {
-            if (strValue.equals(element.toString())) {
+            if (element != null && strValue.equals(element.toString())) {
                 return true;
             }
         }

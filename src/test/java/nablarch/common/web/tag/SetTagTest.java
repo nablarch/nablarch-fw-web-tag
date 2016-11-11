@@ -1,9 +1,12 @@
 package nablarch.common.web.tag;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import java.util.Collections;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
@@ -138,6 +141,49 @@ public class SetTagTest extends TagTestSupport<SetTag> {
     }
 
     @Test
+    public void testInputPageArrayWithNull() throws Exception {
+        pageContext.getMockReq()
+                   .getParams()
+                   .put("entity.bbb", new String[] {null});
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setVar("var_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(pageContext.getAttribute("var_test", PageContext.REQUEST_SCOPE),
+                is(nullValue()));
+
+    }
+    
+    @Test
+    public void testInputPageListWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("entity.bbb", Collections.singleton(null));
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setVar("var_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(pageContext.getAttribute("var_test", PageContext.REQUEST_SCOPE),
+                is(nullValue()));
+
+    }
+
+    @Test
     public void testConfirmationPageUsingName() throws Exception {
 
         pageContext.getMockReq().getParams().put("entity.bbb", new String[] {"value_test"});
@@ -252,5 +298,50 @@ public class SetTagTest extends TagTestSupport<SetTag> {
                 assertNull(o);
             }
         }
+    }
+    
+    @Test
+    public void testConfirmationPageArrayWithNull() throws Exception {
+        pageContext.getMockReq()
+                   .getParams()
+                   .put("entity.bbb", new String[] {null});
+        TagUtil.setConfirmationPage(pageContext);
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setVar("var_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(pageContext.getAttribute("var_test", PageContext.REQUEST_SCOPE),
+                is(nullValue()));
+
+    }
+
+    @Test
+    public void testConfirmationPageListWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("entity.bbb", Collections.singleton(null));
+        TagUtil.setConfirmationPage(pageContext);
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setVar("var_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(pageContext.getAttribute("var_test", PageContext.REQUEST_SCOPE),
+                is(nullValue()));
+
     }
 }

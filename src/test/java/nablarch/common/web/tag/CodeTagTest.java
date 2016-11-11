@@ -4,6 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.Locale;
 
 import javax.servlet.jsp.PageContext;
@@ -423,6 +424,42 @@ public class CodeTagTest extends TagTestSupport<CodeTag> {
         assertThat(TagTestUtil.getOutput(pageContext),
                    is("<ul><li>処理実行中</li><li>処理実行完了</li></ul>"));
     }
+    
+    @Test
+    public void testInputPageArrayWithNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        target.setName("array");
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        pageContext.getAttributes(PageContext.PAGE_SCOPE).put("array", new String[] {null});
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext), is(""));
+    }
+    
+    @Test
+    public void testInputPageListWithNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        target.setName("list");
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        pageContext.getAttributes(PageContext.PAGE_SCOPE).put("list", Collections.singleton(null));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext), is(""));
+    }
 
     @Test
     public void testConfirmationPageForDefault() throws Exception {
@@ -663,6 +700,44 @@ public class CodeTagTest extends TagTestSupport<CodeTag> {
         target.setCodeId("0002");
 
         target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext), is(""));
+    }
+    
+    @Test
+    public void testConfirmationPageArrayWithNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+        TagUtil.setConfirmationPage(pageContext);
+
+        target.setName("array");
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        pageContext.getAttributes(PageContext.PAGE_SCOPE).put("array", new String[] {null});
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext), is(""));
+    }
+
+    @Test
+    public void testConfirmationPageListWithNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+        TagUtil.setConfirmationPage(pageContext);
+
+        target.setName("list");
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        pageContext.getAttributes(PageContext.PAGE_SCOPE).put("list", Collections.singleton(null));
 
         assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));

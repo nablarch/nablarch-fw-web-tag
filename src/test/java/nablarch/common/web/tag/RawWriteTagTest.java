@@ -3,6 +3,8 @@ package nablarch.common.web.tag;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collections;
+
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
@@ -34,5 +36,98 @@ public class RawWriteTagTest extends TagTestSupport<RawWriteTag> {
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
         String actual = TagTestUtil.getOutput(pageContext);
         TagTestUtil.assertTag(actual, "<script>hoge</script>", " ");
+    }
+    
+    /**
+     * 入力画面で配列の要素が非nullの場合その値が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageArrayWithValue() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("array", new String[] {"<script>hoge</script>"});
+
+        target.setName("array");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is("<script>hoge</script>"));
+    }
+    
+    /**
+     * 入力画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageArrayWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("array", new String[] {null});
+
+        target.setName("array");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+    }
+
+    /**
+     * 入力画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageListWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("list", Collections.singletonList(null));
+
+        target.setName("list");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+    }
+    
+    /**
+     * 確認画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testConfirmationPageArrayWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("array", new String[] {null});
+
+        target.setName("array");
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+    }
+
+    /**
+     * 確認画面で配列の要素がnullの場合は空文字列が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testConfirmationPageListWithNull() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                   .put("list", Collections.singletonList(null));
+
+        target.setName("list");
+
+        TagUtil.setConfirmationPage(pageContext);
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
     }
 }

@@ -1,14 +1,25 @@
 package nablarch.common.web.tag;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.iterableWithSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import javax.servlet.jsp.tagext.Tag;
+
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.collection.IsIterableContainingInOrder;
+import org.hamcrest.collection.IsMapContaining;
+import org.hamcrest.core.IsCollectionContaining;
 
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 
@@ -115,7 +126,82 @@ public class ParamTagTest extends TagTestSupport<ParamTag> {
         assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").size(), is(1));
         assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").get(0), is("0.0000000001"));
     }
-    
+
+    @Test
+    public void testArrayWithNullValue() throws Exception {
+        pageContext.setAttribute("array", new String[] {null});
+        target.setName("array");
+        target.setParamName("array_param");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+
+        assertThat(currentSubmissionInfo.getParamsMap(), hasEntry(is("array_param"), contains("")));
+    }
+
+    @Test
+    public void testMultiArrayWithNullValue() throws Exception {
+        pageContext.setAttribute("array", new String[] {"a", null, "c"});
+        target.setName("array");
+        target.setParamName("array_param");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+
+        assertThat(currentSubmissionInfo.getParamsMap(), hasEntry(is("array_param"), contains("a", "", "c")));
+    }
+
+    @Test
+    public void testListWithNullValue() throws Exception {
+        pageContext.setAttribute("list", Collections.singletonList(null));
+        target.setName("list");
+        target.setParamName("list_param");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+
+        assertThat(currentSubmissionInfo.getParamsMap(), hasEntry(is("list_param"), contains("")));
+    }
+
+    @Test
+    public void testMultiListWithNullValue() throws Exception {
+        pageContext.setAttribute("list", Arrays.asList("あ", null, "う"));
+        target.setName("list");
+        target.setParamName("list_param");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+
+        assertThat(currentSubmissionInfo.getParamsMap(), hasEntry(is("list_param"), contains("あ", "", "う")));
+    }
+
+    @Test
+    public void testScopeValueIsNull() throws Exception {
+        pageContext.setAttribute("list", Arrays.asList("あ", null, "う"));
+        target.setName("not_found");
+        target.setParamName("param");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+
+        assertThat(currentSubmissionInfo.getParamsMap(), hasEntry(is("param"), contains("")));
+    }
+
     @Test
     public void testInputPageUsingValue() throws Exception {
         
@@ -225,8 +311,8 @@ public class ParamTagTest extends TagTestSupport<ParamTag> {
         String expected = "";
         TagTestUtil.assertTag(actual, expected, " ");
 
-        assertThat(currentSubmissionInfo.getParamsMap().size(), is(1));
         assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").size(), is(1));
+        assertThat(currentSubmissionInfo.getParamsMap().size(), is(1));
         assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").get(0), is("value_test"));
     }
     
