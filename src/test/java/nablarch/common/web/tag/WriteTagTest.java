@@ -384,7 +384,7 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
     }
     
     /**
-     * 入力画面で配列の要素がnullの場合は空文字列が出力されること
+     * 入力画面でリストの要素がnullの場合は空文字列が出力されること
      * @throws Exception
      */
     @Test
@@ -506,7 +506,7 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
     }
 
     /**
-     * 確認画面で配列の要素がnullの場合は空文字列が出力されること
+     * 確認画面でリストの要素がnullの場合は空文字列が出力されること
      * @throws Exception
      */
     @Test
