@@ -6,8 +6,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.Locale;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import nablarch.core.ThreadContext;
@@ -437,6 +439,97 @@ public class CodeRadioButtonsTagTest extends TagTestSupport<CodeRadioButtonsTag>
         TagTestUtil.assertTag(actual, expected, " ");
 
         assertTrue(formContext.getInputNames().contains("entity.bbb"));
+    }
+
+    @Test
+    public void testInputPageWithArrayNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio%s\"",
+                "type=\"radio\"",
+                "name=\"name_test\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_radio%s\">%s</label><br />").replace(Builder.LS, " ");
+        String unchecked = "unchecked";
+        int i = 0;
+        String expected = Builder.lines(
+                String.format(temp, ++i + "", "01", unchecked, i + "", "初期状態"),
+                String.format(temp, ++i + "", "02", unchecked, i + "", "処理開始待ち"),
+                String.format(temp, ++i + "", "03", unchecked, i + "", "処理実行中"),
+                String.format(temp, ++i + "", "04", unchecked, i + "", "処理実行完了"),
+                String.format(temp, ++i + "", "05", unchecked, i + "", "処理結果確認完了"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio%s\"",
+                "type=\"radio\"",
+                "name=\"name_test\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_radio%s\">%s</label><br />").replace(Builder.LS, " ");
+        String unchecked = "unchecked";
+        int i = 0;
+        String expected = Builder.lines(
+                String.format(temp, ++i + "", "01", unchecked, i + "", "初期状態"),
+                String.format(temp, ++i + "", "02", unchecked, i + "", "処理開始待ち"),
+                String.format(temp, ++i + "", "03", unchecked, i + "", "処理実行中"),
+                String.format(temp, ++i + "", "04", unchecked, i + "", "処理実行完了"),
+                String.format(temp, ++i + "", "05", unchecked, i + "", "処理結果確認完了"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
     }
 
     @Test
@@ -900,6 +993,69 @@ public class CodeRadioButtonsTagTest extends TagTestSupport<CodeRadioButtonsTag>
         TagUtil.setFormContext(pageContext, formContext);
 
         TagUtil.setConfirmationPage(pageContext);
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithArrayNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
 
         // select
         target.setName("name_test");
