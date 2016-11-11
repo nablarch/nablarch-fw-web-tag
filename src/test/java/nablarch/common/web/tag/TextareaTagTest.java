@@ -12,6 +12,8 @@ import nablarch.core.util.Builder;
 
 import org.junit.Test;
 
+import java.util.Collections;
+
 /**
  * @author Kiyohito Itoh
  */
@@ -227,6 +229,64 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
     }
 
     @Test
+    public void testInputPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(pageContext.REQUEST_SCOPE)
+                .put("name_test", new String[] {null});
+
+        // textarea
+        target.setName("name_test");
+        target.setRows(5);
+        target.setCols(40);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<textarea",
+                "name=\"name_test\"",
+                "rows=\"5\"",
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\n</textarea>";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(pageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        // textarea
+        target.setName("name_test");
+        target.setRows(5);
+        target.setCols(40);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<textarea",
+                "name=\"name_test\"",
+                "rows=\"5\"",
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\n</textarea>";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
     public void testInputPageWithDefaultConfig() throws Exception {
         
         TagTestUtil.setUpDefaultConfigWithLS();
@@ -405,7 +465,62 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
         
         assertFalse(formContext.getInputNames().contains("name_test"));
     }
-    
+
+    @Test
+    public void testConfirmationPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(pageContext.REQUEST_SCOPE)
+                .put("name_test", new String[] {null});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // textarea
+        target.setName("name_test");
+        target.setRows(5);
+        target.setCols(40);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(pageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // textarea
+        target.setName("name_test");
+        target.setRows(5);
+        target.setCols(40);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    /**
+     * 本タグがFormタグ内に定義されていない場合（FormContextが設定されていない場合）に、
+
     /**
      * 本タグがFormタグ内に定義されていない場合（FormContextが設定されていない場合）に、
      * IllegalStateExceptionがスローされることのテスト。
