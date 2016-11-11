@@ -63,7 +63,7 @@ public class PlainHiddenTag extends InputTagSupport {
         }
 
         for (Object value : values) {
-            hiddenAttributes.add(createHiddenAttributes(baseAttributes, value));
+            hiddenAttributes.add(createHiddenAttributes(baseAttributes, value != null ? value : ""));
         }
         return hiddenAttributes;
     }
