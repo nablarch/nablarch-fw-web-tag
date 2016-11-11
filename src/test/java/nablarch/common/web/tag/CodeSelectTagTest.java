@@ -6,8 +6,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.Locale;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import nablarch.core.ThreadContext;
@@ -504,6 +506,89 @@ public class CodeSelectTagTest extends TagTestSupport<CodeSelectTag> {
     }
 
     @Test
+    public void testInputPageWithArrayNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String startTag = Builder.lines(
+                "<select",
+                "name=\"name_test\">").replace(Builder.LS, " ");
+        String excludeStartTag = Builder.lines(
+                "<option value=\"01\">初期状態</option>",
+                "<option value=\"02\">処理開始待ち</option>",
+                "<option value=\"03\">処理実行中</option>",
+                "<option value=\"04\">処理実行完了</option>",
+                "<option value=\"05\">処理結果確認完了</option></select>");
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = excludeStartTag.split(Builder.LS);
+        TagTestUtil.assertTag(splitActual[0], startTag, " ");
+        for (int i = 1; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i - 1], " ");
+        }
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String startTag = Builder.lines(
+                "<select",
+                "name=\"name_test\">").replace(Builder.LS, " ");
+        String excludeStartTag = Builder.lines(
+                "<option value=\"01\">初期状態</option>",
+                "<option value=\"02\">処理開始待ち</option>",
+                "<option value=\"03\">処理実行中</option>",
+                "<option value=\"04\">処理実行完了</option>",
+                "<option value=\"05\">処理結果確認完了</option></select>");
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = excludeStartTag.split(Builder.LS);
+        TagTestUtil.assertTag(splitActual[0], startTag, " ");
+        for (int i = 1; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i - 1], " ");
+        }
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
     public void testInputPageForError() throws Exception {
 
         TagTestUtil.setUpCodeTagTest();
@@ -831,6 +916,69 @@ public class CodeSelectTagTest extends TagTestSupport<CodeSelectTag> {
 
         FormContext formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithArrayNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0002");
+        target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNull() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
 
         TagUtil.setConfirmationPage(pageContext);
 
