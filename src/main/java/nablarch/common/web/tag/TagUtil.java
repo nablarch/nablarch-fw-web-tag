@@ -1624,7 +1624,7 @@ public final class TagUtil {
 
             Object property = getPropertyFromObject(valueObject, keyName);
 
-            valuesListStr.append(property);
+            valuesListStr.append(property == null ? "" : property);
             first = false;
         }
 
