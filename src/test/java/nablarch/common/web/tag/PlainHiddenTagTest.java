@@ -7,8 +7,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import nablarch.core.util.Builder;
@@ -190,7 +192,58 @@ public class PlainHiddenTagTest extends TagTestSupport<PlainHiddenTag> {
         
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
-    
+
+    @Test
+    public void testInputPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[] {null});
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"hidden\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"hidden\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
 
     @Test
     public void testConfirmationPageForDefault() throws Exception {
@@ -245,7 +298,63 @@ public class PlainHiddenTagTest extends TagTestSupport<PlainHiddenTag> {
         
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
-    
+
+    @Test
+    public void testConfirmationPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[] {null});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"hidden\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"hidden\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
     @Test
     public void testConfirmationPageForDefaultWithHtml() throws Exception {
 

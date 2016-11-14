@@ -3,7 +3,10 @@ package nablarch.common.web.tag;
 import nablarch.core.util.Builder;
 import org.junit.Test;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
+
+import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
@@ -324,6 +327,58 @@ public class FileTagTest extends TagTestSupport<FileTag> {
     }
 
     @Test
+    public void testInputPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[]{null});
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"file\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"file\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
     public void testConfirmationPageForDefault() throws Exception {
 
         FormContext formContext = TagTestUtil.createFormContext();
@@ -345,7 +400,6 @@ public class FileTagTest extends TagTestSupport<FileTag> {
 
         assertFalse(formContext.getInputNames().contains("name_test"));
     }
-
 
     @Test
     public void testConfirmationPageForDefaultWithHtml() throws Exception {
@@ -389,8 +443,54 @@ public class FileTagTest extends TagTestSupport<FileTag> {
         TagTestUtil.assertTag(actual, expected, " ");
 
         assertFalse(formContext.getInputNames().contains("name_test"));
-    }    
-    
+    }
+
+    @Test
+    public void testConfirmationPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[]{null});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
     /**
      * 本タグがFormタグ内に定義されていない場合（FormContextが設定されていない場合）に、
      * IllegalStateExceptionがスローされることのテスト。

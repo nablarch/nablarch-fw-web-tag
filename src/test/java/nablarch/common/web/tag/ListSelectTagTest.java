@@ -7,6 +7,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -515,6 +516,86 @@ public class ListSelectTagTest extends TagTestSupport<ListSelectTag> {
     }
 
     @Test
+    public void testInputPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[] {null});
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String startTag = "<select name=\"name_test\">";
+        String excludeStartTag = Builder.lines(
+                "<option value=\"G000\">グループ0</option>",
+                "<option value=\"G001\">グループ1</option>",
+                "<option value=\"G002\">グループ2</option>",
+                "<option value=\"G003\">グループ3</option>",
+                "<option value=\"G004\">グループ4</option></select>");
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = excludeStartTag.split(Builder.LS);
+        TagTestUtil.assertTag(splitActual[0], startTag, " ");
+        for (int i = 1; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i - 1], " ");
+        }
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String startTag = "<select name=\"name_test\">";
+        String excludeStartTag = Builder.lines(
+                "<option value=\"G000\">グループ0</option>",
+                "<option value=\"G001\">グループ1</option>",
+                "<option value=\"G002\">グループ2</option>",
+                "<option value=\"G003\">グループ3</option>",
+                "<option value=\"G004\">グループ4</option></select>");
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = excludeStartTag.split(Builder.LS);
+        TagTestUtil.assertTag(splitActual[0], startTag, " ");
+        for (int i = 1; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i - 1], " ");
+        }
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
     public void testInputPageForError() throws Exception {
         
         FormContext formContext = TagTestUtil.createFormContext();
@@ -932,8 +1013,71 @@ public class ListSelectTagTest extends TagTestSupport<ListSelectTag> {
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertFalse(formContext.getInputNames().contains("name_test"));
-    }    
-    
+    }
+
+    @Test
+    public void testConfirmationPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[] {null});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+        target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+
+    @Test
+    public void testConfirmationPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // select
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+        target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
     /**
      * 本タグがFormタグ内に定義されていない場合（FormContextが設定されていない場合）に、
      * IllegalStateExceptionがスローされることのテスト。

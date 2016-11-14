@@ -6,7 +6,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
+import java.util.Collections;
 import java.util.Locale;
 
 import static org.hamcrest.core.Is.is;
@@ -232,7 +234,61 @@ public class TextTagTest extends TagTestSupport<TextTag> {
         
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
-    
+
+    @Test
+    public void testInputPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", new String[] {null});
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"text\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"text\"",
+                "name=\"name_test\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
     @Test
     public void testInputPageWithDefaultConfig() throws Exception {
         
@@ -828,7 +884,55 @@ public class TextTagTest extends TagTestSupport<TextTag> {
         
         assertFalse(formContext.getInputNames().contains("name_test"));
     }
-    
+
+    @Test
+    public void testConfirmationPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", new String[]{null});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
     @Test
     public void testConfirmationPageForDefaultWithNullValueFormat() throws Exception {
         

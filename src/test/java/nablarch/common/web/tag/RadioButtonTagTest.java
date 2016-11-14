@@ -13,6 +13,8 @@ import nablarch.core.util.Builder;
 
 import org.junit.Test;
 
+import java.util.Collections;
+
 /**
  * @author Kiyohito Itoh
  */
@@ -399,7 +401,71 @@ public class RadioButtonTagTest extends TagTestSupport<RadioButtonTag> {
         
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
-    
+
+    @Test
+    public void testInputPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[]{null});
+
+        // input
+        target.setName("name_test");
+
+        // checkbox
+        target.setValue("10");
+
+        // nablarch
+        target.setLabel("label_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio1\"",
+                "type=\"radio\"",
+                "name=\"name_test\"",
+                "value=\"10\" /><label for=\"nablarch_radio1\">label_test</label>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        // input
+        target.setName("name_test");
+
+        // checkbox
+        target.setValue("10");
+
+        // nablarch
+        target.setLabel("label_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio1\"",
+                "type=\"radio\"",
+                "name=\"name_test\"",
+                "value=\"10\" /><label for=\"nablarch_radio1\">label_test</label>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
     @Test
     public void testConfirmationPageForChecked() throws Exception {
 
@@ -515,8 +581,66 @@ public class RadioButtonTagTest extends TagTestSupport<RadioButtonTag> {
         TagTestUtil.assertTag(actual, expected, " ");
         
         assertFalse(formContext.getInputNames().contains("name_test" + TagTestUtil.ESC_HTML));
-    }    
-    
+    }
+
+    @Test
+    public void testConfirmationPageWithArrayNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", new String[]{null});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        // radio
+        target.setValue("value_test");
+
+        // nablarch
+        target.setLabel("label_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("name_test", Collections.singletonList(null));
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        // radio
+        target.setValue("value_test");
+
+        // nablarch
+        target.setLabel("label_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
     /**
      * 本タグがFormタグ内に定義されていない場合（FormContextが設定されていない場合）に、
      * IllegalStateExceptionがスローされることのテスト。
