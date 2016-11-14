@@ -428,6 +428,86 @@ public class CompositeKeyRadioButtonTagTest extends TagTestSupport<CompositeKeyR
         
         assertTrue(formContext.getInputNames().contains("test.value"));
     }
+
+    @Test
+    public void testInputPageCompositeKeyNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        Map<String, Object> testMap = new HashMap<String, Object>();
+        testMap.put("value", new CompositeKey(new String[]{null}));
+        pageContext.getMockReq().setAttribute("test", testMap);
+
+        // generic
+        TagTestUtil.setGenericAttributes(target);
+
+        // focus
+        TagTestUtil.setFocusAttributes(target);
+
+        // input
+        target.setName("test.value");
+        target.setDisabled(true);
+        target.setOnchange("onchange_test");
+
+        // checkbox
+        target.setValue("value_test");
+
+        // HTML5
+        target.setAutofocus(true);
+
+        // nablarch
+        target.setLabel("label_test");
+        target.setErrorCss("errorCss_test");
+
+        target.setNamePrefix("test");
+        target.setKeyNames("key1,key2");
+
+        Map<String, String> values = new HashMap<String, String>() {
+            {
+                put("key1", "val1");
+                put("key2", "val2");
+            }
+        };
+        target.setValueObject(values);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "id=\"id_test\"",
+                "class=\"css_test\"",
+                "style=\"style_test\"",
+                "title=\"title_test\"",
+                "lang=\"lang_test\"",
+                "xml:lang=\"xmlLang_test\"",
+                "dir=\"dir_test\"",
+                "accesskey=\"accesskey_test\"",
+                "tabindex=\"3\"",
+                "type=\"radio\"",
+                "name=\"test.value\"",
+                "value=\"val1,val2\"",
+                "disabled=\"disabled\"",
+                "onclick=\"onclick_test\"",
+                "ondblclick=\"ondblclick_test\"",
+                "onchange=\"onchange_test\"",
+                "onmousedown=\"onmousedown_test\"",
+                "onmouseup=\"onmouseup_test\"",
+                "onmouseover=\"onmouseover_test\"",
+                "onmousemove=\"onmousemove_test\"",
+                "onmouseout=\"onmouseout_test\"",
+                "onkeypress=\"onkeypress_test\"",
+                "onkeydown=\"onkeydown_test\"",
+                "onkeyup=\"onkeyup_test\"",
+                "onfocus=\"onfocus_test\"",
+                "onblur=\"onblur_test\"",
+                "autofocus=\"autofocus\" /><label for=\"id_test\">label_test</label>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("test.value"));
+    }
     /**
      * 本タグがFormタグ内に定義されていない場合（FormContextが設定されていない場合）に、
      * IllegalStateExceptionがスローされることのテスト。
