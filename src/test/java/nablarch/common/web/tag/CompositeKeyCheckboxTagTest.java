@@ -382,6 +382,82 @@ public class CompositeKeyCheckboxTagTest extends TagTestSupport<CompositeKeyChec
         assertTrue(formContext.getInputNames().contains("test.value"));
     }
 
+    @Test
+    public void testInputPageParameterNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("test.key1", new String[] {"val1"});
+        pageContext.getMockReq().getParams().put("test.key2", new String[] {null});
+
+        // generic
+        TagTestUtil.setGenericAttributes(target);
+
+        // focus
+        TagTestUtil.setFocusAttributes(target);
+
+        // input
+        target.setName("test.value");
+        target.setDisabled(true);
+        target.setOnchange("onchange_test");
+
+        // HTML5
+        target.setAutofocus(true);
+
+        // nablarch
+        target.setLabel("label_test");
+        target.setErrorCss("errorCss_test");
+
+        target.setNamePrefix("test");
+        target.setKeyNames("key1,key2");
+
+        Map<String, String> values = new HashMap<String, String>() {
+            {
+                put("key1", "val1");
+                put("key2", "val2");
+            }
+        };
+        target.setValueObject(values);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "id=\"id_test\"",
+                "class=\"css_test\"",
+                "style=\"style_test\"",
+                "title=\"title_test\"",
+                "lang=\"lang_test\"",
+                "xml:lang=\"xmlLang_test\"",
+                "dir=\"dir_test\"",
+                "accesskey=\"accesskey_test\"",
+                "tabindex=\"3\"",
+                "type=\"checkbox\"",
+                "name=\"test.value\"",
+                "value=\"val1,val2\"",
+                "disabled=\"disabled\"",
+                "onclick=\"onclick_test\"",
+                "ondblclick=\"ondblclick_test\"",
+                "onchange=\"onchange_test\"",
+                "onmousedown=\"onmousedown_test\"",
+                "onmouseup=\"onmouseup_test\"",
+                "onmouseover=\"onmouseover_test\"",
+                "onmousemove=\"onmousemove_test\"",
+                "onmouseout=\"onmouseout_test\"",
+                "onkeypress=\"onkeypress_test\"",
+                "onkeydown=\"onkeydown_test\"",
+                "onkeyup=\"onkeyup_test\"",
+                "onfocus=\"onfocus_test\"",
+                "onblur=\"onblur_test\"",
+                "autofocus=\"autofocus\" /><label for=\"id_test\">label_test</label>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("test.value"));
+    }
+
     /**
      * name 属性に指定した値と namePrefix 属性・ keyNames 属性の組み合わせで名称がかぶった場合に、
      * エラーとなることのテスト。
