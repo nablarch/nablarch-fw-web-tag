@@ -3,9 +3,11 @@ package nablarch.common.web.tag;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -238,6 +240,33 @@ public class HiddenTagTest extends TagTestSupport<HiddenTag> {
 
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
+
+    @Test
+    public void testInputPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // input
+        target.setName("name_test");
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext), is(""));
+
+        List<HtmlAttributes> InfoList = formContext.getHiddenTagInfoList();
+        assertThat(InfoList.size(), is(1));
+
+        HtmlAttributes attrs = InfoList.get(0);
+        assertThat(attrs.<String>get(HtmlAttribute.TYPE), is("hidden"));
+        assertThat(attrs.<String>get(HtmlAttribute.NAME), is("name_test"));
+        assertThat(attrs.<String>get(HtmlAttribute.VALUE), is(""));
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
     
     @Test
     public void testConfirmationPageForDefault() throws Exception {
@@ -280,6 +309,30 @@ public class HiddenTagTest extends TagTestSupport<HiddenTag> {
         List<HtmlAttributes> InfoList = formContext.getHiddenTagInfoList();
         assertThat(InfoList.size(), is(0));
         
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageWithListNullValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext), is(""));
+
+        List<HtmlAttributes> InfoList = formContext.getHiddenTagInfoList();
+        assertThat(InfoList.size(), is(0));
+
         assertFalse(formContext.getInputNames().contains("name_test"));
     }
 

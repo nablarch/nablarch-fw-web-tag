@@ -7,9 +7,11 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -443,7 +445,97 @@ public class ListRadioButtonsTagTest extends TagTestSupport<ListRadioButtonsTag>
         
         assertTrue(formContext.getInputNames().contains("entity.bbb"));
     }
-    
+
+    @Test
+    public void testInputPageArrayWithNull() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio%s\"",
+                "type=\"radio\"",
+                "name=\"name_test\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_radio%s\">%s</label><br />").replace(Builder.LS, " ");
+        String unchecked = "unchecked";
+        int i = 0;
+        String expected = Builder.lines(
+                String.format(temp, ++i + "", "G000", unchecked, i + "", "グループ0"),
+                String.format(temp, ++i + "", "G001", unchecked, i + "", "グループ1"),
+                String.format(temp, ++i + "", "G002", unchecked, i + "", "グループ2"),
+                String.format(temp, ++i + "", "G003", unchecked, i + "", "グループ3"),
+                String.format(temp, ++i + "", "G004", unchecked, i + "", "グループ4"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageListWithNull() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio%s\"",
+                "type=\"radio\"",
+                "name=\"name_test\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_radio%s\">%s</label><br />").replace(Builder.LS, " ");
+        String unchecked = "unchecked";
+        int i = 0;
+        String expected = Builder.lines(
+                String.format(temp, ++i + "", "G000", unchecked, i + "", "グループ0"),
+                String.format(temp, ++i + "", "G001", unchecked, i + "", "グループ1"),
+                String.format(temp, ++i + "", "G002", unchecked, i + "", "グループ2"),
+                String.format(temp, ++i + "", "G003", unchecked, i + "", "グループ3"),
+                String.format(temp, ++i + "", "G004", unchecked, i + "", "グループ4"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+
     @Test
     public void testInputPageForError() throws Exception {
 
@@ -997,6 +1089,61 @@ public class ListRadioButtonsTagTest extends TagTestSupport<ListRadioButtonsTag>
         String expected = "";
         TagTestUtil.assertTag(actual, expected, " ");
         
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageArrayWithNull() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {null});
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        assertThat(TagTestUtil.getOutput(pageContext), isEmptyString());
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testConfirmationPageListWithNull() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("name_test", Collections.singletonList(null));
+
+        TagTestUtil.setListWithStringId(pageContext);
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        assertThat(TagTestUtil.getOutput(pageContext), isEmptyString());
+
         assertFalse(formContext.getInputNames().contains("name_test"));
     }
     
