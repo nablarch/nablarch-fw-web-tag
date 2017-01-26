@@ -50,7 +50,8 @@ public class FormTagTest extends TagTestSupport<FormTag> {
             "    }",
 
                  // サブミット制御のJavaScriptの出力が完了したことを示すマーカを取得する。
-            "    if ($submissionEndMarkPrefix$[form.name] == null) {",
+            "    var formName = form.getAttribute('name');",
+            "    if ($submissionEndMarkPrefix$[formName] == null) {",
             "        return false;",
             "    }",
 
@@ -64,7 +65,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
             "    var submitName = element.name;",
 
                  // フォームに含まれるサブミット情報を取得する。
-            "    var formData = $submissionInfoVar$[form.name];",
+            "    var formData = $submissionInfoVar$[formName];",
 
                  // イベント発生元のサブミット情報を取得する。
             "    var submissionData = formData[submitName];",
