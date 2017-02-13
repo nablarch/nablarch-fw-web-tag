@@ -744,7 +744,7 @@ public class FormTag extends GenericAttributesTagSupport {
             "    }",
 
                  // サブミット制御のJavaScriptの出力が完了したことを示すマーカを取得する。
-            "    var formName = form.getAttribute('name');",
+            "    var formName = form.attributes['name'].nodeValue;",
             "    if ($submissionEndMarkPrefix$[formName] == null) {",
             "        return false;",
             "    }",
