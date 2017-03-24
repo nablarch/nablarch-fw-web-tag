@@ -3,6 +3,7 @@ package nablarch.common.web.tag;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.servlet.jsp.PageContext;
 
@@ -16,6 +17,9 @@ import nablarch.core.validation.convertor.ConversionUtil;
  * @author Kiyohito Itoh
  */
 public class DecimalFormatter implements ValueFormatter {
+
+    /** 指数表現の数値のパターン */
+    private static final Pattern EXPONENT_PATTERN = Pattern.compile("^[+-]?([0-9][0-9]*)?[0-9](\\.[0-9]*[0-9])?([eE][-+]?[0-9]+)?$");
 
     /**
      * {@inheritDoc}
@@ -55,6 +59,10 @@ public class DecimalFormatter implements ValueFormatter {
         if (value instanceof String) {
             String strValue = (String) value;
             if (StringUtil.isNullOrEmpty(strValue)) {
+                return strValue;
+            }
+            // 指数表現の場合はそのまま返す。
+            if (EXPONENT_PATTERN.matcher(strValue).matches()) {
                 return strValue;
             }
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(language);

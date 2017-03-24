@@ -1731,4 +1731,20 @@ public class TagUtilTest {
                 actual, is("http://localhost.com"));
 
     }
+
+    /**
+     * 指数表現を含む数値のテスト
+     */
+    @Test
+    public void testFormatHugeExponentialValue() {
+        MockPageContext pageContext = new MockPageContext();
+        String name = "name_test";
+
+        // huge exponetial value
+        assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "9e99999999"), is("9e99999999"));
+        assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "-9E-99999999"), is("-9E-99999999"));
+        // non exponential value.
+        assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "hogehoge"), is("hogehoge"));
+    }
+
 }
