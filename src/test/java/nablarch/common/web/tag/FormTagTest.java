@@ -1343,7 +1343,6 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                         put("nablarch_hidden_submit_go", new ArrayList<String>() {{ add("goParam1=goParam1_sample1|goParam1=goParam1_sample2|goParam2=goParam2_sample"); }});
                     }
                 });
-        
         String actual = TagTestUtil.getOutput(pageContext);
         String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
         String[] splitExpected = Builder.lines(
@@ -1375,7 +1374,16 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "-->",
                 "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
-            TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
+            if (splitExpected[i].startsWith("<input type=\"hidden\" name=\"nablarch_hidden\" value=\"") &&
+                    splitExpected[i].endsWith("\" />")) {
+                // hiddenValueは必ずしも一致しないため、前後を比較する。
+                assertThat("hiddenValueの前",
+                        splitActual[i].startsWith("<input type=\"hidden\" name=\"nablarch_hidden\" value=\""),
+                        is(true));
+                assertThat("hiddenValueの後", splitActual[i].endsWith("\" />"), is(true));
+            } else {
+                TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
+            }
         }
         assertThat(formContext.getRequestIds().size(), is(2));
         assertThat(formContext.getRequestIds().get(0), is("R0001"));
@@ -1437,7 +1445,6 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                         put("nablarch_hidden_submit_go", new ArrayList<String>() {{ add("goParam1=goParam1_sample1|goParam1=goParam1_sample2|goParam2=goParam2_sample"); }});
                     }
                 });
-        
         String actual = TagTestUtil.getOutput(pageContext);
         String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
         String[] splitExpected = Builder.lines(
@@ -1469,7 +1476,16 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "-->",
                 "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
-            TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
+            if (splitExpected[i].startsWith("<input type=\"hidden\" name=\"nablarch_hidden\" value=\"") &&
+                    splitExpected[i].endsWith("\" />")) {
+                // hiddenValueは必ずしも一致しないため、前後を比較する。
+                assertThat("hiddenValueの前",
+                        splitActual[i].startsWith("<input type=\"hidden\" name=\"nablarch_hidden\" value=\""),
+                        is(true));
+                assertThat("hiddenValueの後", splitActual[i].endsWith("\" />"), is(true));
+            } else {
+                TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
+            }
         }
         assertThat(formContext.getRequestIds().size(), is(2));
         assertThat(formContext.getRequestIds().get(0), is("R0001"));

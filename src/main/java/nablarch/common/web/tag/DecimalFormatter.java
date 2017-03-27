@@ -3,6 +3,7 @@ package nablarch.common.web.tag;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.servlet.jsp.PageContext;
 
@@ -55,6 +56,10 @@ public class DecimalFormatter implements ValueFormatter {
         if (value instanceof String) {
             String strValue = (String) value;
             if (StringUtil.isNullOrEmpty(strValue)) {
+                return strValue;
+            }
+            // 指数表現を含む場合はそのまま返す。
+            if (strValue.toUpperCase().contains("E")) {
                 return strValue;
             }
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(language);

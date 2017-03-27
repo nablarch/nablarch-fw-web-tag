@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -1577,10 +1578,13 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertThat(versions.size(), is(1));
         String[] version = versions.get(0).split("\\|");
         assertThat(version.length, is(4));
-        assertThat("table name", version[0], is("tableName=EXCLUSIVE_TEST_1"));
-        assertThat("version column name", version[1], is("versionColumnName=VERSION"));
-        assertThat("primary keys", version[2], is("primaryKeys=id\\=1"));
-        assertThat("version no", version[3], is("version=100"));
+        // 順番は不定なためソート
+        List<String> versionList = Arrays.asList(version);
+        Collections.sort(versionList);
+        assertThat("primary keys", versionList.get(0), is("primaryKeys=id\\=1"));
+        assertThat("table name", versionList.get(1), is("tableName=EXCLUSIVE_TEST_1"));
+        assertThat("version no", versionList.get(2), is("version=100"));
+        assertThat("version column name", versionList.get(3), is("versionColumnName=VERSION"));
 
         //----------------------------------------------------------------------
         // バージョンのアップデート処理
