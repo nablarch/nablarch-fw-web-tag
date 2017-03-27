@@ -18,9 +18,6 @@ import nablarch.core.validation.convertor.ConversionUtil;
  */
 public class DecimalFormatter implements ValueFormatter {
 
-    /** 指数表現の数値のパターン */
-    private static final Pattern EXPONENT_PATTERN = Pattern.compile("^[+-]?([0-9][0-9]*)?[0-9](\\.[0-9]*[0-9])?([eE][-+]?[0-9]+)?$");
-
     /**
      * {@inheritDoc}
      * <pre><code>
@@ -61,8 +58,8 @@ public class DecimalFormatter implements ValueFormatter {
             if (StringUtil.isNullOrEmpty(strValue)) {
                 return strValue;
             }
-            // 指数表現の場合はそのまま返す。
-            if (EXPONENT_PATTERN.matcher(strValue).matches()) {
+            // 指数表現を含む場合はそのまま返す。
+            if (strValue.toUpperCase().contains("E")) {
                 return strValue;
             }
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(language);

@@ -1744,7 +1744,7 @@ public class TagUtilTest {
         assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "9e99999999"), is("9e99999999"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "-9E-99999999"), is("-9E-99999999"));
         // non exponential value.
-        assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "hogehoge"), is("hogehoge"));
+        assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "abc"), is("abc"));
     }
 
 }
