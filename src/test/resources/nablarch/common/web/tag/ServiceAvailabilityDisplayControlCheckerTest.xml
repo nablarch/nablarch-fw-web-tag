@@ -1,39 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component-configuration xmlns="http://tis.co.jp/nablarch/component-configuration"
-                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+>
 
-<!--
-    <import file="db-default.xml"/>
--->
 
-<!-- WEBサービス提供可否状態を判定するハンドラ -->
-    <component name="ServiceAvailabilityCheckHandler" class="nablarch.common.availability.ServiceAvailabilityCheckHandler">
-        <property name="serviceAvailability" ref="serviceAvailability"/>
-    </component>
+  <!-- WEBサービス提供可否状態を判定するハンドラ -->
+  <component name="ServiceAvailabilityCheckHandler"
+      class="nablarch.common.availability.ServiceAvailabilityCheckHandler">
+    <property name="serviceAvailability" ref="serviceAvailability" />
+  </component>
 
-    <component name="serviceAvailability" class="nablarch.common.web.tag.MockServiceAvailability">
-    </component>
+  <component name="serviceAvailability" class="nablarch.common.web.tag.MockServiceAvailability" />
 
-<!--
-    <component name="serviceAvailability" class="nablarch.common.availability.BasicServiceAvailability">
-        <property name="tableName" value="APPLIED_REQUEST"/>
-        <property name="requestTableRequestIdColumnName" value="APPLIED_REQUEST_ID"/>
-        <property name="requestTableServiceAvailableColumnName"
-                  value="APPLIED_SERVICE_AVAILABLE"/>
-        <property name="dbManager" ref="serviceAvailabilityDbManager"/>
-    </component>
-
-    <component name="serviceAvailabilityDbManager" class="nablarch.core.db.transaction.SimpleDbTransactionManager">
-        <property name="dbTransactionName" value="serviceAvailability"/>
-    </component>
- -->
-
-    <!-- 初期化設定 -->
-    <component name="initializer" class="nablarch.core.repository.initialization.BasicApplicationInitializer">
-        <property name="initializeList">
-            <list>
-                <component-ref name="serviceAvailability"/>
-            </list>
-        </property>
-    </component>
 </component-configuration>

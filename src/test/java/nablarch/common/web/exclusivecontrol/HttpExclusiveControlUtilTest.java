@@ -1,6 +1,6 @@
 package nablarch.common.web.exclusivecontrol;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -32,7 +32,6 @@ import nablarch.common.exclusivecontrol.ExclusiveUserMst3;
 import nablarch.common.exclusivecontrol.OptimisticLockException;
 import nablarch.core.ThreadContext;
 import nablarch.core.db.transaction.SimpleDbTransactionManager;
-
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.MockHttpRequest;
@@ -40,8 +39,8 @@ import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.TargetDb;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
-
 import nablarch.test.support.message.MockStringResourceHolder;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,6 +49,7 @@ import org.junit.runner.RunWith;
 
 /**
  * {@link HttpExclusiveControlUtil}テスト。
+ *
  * @author Kiyohito Itoh
  */
 @RunWith(DatabaseTestRunner.class)
@@ -58,16 +58,19 @@ import org.junit.runner.RunWith;
 @TargetDb(exclude = TargetDb.Db.POSTGRE_SQL)
 public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
-	@Rule
-    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("nablarch/common/exclusivecontrol/exclusivecontrol.xml");
+    @Rule
+    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource(
+            "nablarch/common/exclusivecontrol/exclusivecontrol.xml");
 
     private static SimpleDbTransactionManager transactionManager;
 
     @Before
     public void setUp() {
         ThreadContext.setLanguage(Locale.JAPAN);
-        repositoryResource.getComponentByType(MockStringResourceHolder.class).setMessages(MESSAGES);
-        repositoryResource.addComponent("exclusiveControlManager", repositoryResource.getComponent("basicExclusiveControlManager"));
+        repositoryResource.getComponentByType(MockStringResourceHolder.class)
+                          .setMessages(MESSAGES);
+        repositoryResource.addComponent("exclusiveControlManager",
+                repositoryResource.getComponent("basicExclusiveControlManager"));
         transactionManager = repositoryResource.getComponent("dbManager-default");
         transactionManager.beginTransaction();
     }
@@ -89,8 +92,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         List<ExclusiveCompMst> exclusiveCompMstList;
 
         /****************************************************************
-        バージョン番号を取得する場合(1件)
-        ****************************************************************/
+         バージョン番号を取得する場合(1件)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
 
@@ -99,14 +102,15 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(1));
-        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001");
+        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001");
 
         /****************************************************************
-        バージョン番号をチェックする場合(1件かつ更新なし)
-        ****************************************************************/
+         バージョン番号をチェックする場合(1件かつ更新なし)
+         ****************************************************************/
 
         String userVersionString = versionString(
-            "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"
+                "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"
         );
 
         exeContext = new ExecutionContext();
@@ -117,11 +121,12 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(1));
-        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001");
+        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001");
 
         /****************************************************************
-        バージョン番号をチェックする場合(1件かつ更新あり)
-        ****************************************************************/
+         バージョン番号をチェックする場合(1件かつ更新あり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst("uid001", "pk2001", "pk3001", 2L));
 
@@ -137,16 +142,17 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(1件かつ更新なし)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(1件かつ更新なし)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst("uid001", "pk2001", "pk3001", 1L));
 
-        userVersionString = versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001");
+        userVersionString = versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001");
 
         req = new MockHttpRequest();
         req.setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                     userVersionString);
+                userVersionString);
 
         HttpExclusiveControlUtil.updateVersionsWithCheck(req);
         transactionManager.commitTransaction();
@@ -159,12 +165,13 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertThat(exclusiveUserMstList.get(0).version, is(2L));
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(1件かつ更新あり)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(1件かつ更新あり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst("uid001", "pk2001", "pk3001", 2L));
 
-        userVersionString = versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001");
+        userVersionString = versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001");
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
@@ -181,8 +188,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
 
         /****************************************************************
-        バージョン番号が存在しない場合(1件)
-        ****************************************************************/
+         バージョン番号が存在しない場合(1件)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
 
@@ -190,8 +197,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertNull(exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME));
 
         /****************************************************************
-        バージョン番号を取得する場合(複数件)
-        ****************************************************************/
+         バージョン番号を取得する場合(複数件)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(
                 new ExclusiveCompMst("com001", 1L),
@@ -203,10 +210,10 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
 
         assertTrue(HttpExclusiveControlUtil.prepareVersions(exeContext, Arrays.asList(new ExCompMstPk("com001"),
-                                                                     new ExCompMstPk("com003"),
-                                                                     new ExCompMstPk("com005"),
-                                                                     new ExCompMstPk("com004"),
-                                                                     new ExCompMstPk("com002"))));
+                new ExCompMstPk("com003"),
+                new ExCompMstPk("com005"),
+                new ExCompMstPk("com004"),
+                new ExCompMstPk("com002"))));
 
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(5));
@@ -217,8 +224,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertVersionString(versions.get(4), "EXCLUSIVE_COMP_MST", "VERSION", "2", "comp_id", "com002");
 
         /****************************************************************
-        バージョン番号をチェックする場合(複数件かつ更新なし)
-        ****************************************************************/
+         バージョン番号をチェックする場合(複数件かつ更新なし)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
@@ -241,8 +248,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
 
         /****************************************************************
-        バージョン番号をチェックする場合(複数件かつ更新あり)
-        ****************************************************************/
+         バージョン番号をチェックする場合(複数件かつ更新あり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(
                 new ExclusiveCompMst("com001", 1L),
@@ -276,7 +283,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
                         versionString("EXCLUSIVE_COMP_MST", "VERSION", "3", "comp_id", "com003"),
                         versionString("EXCLUSIVE_COMP_MST", "VERSION", "4", "comp_id", "com004"),
                         versionString("EXCLUSIVE_COMP_MST", "VERSION", "5", "comp_id", "com005"))
-                    .setParam("user.targetUidList", "com001", "com002", "com004");
+                .setParam("user.targetUidList", "com001", "com002", "com004");
 
         // 更新済み項目("com004") が対象に含まれているので排他エラー
         try {
@@ -295,9 +302,9 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
                         versionString("EXCLUSIVE_COMP_MST", "VERSION", "3", "comp_id", "com003"),
                         versionString("EXCLUSIVE_COMP_MST", "VERSION", "4", "comp_id", "com004"),
                         versionString("EXCLUSIVE_COMP_MST", "VERSION", "5", "comp_id", "com005"))
-                    .setParam("user.targetUidList", "com001", "com002", "com005");
+                .setParam("user.targetUidList", "com001", "com002", "com005");
 
-       // 更新済み項目("com004") がチェック対象から外れたので論理排他チェックOK
+        // 更新済み項目("com004") がチェック対象から外れたので論理排他チェックOK
 
         HttpExclusiveControlUtil.updateVersionsWithCheck(req, "user.targetUidList");
         transactionManager.commitTransaction();
@@ -316,8 +323,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         HttpExclusiveControlUtil.checkVersions(req, exeContext, "user.targetUidList");
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(複数件かつ更新なし)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(複数件かつ更新なし)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(
                 new ExclusiveCompMst("com001", 1L),
@@ -352,8 +359,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertThat(exclusiveCompMstList.get(4).version, is(6L));
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(複数件かつ更新あり)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(複数件かつ更新あり)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
@@ -374,20 +381,20 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-        バージョン番号が存在しない場合(複数件)
-        ****************************************************************/
+         バージョン番号が存在しない場合(複数件)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         assertFalse(HttpExclusiveControlUtil.prepareVersions(exeContext, Arrays.asList(new ExCompMstPk("com001"),
-                                                                     new ExCompMstPk("com003"),
-                                                                     new ExCompMstPk("com005"),
-                                                                     new ExCompMstPk("com994"),
-                                                                     new ExCompMstPk("com002"))));
+                new ExCompMstPk("com003"),
+                new ExCompMstPk("com005"),
+                new ExCompMstPk("com994"),
+                new ExCompMstPk("com002"))));
         assertNull(exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME));
 
         /****************************************************************
-        バージョン番号パラメータが存在しない場合
-        ****************************************************************/
+         バージョン番号パラメータが存在しない場合
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest();
@@ -416,10 +423,9 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
 
-
         /****************************************************************
-        更新対象リスト変数名がnullだった場合は、実行時例外を送出する。
-        ****************************************************************/
+         更新対象リスト変数名がnullだった場合は、実行時例外を送出する。
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest();
@@ -458,17 +464,22 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
                 new ExclusiveUserMst("uid005", "pk2005", "pk3005", 5L));
 
         /****************************************************************
-        バージョン番号をチェックする場合(複数件かつ更新なし)
-        ****************************************************************/
+         バージョン番号をチェックする場合(複数件かつ更新なし)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3001"));
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid002", "pk2002", "pk3002"));
@@ -478,24 +489,34 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(5));
-        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3001");
-        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id","uid002", "pk2", "pk2002", "pk3", "pk3002");
-        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id","uid003", "pk2", "pk2003", "pk3", "pk3003");
-        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id","uid004", "pk2", "pk2004", "pk3", "pk3004");
-        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id","uid005", "pk2", "pk2005", "pk3", "pk3005");
+        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001");
+        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002",
+                "pk3", "pk3002");
+        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003",
+                "pk3", "pk3003");
+        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004",
+                "pk3", "pk3004");
+        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005",
+                "pk3", "pk3005");
 
         /****************************************************************
-        バージョン番号をチェックする場合(複数件かつ更新なし、主キークラスに定義される主キーが小文字)
-        ****************************************************************/
+         バージョン番号をチェックする場合(複数件かつ更新なし、主キークラスに定義される主キーが小文字)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstLowerPk("uid001", "pk2001", "pk3001"));
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstLowerPk("uid002", "pk2002", "pk3002"));
@@ -505,15 +526,20 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(5));
-        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3001");
-        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id","uid002", "pk2", "pk2002", "pk3", "pk3002");
-        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id","uid003", "pk2", "pk2003", "pk3", "pk3003");
-        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id","uid004", "pk2", "pk2004", "pk3", "pk3004");
-        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id","uid005", "pk2", "pk2005", "pk3", "pk3005");
+        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001");
+        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002",
+                "pk3", "pk3002");
+        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003",
+                "pk3", "pk3003");
+        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004",
+                "pk3", "pk3004");
+        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005",
+                "pk3", "pk3005");
 
         /****************************************************************
-        バージョン番号をチェックする場合(複数件かつ更新あり)
-        ****************************************************************/
+         バージョン番号をチェックする場合(複数件かつ更新あり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(
                 new ExclusiveUserMst("uid001", "pk2001", "pk3001", 1L),
@@ -526,11 +552,16 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         try {
             HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3001"));
@@ -547,11 +578,16 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         // 更新済み項目("uid004") が対象に含まれているので排他エラー
         try {
@@ -567,11 +603,16 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         // 更新済み項目("uid004") がチェック対象から外れたので論理排他チェックOK
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3001"));
@@ -579,8 +620,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid005", "pk2005", "pk3005"));
 
         /****************************************************************
-        バージョン番号のチェックを伴い更新する場合(複数件かつ更新なし)
-        ****************************************************************/
+         バージョン番号のチェックを伴い更新する場合(複数件かつ更新なし)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(
                 new ExclusiveUserMst("uid001", "pk2001", "pk3001", 1L),
@@ -592,11 +633,16 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", "pk2001", "pk3001"));
         HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid002", "pk2002", "pk3002"));
@@ -629,8 +675,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertThat(exclusiveUserMstList.get(4).version, is(6L));
 
         /****************************************************************
-        バージョン番号のチェックを伴い更新する場合(複数件かつ更新あり)
-        ****************************************************************/
+         バージョン番号のチェックを伴い更新する場合(複数件かつ更新あり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(
                 new ExclusiveUserMst("uid001", "pk2001", "pk3001", 1L),
@@ -643,11 +689,16 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         try {
             HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", "pk2001", "pk3001"));
@@ -666,11 +717,16 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         // 更新済み項目("uid004") が対象に含まれているので排他エラー
         try {
@@ -696,8 +752,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-       主キー条件にバージョン情報が含まれても正常に動作すること
-        ****************************************************************/
+         主キー条件にバージョン情報が含まれても正常に動作すること
+         ****************************************************************/
         VariousDbTestHelper.setUpTable(
                 new ExclusiveUserMst("uid001", "pk2001", "pk3001", 1L),
                 new ExclusiveUserMst("uid002", "pk2002", "pk3002", 2L),
@@ -708,11 +764,16 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001", "version", "1"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002", "version", "2"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003", "version", "3"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004", "version", "4"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005", "version", "5"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001", "version", "1"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002", "version", "2"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003", "version", "3"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004", "version", "4"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005", "version", "5"));
 
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3001"));
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid002", "pk2002", "pk3002"));
@@ -722,20 +783,30 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(5));
-        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3001", "version", "1");
-        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id","uid002", "pk2", "pk2002", "pk3", "pk3002", "version", "2");
-        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id","uid003", "pk2", "pk2003", "pk3", "pk3003", "version", "3");
-        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id","uid004", "pk2", "pk2004", "pk3", "pk3004", "version", "4");
-        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id","uid005", "pk2", "pk2005", "pk3", "pk3005", "version", "5");
+        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001", "version", "1");
+        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002",
+                "pk3", "pk3002", "version", "2");
+        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003",
+                "pk3", "pk3003", "version", "3");
+        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004",
+                "pk3", "pk3004", "version", "4");
+        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005",
+                "pk3", "pk3005", "version", "5");
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001", "version", "1"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002", "version", "2"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003", "version", "3"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004", "version", "4"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005", "version", "5"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001", "version", "1"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002", "version", "2"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003", "version", "3"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004", "version", "4"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005", "version", "5"));
 
         HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", "pk2001", "pk3001"));
         HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid002", "pk2002", "pk3002"));
@@ -768,8 +839,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertThat(exclusiveUserMstList.get(4).version, is(6L));
 
         /****************************************************************
-        バージョン番号パラメータが存在しない場合
-        ****************************************************************/
+         バージョン番号パラメータが存在しない場合
+         ****************************************************************/
 
         req = new MockHttpRequest();
         exeContext = new ExecutionContext();
@@ -798,17 +869,22 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001", "version", "1"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3002", "version", "2"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3003", "version", "3"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3004", "version", "4"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "USER_ID", "uid001", "pk2", "pk2001", "pk3", "pk3005", "version", "5"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001", "version", "1"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3002", "version", "2"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3003", "version", "3"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3004", "version", "4"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "USER_ID", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3005", "version", "5"));
 
         try {
             HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3006"));
             fail();
         } catch (IllegalArgumentException e) {
-            assertContainsAll(new String[]{
+            assertContainsAll(new String[] {
                     "version was not found. ",
                     "tableName = [EXCLUSIVE_USER_MST]",
                     "user_id=uid001",
@@ -821,7 +897,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
             HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", "pk2001", "pk3006"));
             fail();
         } catch (IllegalArgumentException e) {
-            assertContainsAll(new String[]{
+            assertContainsAll(new String[] {
                     "version was not found. ",
                     "tableName = [EXCLUSIVE_USER_MST]",
                     "user_id=uid001",
@@ -836,7 +912,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
             HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", null, "pk3006"));
             fail();
         } catch (IllegalArgumentException e) {
-            assertContainsAll(new String[]{
+            assertContainsAll(new String[] {
                     "version was not found. ",
                     "tableName = [EXCLUSIVE_USER_MST]",
                     "user_id=uid001",
@@ -846,17 +922,22 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-        排他制御コンテキスト変数名がnullだった場合は、実行時例外を送出する。
-        ****************************************************************/
+         排他制御コンテキスト変数名がnullだった場合は、実行時例外を送出する。
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid002", "pk2", "pk2002", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid003", "pk2", "pk2003", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid004", "pk2", "pk2004", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid005", "pk2", "pk2005", "pk3",
+                                "pk3005"));
 
         try {
             HttpExclusiveControlUtil.checkVersion(req, exeContext, (ExclusiveControlContext) null);
@@ -873,8 +954,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-       キー値を取得できない場合は、実行時例外を送出する。
-        ****************************************************************/
+         キー値を取得できない場合は、実行時例外を送出する。
+         ****************************************************************/
 
         // 対応する主キーのカラム名が見つからない
         exeContext = new ExecutionContext();
@@ -885,7 +966,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
             HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3001"));
             fail();
         } catch (IllegalArgumentException e) {
-            assertContainsAll(new String[]{
+            assertContainsAll(new String[] {
                     "version was not found. ",
                     "tableName = [EXCLUSIVE_USER_MST]",
                     "user_id=uid001",
@@ -898,7 +979,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
             HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", "pk2001", "pk3001"));
             fail();
         } catch (IllegalArgumentException e) {
-            assertContainsAll(new String[]{
+            assertContainsAll(new String[] {
                     "version was not found. ",
                     "tableName = [EXCLUSIVE_USER_MST]",
                     "user_id=uid001",
@@ -916,17 +997,22 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
 
         /****************************************************************
-        バージョン番号をチェックする場合(複数件かつ更新なし、複合主キーの一項目のみ異なる)
-        ****************************************************************/
+         バージョン番号をチェックする場合(複数件かつ更新なし、複合主キーの一項目のみ異なる)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3005"));
 
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3001"));
         HttpExclusiveControlUtil.checkVersion(req, exeContext, new ExUserMstPk("uid001", "pk2001", "pk3002"));
@@ -936,23 +1022,33 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(5));
-        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3001");
-        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3002");
-        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3003");
-        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3004");
-        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id","uid001", "pk2", "pk2001", "pk3", "pk3005");
+        assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3001");
+        assertVersionString(versions.get(1), "EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3002");
+        assertVersionString(versions.get(2), "EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3003");
+        assertVersionString(versions.get(3), "EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3004");
+        assertVersionString(versions.get(4), "EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid001", "pk2", "pk2001",
+                "pk3", "pk3005");
 
         /****************************************************************
-        バージョン番号のチェックを伴い更新する場合(複数件かつ更新なし、複合主キーの一項目のみ異なる)
-        ****************************************************************/
+         バージョン番号のチェックを伴い更新する場合(複数件かつ更新なし、複合主キーの一項目のみ異なる)
+         ****************************************************************/
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3001"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3002"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3003"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3004"),
-                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid001", "pk2", "pk2001", "pk3", "pk3005"));
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "1", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3001"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "2", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3002"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "3", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3003"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "4", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3004"),
+                        versionString("EXCLUSIVE_USER_MST", "VERSION", "5", "user_id", "uid001", "pk2", "pk2001", "pk3",
+                                "pk3005"));
 
         HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", "pk2001", "pk3001"));
         HttpExclusiveControlUtil.updateVersionWithCheck(req, new ExUserMstPk("uid001", "pk2001", "pk3002"));
@@ -996,8 +1092,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         List<ExclusiveUserMst2> exclusiveUserMst2List;
 
         /****************************************************************
-        バージョン番号を取得する場合(1件)
-        ****************************************************************/
+         バージョン番号を取得する場合(1件)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
 
@@ -1010,11 +1106,11 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST2", "VERSION", "1", "user_id", "uid001");
 
         /****************************************************************
-        バージョン番号をチェックする場合(1件かつ更新なし)
-        ****************************************************************/
+         バージョン番号をチェックする場合(1件かつ更新なし)
+         ****************************************************************/
 
         String userVersionString = versionString(
-            "EXCLUSIVE_USER_MST2", "VERSION", "1", "user_id", "uid001"
+                "EXCLUSIVE_USER_MST2", "VERSION", "1", "user_id", "uid001"
         );
 
         exeContext = new ExecutionContext();
@@ -1038,8 +1134,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
 
         /****************************************************************
-        バージョン番号をチェックする場合(1件かつ更新あり)
-        ****************************************************************/
+         バージョン番号をチェックする場合(1件かつ更新あり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 2L));
 
@@ -1058,7 +1154,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, userVersionString)
-             .setParam("user.targetUidList", "uid001", "uid002"); // 更新対象に入ってる
+                .setParam("user.targetUidList", "uid001", "uid002"); // 更新対象に入ってる
 
         try {
             HttpExclusiveControlUtil.checkVersions(req, exeContext, "user.targetUidList");
@@ -1070,14 +1166,14 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, userVersionString)
-             .setParam("user.targetUidList", "uid003", "uid002"); // 更新対象外
+                .setParam("user.targetUidList", "uid003", "uid002"); // 更新対象外
 
         // 更新可能
         HttpExclusiveControlUtil.checkVersions(req, exeContext, "user.targetUidList");
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(1件かつ更新なし)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(1件かつ更新なし)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 1L));
 
@@ -1085,7 +1181,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
         req = new MockHttpRequest();
         req.setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME,
-                     userVersionString);
+                userVersionString);
 
         HttpExclusiveControlUtil.updateVersionsWithCheck(req);
         transactionManager.commitTransaction();
@@ -1099,15 +1195,15 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 1L));
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, userVersionString)
-             .setParam("user.targetUidList", "uid001", "uid002"); // 更新対象に入ってる
+                .setParam("user.targetUidList", "uid001", "uid002"); // 更新対象に入ってる
 
         // 更新対象で論理排他チェックOK
         HttpExclusiveControlUtil.updateVersionsWithCheck(req, "user.targetUidList");
         transactionManager.commitTransaction();
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(1件かつ更新あり)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(1件かつ更新あり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 2L));
 
@@ -1131,7 +1227,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, userVersionString)
-             .setParam("user.targetUidList", "uid001", "uid002"); // 更新対象に入ってる
+                .setParam("user.targetUidList", "uid001", "uid002"); // 更新対象に入ってる
 
         // 論理排他エラーが発生する。
         try {
@@ -1146,7 +1242,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         exeContext = new ExecutionContext();
         req = new MockHttpRequest()
                 .setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, userVersionString)
-             .setParam("user.targetUidList", "uid003", "uid002"); // 更新対象外
+                .setParam("user.targetUidList", "uid003", "uid002"); // 更新対象外
 
 
         // 更新した行がチェック対象外になったので論理排他チェックOK
@@ -1154,8 +1250,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
 
         /****************************************************************
-        バージョン番号が存在しない場合(1件)
-        ****************************************************************/
+         バージョン番号が存在しない場合(1件)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
 
@@ -1175,8 +1271,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         List<ExclusiveCardMst3> exclusiveCardMst3List;
 
         /****************************************************************
-        バージョン番号を取得する場合
-        ****************************************************************/
+         バージョン番号を取得する場合
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
 
@@ -1192,22 +1288,24 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertVersionString(versions.get(1), "EXCLUSIVE_CARD_MST3", "VERSION", "5", "card_id", "cad005");
 
         /****************************************************************
-        バージョン番号をチェックする場合(排他エラーなし)
-        ****************************************************************/
+         バージョン番号をチェックする場合(排他エラーなし)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         HttpExclusiveControlUtil.checkVersions(req, exeContext);
 
         /****************************************************************
-        バージョン番号をチェックする場合(排他エラーあり)
-        ****************************************************************/
+         バージョン番号をチェックする場合(排他エラーあり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 2L));
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         try {
             HttpExclusiveControlUtil.checkVersions(req, exeContext);
@@ -1217,13 +1315,14 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(排他エラーなし)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(排他エラーなし)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 1L));
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         HttpExclusiveControlUtil.updateVersionsWithCheck(req);
         transactionManager.commitTransaction();
@@ -1239,14 +1338,15 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertThat(exclusiveCardMst3List.get(0).version, is(6L));
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(排他エラーあり)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(排他エラーあり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 1L));
         VariousDbTestHelper.setUpTable(new ExclusiveCardMst3("cad005", 7L));
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         try {
             HttpExclusiveControlUtil.updateVersionsWithCheck(req);
@@ -1258,11 +1358,12 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-        バージョン番号が存在しない場合
-        ****************************************************************/
+         バージョン番号が存在しない場合
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         assertFalse(HttpExclusiveControlUtil.prepareVersion(exeContext, new ExUserMstPk2("uid999")));
         assertNull(exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME));
@@ -1280,8 +1381,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         List<ExclusiveCardMst3> exclusiveCardMst3List;
 
         /****************************************************************
-        バージョン番号を取得する場合
-        ****************************************************************/
+         バージョン番号を取得する場合
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
 
@@ -1300,24 +1401,26 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertVersionString(versions.get(1), "EXCLUSIVE_CARD_MST3", "VERSION", "5", "card_id", "cad005");
 
         /****************************************************************
-        バージョン番号をチェックする場合(排他エラーなし)
-        ****************************************************************/
+         バージョン番号をチェックする場合(排他エラーなし)
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         // prepareVersionと異なる順で呼び出す。
         HttpExclusiveControlUtil.checkVersion(req, exeContext, exCardMstPk3);
         HttpExclusiveControlUtil.checkVersion(req, exeContext, exUserMstPk2);
 
         /****************************************************************
-        バージョン番号をチェックする場合(排他エラーあり)
-        ****************************************************************/
+         バージョン番号をチェックする場合(排他エラーあり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 2L));
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         HttpExclusiveControlUtil.checkVersion(req, exeContext, exCardMstPk3);
         try {
@@ -1328,13 +1431,14 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(排他エラーなし)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(排他エラーなし)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 1L));
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         // prepareVersionと異なる順で呼び出す。
         HttpExclusiveControlUtil.updateVersionWithCheck(req, exCardMstPk3);
@@ -1352,14 +1456,15 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertThat(exclusiveCardMst3List.get(0).version, is(6L));
 
         /****************************************************************
-        バージョン番号をチェックを伴い更新する場合(排他エラーあり)
-        ****************************************************************/
+         バージョン番号をチェックを伴い更新する場合(排他エラーあり)
+         ****************************************************************/
 
         VariousDbTestHelper.setUpTable(new ExclusiveUserMst2("uid001", 1L));
         VariousDbTestHelper.setUpTable(new ExclusiveCardMst3("cad005", 7L));
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         HttpExclusiveControlUtil.updateVersionWithCheck(req, exUserMstPk2);
         try {
@@ -1392,9 +1497,9 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         ExCardMstPk3 exCardMstPk3 = new ExCardMstPk3("cad005");
 
         /****************************************************************
-        GH5AAM1Action:初期表示処理
-        ExUserMstPk2のみprepareVersionを呼び出す。･･･このリクエストで排他制御対象が確定する。
-        ****************************************************************/
+         GH5AAM1Action:初期表示処理
+         ExUserMstPk2のみprepareVersionを呼び出す。･･･このリクエストで排他制御対象が確定する。
+         ****************************************************************/
 
         assertTrue(HttpExclusiveControlUtil.prepareVersion(exeContext, exUserMstPk2));
 
@@ -1403,10 +1508,10 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         assertVersionString(versions.get(0), "EXCLUSIVE_USER_MST2", "VERSION", "1", "user_id", "uid001");
 
         /****************************************************************
-        GH5AAM1Action:確認処理(doRGH5AAM106)
-        ExCardMstPk3はprepareVersionを呼び出す。･･･このリクエストで排他制御対象が確定する。
-        ExUserMstPk2はcheckVersionを呼び出す。
-        ****************************************************************/
+         GH5AAM1Action:確認処理(doRGH5AAM106)
+         ExCardMstPk3はprepareVersionを呼び出す。･･･このリクエストで排他制御対象が確定する。
+         ExUserMstPk2はcheckVersionを呼び出す。
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0));
@@ -1418,13 +1523,14 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
 
         /****************************************************************
-        GH5AAM1Action:確認画面から入力画面へ戻る処理(doRGH5AAM108)
-        ExUserMstPk2のみcheckVersionを呼び出す。
-        排他制御対象が未確定となるためExCardMstPk3はcheckversionしない。
-        ****************************************************************/
+         GH5AAM1Action:確認画面から入力画面へ戻る処理(doRGH5AAM108)
+         ExUserMstPk2のみcheckVersionを呼び出す。
+         排他制御対象が未確定となるためExCardMstPk3はcheckversionしない。
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         // 戻る処理は個別にcheckVersionするため、ここで #5452 によりIllegalArgumentExceptionが発生していた。
         HttpExclusiveControlUtil.checkVersion(req, exeContext, exUserMstPk2);
@@ -1432,10 +1538,10 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
 
         /****************************************************************
-        GH5AAM1Action:確認処理(doRGH5AAM106)
-        ExCardMstPk3はprepareVersionを呼び出す。･･･このリクエストで排他制御対象が確定する。
-        ExUserMstPk2はcheckVersionを呼び出す。
-        ****************************************************************/
+         GH5AAM1Action:確認処理(doRGH5AAM106)
+         ExCardMstPk3はprepareVersionを呼び出す。･･･このリクエストで排他制御対象が確定する。
+         ExUserMstPk2はcheckVersionを呼び出す。
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
         req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0));
@@ -1446,11 +1552,12 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
 
         /****************************************************************
-        updateVersionsWithCheckを呼び出す。
-        ****************************************************************/
+         updateVersionsWithCheckを呼び出す。
+         ****************************************************************/
 
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         HttpExclusiveControlUtil.updateVersionsWithCheck(req);
         transactionManager.commitTransaction();
@@ -1468,9 +1575,9 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
     /**
      * 複数テーブルを使用して排他制御を行う場合で、それらのテーブルの主キーが全く同一の定義の場合のテスト。
-     *
+     * <p>
      * 指定した排他制御テーブルを使用して排他制御が行われること。
-     *
+     * <p>
      * 本テストは、不具合「#5554」対応のために追加したテスト。
      */
     @Test
@@ -1501,7 +1608,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
          複数テーブルのバージョン番号をチェックする。
          ****************************************************************/
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         HttpExclusiveControlUtil.checkVersion(req, exeContext, exUserMstPk3);
         HttpExclusiveControlUtil.checkVersion(req, exeContext, exUserMstPk2);
@@ -1510,15 +1618,18 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         versions = exeContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
 
         // EXCLUSIVE_USER_MST3
-        assertVersionString(versions.get(0), exUserMstPk3.getTableName(), exUserMstPk3.getVersionColumnName(), "5", "user_id", "uid001");
+        assertVersionString(versions.get(0), exUserMstPk3.getTableName(), exUserMstPk3.getVersionColumnName(), "5",
+                "user_id", "uid001");
         // EXCLUSIVE_USER_MST2
-        assertVersionString(versions.get(1), exUserMstPk2.getTableName(), exUserMstPk2.getVersionColumnName(), "1", "user_id", "uid001");
+        assertVersionString(versions.get(1), exUserMstPk2.getTableName(), exUserMstPk2.getVersionColumnName(), "1",
+                "user_id", "uid001");
 
         /****************************************************************
          複数テーブルのバージョン番号を更新する。
          ****************************************************************/
         exeContext = new ExecutionContext();
-        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0), versions.get(1));
+        req = new MockHttpRequest().setParam(HttpExclusiveControlUtil.VERSION_PARAM_NAME, versions.get(0),
+                versions.get(1));
 
         //*********************************************************************
         // EXCLUSIVE_USER_MST2
@@ -1556,7 +1667,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
     @Test
     public void testCheckAndUpdate() throws Exception {
 
-    	VariousDbTestHelper.setUpTable(new ExclusiveTest1(1L, 100L));
+        VariousDbTestHelper.setUpTable(new ExclusiveTest1(1L, 100L));
 
         ExclusiveTest1Pk exclusiveTest1 = new ExclusiveTest1Pk("1");
         ExecutionContext executionContext = new ExecutionContext();
@@ -1575,7 +1686,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         //----------------------------------------------------------------------
         List<String> versions = executionContext.getRequestScopedVar(HttpExclusiveControlUtil.VERSIONS_VARIABLE_NAME);
         assertThat(versions.size(), is(1));
-        String[] version = versions.get(0).split("\\|");
+        String[] version = versions.get(0)
+                                   .split("\\|");
         assertThat(version.length, is(4));
         assertThat("table name", version[0], is("tableName=EXCLUSIVE_TEST_1"));
         assertThat("version column name", version[1], is("versionColumnName=VERSION"));
@@ -1606,7 +1718,7 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
     @Test
     public void testUpdateOnly() throws Exception {
 
-    	VariousDbTestHelper.setUpTable(new ExclusiveTest2(100L, 500L));
+        VariousDbTestHelper.setUpTable(new ExclusiveTest2(100L, 500L));
 
         ExclusiveTest2Pk exclusiveTest2 = new ExclusiveTest2Pk("1");
 
@@ -1643,7 +1755,8 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
         }
     }
 
-    private void assertVersionString(String actual, String tableName, String versionColumnName, String version, String... primaryKeys) {
+    private void assertVersionString(String actual, String tableName, String versionColumnName, String version,
+            String... primaryKeys) {
         assertThat(actual, containsString("tableName=" + tableName));
         assertThat(actual, containsString("version=" + version));
         for (int i = 0; i < primaryKeys.length; i += 2) {
@@ -1653,9 +1766,15 @@ public class HttpExclusiveControlUtilTest extends ExclusiveControlTestSupport {
 
     private String versionString(String tableName, String versionColumnName, String version, String... primaryKeys) {
         StringBuilder sb = new StringBuilder();
-        sb.append("tableName=").append(tableName).append("|")
-          .append("versionColumnName=").append(versionColumnName).append("|")
-          .append("version=").append(version).append("|")
+        sb.append("tableName=")
+          .append(tableName)
+          .append("|")
+          .append("versionColumnName=")
+          .append(versionColumnName)
+          .append("|")
+          .append("version=")
+          .append(version)
+          .append("|")
           .append("primaryKeys=");
         for (int i = 0; i < primaryKeys.length; i += 2) {
             if (i != 0) {
