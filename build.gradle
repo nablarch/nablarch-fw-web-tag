@@ -11,7 +11,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath "net.saliman:gradle-cobertura-plugin:2.2.3"
+    classpath "net.saliman:gradle-cobertura-plugin:2.4.0"
     classpath "com.nablarch.dev:nablarch-gradle-plugin:${nablarchGradlePluginVersion}"
   }
 }
@@ -43,17 +43,9 @@ dependencies {
     exclude module: 'hamclrest-core'
   }
   testCompile 'org.hamcrest:hamcrest-all:1.3'
-  testCompile 'com.nablarch.dev:nablarch-test-support:0.0.5'
-  testCompile "com.nablarch.framework:nablarch-common-auth-jdbc:${nablarchCommonAuthJdbcVersion}"
-  testCompile "com.nablarch.framework:nablarch-fw-batch:${nablarchFwBatchVersion}"
-  testCompile "com.nablarch.framework:nablarch-common-exclusivecontrol-jdbc:${nablarchCommonExclusivecontrolVersion}"
-  testCompile 'com.nablarch.framework:nablarch-testing:1.0.6'
-
-  //test JDBC Driver
-  testCompile 'com.oracle:ucp:11.2.0.3.0'
-  testCompile 'com.oracle:ojdbc6:11.2.0.2.0'
   
-  cobertura ("net.sourceforge.cobertura:cobertura:1.9.4") 
+  testCompile "com.nablarch.framework:nablarch-common-exclusivecontrol-jdbc:${nablarchCommonExclusivecontrolJdbcVersion}"
+  testCompile 'com.nablarch.framework:nablarch-testing:${nablarchTestingVersion}'
 }
 
 tasks.sonarRunner {

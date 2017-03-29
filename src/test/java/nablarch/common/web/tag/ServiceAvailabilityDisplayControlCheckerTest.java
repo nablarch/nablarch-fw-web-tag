@@ -18,11 +18,11 @@ public class ServiceAvailabilityDisplayControlCheckerTest {
 
     @Rule
     public SystemRepositoryResource repositoryResource = new SystemRepositoryResource(
-			"nablarch/common/web/tag/ServiceAvailabilityDisplayControlCheckerTest.xml");
+            "nablarch/common/web/tag/ServiceAvailabilityDisplayControlCheckerTest.xml");
 
     private static final String[][] APPLIED_REQUEST = {
-        { "REQ0000001", "1"}
-        };
+            {"REQ0000001", "1"}
+    };
 
     @Test
     public void testServiceAvailabilityDisplayControlChecker() {
@@ -31,18 +31,20 @@ public class ServiceAvailabilityDisplayControlCheckerTest {
             add(new HashMap<String, String>() {{
                 put("logLevel", "INFO");
                 put("message1",
-                    "Failed to pre-check the availability of business services. "
-                  + "It is needed for determining appearance of some buttons and links. "
-                  + "(They are showed in ordinal appearance.)");
+                        "Failed to pre-check the availability of business services. "
+                                + "It is needed for determining appearance of some buttons and links. "
+                                + "(They are showed in ordinal appearance.)");
             }});
         }});
 
-        repositoryResource.getComponentByType(MockServiceAvailability.class).setRequest(APPLIED_REQUEST);
+        repositoryResource.getComponentByType(MockServiceAvailability.class)
+                          .setRequest(APPLIED_REQUEST);
 
         ServiceAvailabilityDisplayControlChecker checker = new ServiceAvailabilityDisplayControlChecker();
         Assert.assertFalse(checker.needsDisplayControl("REQ0000001"));
         Assert.assertTrue(checker.needsDisplayControl("unknown"));
-        repositoryResource.getComponentByType(MockServiceAvailability.class).dropRequest();
+        repositoryResource.getComponentByType(MockServiceAvailability.class)
+                          .dropRequest();
         LogVerifier.clear();
         Assert.assertTrue(checker.needsDisplayControl("REQ0000001"));
         LogVerifier.verify("開閉局状態の事前チェックに失敗した旨のログがでる。(INFOレベル)");

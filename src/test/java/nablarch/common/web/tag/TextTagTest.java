@@ -1,22 +1,24 @@
 package nablarch.common.web.tag;
 
-import nablarch.core.ThreadContext;
-import nablarch.core.util.Builder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
-import java.util.Collections;
-import java.util.Locale;
-
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.hasItem;
+
+import java.util.Collections;
+import java.util.Locale;
+
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.Tag;
+
+import nablarch.core.ThreadContext;
+import nablarch.core.util.Builder;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Kiyohito Itoh
