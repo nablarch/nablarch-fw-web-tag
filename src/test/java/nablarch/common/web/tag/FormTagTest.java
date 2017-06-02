@@ -11,6 +11,7 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.jsp.tagext.Tag;
 
@@ -2192,7 +2193,10 @@ public class FormTagTest extends TagTestSupport<FormTag> {
     public void testNullValueOfRequestParam() throws Exception {
         TagUtil.getCustomTagConfig().setUseHiddenEncryption(false);
         // request param
-        pageContext.getMockReq().getParameterMap().put("user.name", new String[] {null});
+        Map<String, String[]> paramMap = pageContext.getMockReq().getParameterMap();
+        paramMap.put("user.name", new String[] {null});
+        paramMap.put("user.address", new String[] {null, "sample_address"});
+        paramMap.put("user.kana", new String[] {"sample_kana", null});
         target.setWindowScopePrefixes("user");
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
