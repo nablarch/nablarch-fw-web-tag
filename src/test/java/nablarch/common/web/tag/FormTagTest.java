@@ -11,6 +11,7 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.jsp.tagext.Tag;
 
@@ -2199,5 +2200,24 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         assertThat(formContext.getRequestIds().get(1), is("R0002"));        
         
         TagUtil.getCustomTagConfig().getNoHiddenEncryptionRequestIds().clear();
-    }    
+    }
+
+    /**
+     * リクエストパラメータがnullの時のテスト
+     */
+    @Test
+    public void testNullValueOfRequestParam() throws Exception {
+        TagUtil.getCustomTagConfig().setUseHiddenEncryption(false);
+        // request param
+        Map<String, String[]> paramMap = pageContext.getMockReq().getParameterMap();
+        paramMap.put("user.name", new String[] {null});
+        paramMap.put("user.address", new String[] {null, "sample_address"});
+        paramMap.put("user.kana", new String[] {"sample_kana", null});
+        target.setWindowScopePrefixes("user");
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        // doEndTag()は実行時にhiddenタグの生成と出力、formContextの削除を行なっているため、
+        // テストコードでリクエストパラメータのnullが空文字に置き変わっていることをassert出来ない。
+        // そのため、doEndTag()が正常に終了することで問題ないことを確認する。
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+    }
 }

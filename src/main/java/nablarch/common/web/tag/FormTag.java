@@ -356,8 +356,12 @@ public class FormTag extends GenericAttributesTagSupport {
             if (!containsWindowScopePrefix(name) || inputNames.contains(name)) {
                 continue;
             }
-            String[] values = param.getValue();
-            formContext.addHiddenTagInfo(name, values);
+            final String[] values = param.getValue();
+            final String[] convertValues = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                convertValues[i] = values[i] == null ? "" : values[i];
+            }
+            formContext.addHiddenTagInfo(name, convertValues);
         }
     }
 
