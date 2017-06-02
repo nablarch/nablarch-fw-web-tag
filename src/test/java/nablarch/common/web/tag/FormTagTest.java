@@ -2199,6 +2199,9 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         paramMap.put("user.kana", new String[] {"sample_kana", null});
         target.setWindowScopePrefixes("user");
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        // doEndTag()は実行時にhiddenタグの生成と出力、formContextの削除を行なっているため、
+        // テストコードでリクエストパラメータのnullが空文字に置き変わっていることをassert出来ない。
+        // そのため、doEndTag()が正常に終了することで問題ないことを確認する。
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
     }
 }
