@@ -145,8 +145,10 @@ public class FormContext {
      * @param hiddenTagInfo フォームに含まれるhiddenタグの情報
      */
     public void addHiddenTagInfo(HtmlAttributes hiddenTagInfo) {
-        hiddenTagInfoList.add(hiddenTagInfo);
-        addInputName(hiddenTagInfo.<String>get(HtmlAttribute.NAME));
+        if (hiddenTagInfo.get(HtmlAttribute.VALUE) != null) {
+            hiddenTagInfoList.add(hiddenTagInfo);
+            addInputName(hiddenTagInfo.<String>get(HtmlAttribute.NAME));
+        }
     }
     
     /**

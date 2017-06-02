@@ -2183,5 +2183,18 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         assertThat(formContext.getRequestIds().get(1), is("R0002"));        
         
         TagUtil.getCustomTagConfig().getNoHiddenEncryptionRequestIds().clear();
-    }    
+    }
+
+    /**
+     * リクエストパラメータがnullの時のテスト
+     */
+    @Test
+    public void testNullValueOfRequestParam() throws Exception {
+        TagUtil.getCustomTagConfig().setUseHiddenEncryption(false);
+        // request param
+        pageContext.getMockReq().getParameterMap().put("user.name", new String[] {null});
+        target.setWindowScopePrefixes("user");
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+    }
 }
