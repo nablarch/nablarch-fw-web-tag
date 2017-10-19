@@ -1,7 +1,7 @@
 package nablarch.common.web.handler.threadcontext;
 
+import mockit.Expectations;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 import nablarch.core.ThreadContext;
 import nablarch.core.repository.ObjectLoader;
@@ -46,7 +46,7 @@ public class TimeZoneAttributeInHttpUtilTest {
 
     @Before
     public void setUp(){
-        new NonStrictExpectations() {{
+        new Expectations() {{
             mockServletRequest.getContextPath();
             result = "/";
             mockServletRequest.getRequestURI();
