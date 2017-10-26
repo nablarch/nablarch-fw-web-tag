@@ -6,7 +6,7 @@
 
   <groupId>com.nablarch.framework</groupId>
   <artifactId>nablarch-fw-web-tag</artifactId>
-  <version>1.0.8</version>
+  <version>1.0.7</version>
 
   <parent>
     <groupId>com.nablarch</groupId>
