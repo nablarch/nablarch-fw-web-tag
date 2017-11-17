@@ -3,21 +3,19 @@ branches:
   only:
   - master
   - develop
-before_install:
-- chmod +x gradlew
 install: true
+jdk:
+- oraclejdk8
 cache:
   directories:
-  - $HOME/.gradle/caches/
-  - $HOME/.gradle/wrapper/
+  - $HOME/.m2
 script:
 - git clone -b master https://github.com/nablarch/nablarch-ci-script.git $HOME/build-script/
   && chmod +x $HOME/build-script/travis-ci/*.sh
-- $HOME/build-script/travis-ci/install-oracle-jdk6.sh
-- $HOME/build-script/travis-ci/nablarch-build.sh
-- $HOME/build-script/travis-ci/upload-test-report.sh
-before_cache:
-- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+- $HOME/build-script/travis-ci/setup-oracle-jdk6.sh
+- $HOME/build-script/travis-ci/prepare_travis_settings.sh
+- $HOME/build-script/travis-ci/build-nablarch.sh -m deploy -p ci,dev-deploy
+- $HOME/build-script/travis-ci/upload-test-report.sh -p dev-deploy
 notifications:
   slack:
     secure: XoDstiNVETkWyfEaevhrorzjAMAN4ZxCkxEWHghNbFMu5U3qK9Ju09YWf3JrNCggQ33EwZ8jE6JSjUmPYCjiXubMkJ6QNPxb5Asj+iB3Q+J7EPAoxFeAArdYlxwWa3TEznr34l6O5IhcTNwrjcxXhxdFiZnGczWUmQ2vbsJh1vxOAb7UcFMCLaSumwXlwukyRmxNeSG+IaCJTjK9QVqEoidHS+e7YgRWbMBPkfxIWMbxSKFZX2OSs7fEFCZV5Tc8jZUvxbGfGK8g/VTvh6tWG5xrmSJOH6JUQT60Mutl6xK/+iSkr1ctp2MYllyCKV/IsemWTnA1u63uWee14pvsc9YwkroUq65NDeWsHF31BzvO5hQbHnxMdPoKSd6UFuL6NyPfNCDlzrnIgxsidLyJoLm3cV1RK7C/QrgN7J/avCM/4IQ/FETKeM+MZ4wm6zHIpFGnE6J65QbiEq5YF/P8PCFeNahVcwMvpSXARylTbmrqNXJmGjZ0zZn42TOPv/0F2JPJ+7SU8WtO36xcERZiG9LzTeA0cIoLnQ6EH8NDUQbOjDqaZe0lfmq55kN4R9xeWxOXRcQDzpWg18AiJLDOgp+x3oWUTjVWd96YdJoGqo0LljhD+s0lIj9Z19H+5EhM4rXHhhea6CsNOe6fT8G7/jaBp41r/8N3Xvp8RY6NY3M=
