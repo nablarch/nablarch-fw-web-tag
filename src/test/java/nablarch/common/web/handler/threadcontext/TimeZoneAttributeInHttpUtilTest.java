@@ -55,7 +55,7 @@ public class TimeZoneAttributeInHttpUtilTest {
     }
 
     private void setUpRepository(final TimeZoneAttributeInHttpSupport support){
-        // リポジトリにMailRequesterを定義
+        // リポジトリにTimeZoneAttributeInHttpSupportを定義
         SystemRepository.load(new ObjectLoader() {
             @SuppressWarnings("serial")
             @Override
