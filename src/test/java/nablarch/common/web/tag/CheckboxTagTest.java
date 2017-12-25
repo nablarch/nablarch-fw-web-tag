@@ -199,7 +199,43 @@ public class CheckboxTagTest extends TagTestSupport<CheckboxTag> {
         assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.NAME), is("nablarch_cbx_off_param_name_test"));
         assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.VALUE), is("0"));
     }
-    
+
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("🙊🙈🙉", new String[] {"unknown"});
+
+        // input
+        target.setName("🙊🙈🙉");
+
+        // nablarch
+        target.setLabel("🙊🙊🙊");
+        target.setOffLabel("offLabel_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "id=\"nablarch_checkbox1\"",
+                "type=\"checkbox\"",
+                "name=\"🙊🙈🙉\"",
+                "value=\"1\" /><label for=\"nablarch_checkbox1\">🙊🙊🙊</label>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("🙊🙈🙉"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.NAME), is("nablarch_cbx_off_param_🙊🙈🙉"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.VALUE), is("0"));
+    }
+
     @Test
     public void testInputPageWithNotUseOffValue() throws Exception {
 

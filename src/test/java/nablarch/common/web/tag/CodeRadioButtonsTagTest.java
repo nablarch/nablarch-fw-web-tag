@@ -69,6 +69,8 @@ public class CodeRadioButtonsTagTest extends TagTestSupport<CodeRadioButtonsTag>
         { "0008", "P", "2", "ja", "P0008", "いいえ", "0:NO", "0008-P-ja" },
         { "0009", "0", "2", "ja", "","いいえ", "0:NO", "0005-0-ja" },
         { "0009", "1", "1", "ja", "","はい", "1:YES", "0005-1-ja" },
+        { "0010", "01", "1", "ja", "🙊🙊🙊", "", "", "0010-01-ja" },
+        { "0010", "02", "1", "ja", "🙈🙈🙈", "", "", "0010-02-ja" },
     };
 
     private static final String[][] CODE_PATTERNS = {
@@ -95,6 +97,8 @@ public class CodeRadioButtonsTagTest extends TagTestSupport<CodeRadioButtonsTag>
     	{ "0008", "P", "0", "0", "0" },
     	{ "0009", "1", "0", "0", "0" },
     	{ "0009", "0", "0", "0", "0" },
+        { "0010", "1", "0", "0", "0" },
+        { "0010", "0", "0", "0", "0" },
     };
 
 
@@ -343,6 +347,49 @@ public class CodeRadioButtonsTagTest extends TagTestSupport<CodeRadioButtonsTag>
         TagTestUtil.assertTag(actual, expected, " ");
 
         assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("😸😸😸", new String[] {"03"});
+
+        // input
+        target.setName("😸😸😸");
+
+        // nablarch
+        target.setCodeId("0010");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio%s\"",
+                "type=\"radio\"",
+                "name=\"😸😸😸\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_radio%s\">%s</label><br />").replace(Builder.LS, " ");
+        String checked = "checked=\"checked\"";
+        String unchecked = "unchecked";
+        int i = 0;
+        String expected = Builder.lines(
+                String.format(temp, ++i + "", "01", unchecked, i + "", "🙊🙊🙊"),
+                String.format(temp, ++i + "", "02", unchecked, i + "", "🙈🙈🙈"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("😸😸😸"));
     }
 
     @Test

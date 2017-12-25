@@ -411,6 +411,8 @@ public class NablarchTagHandlerTest {
         request.setParam("chgParam1", "chgParam1_test");
         request.setParam("chgParam2", "chgParam2_test");
         request.setParam("chgParam3", "chgParam3_test");
+        //サロゲートペア対応
+        request.setParam("chgParam4", "chgParam4_🙊🙊🙊");
         HttpResponse response = handler.handle(request, context);
         
         assertThat(response.getStatusCode(), is(200));
@@ -424,7 +426,8 @@ public class NablarchTagHandlerTest {
         assertThat(Arrays.asList(request.getParam("chgParam1")), hasItems("chgParam1_test"));
         assertThat(Arrays.asList(request.getParam("chgParam2")), hasItems("chgSample2"));
         assertThat(Arrays.asList(request.getParam("chgParam3")), hasItems("chgParam3_test"));
-        
+        assertThat(Arrays.asList(request.getParam("chgParam4")), hasItems("chgParam4_🙊🙊🙊"));
+
         // hidden暗号化を使用しない場合。
         
         TagUtil.getCustomTagConfig().setUseHiddenEncryption(false);

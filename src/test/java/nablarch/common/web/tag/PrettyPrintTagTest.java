@@ -56,7 +56,25 @@ public class PrettyPrintTagTest extends TagTestSupport<PrettyPrintTag> {
         final String actual = TagTestUtil.getOutput(pageContext);
         assertThat(actual, is("abc"));
     }
-    
+
+    /**
+     * サロゲートペアを扱うテストケース
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageArrayWithSurrogatepairValue() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("array", new String[] {"🙊🙈🙉"});
+
+        target.setName("array");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is("🙊🙈🙉"));
+    }
+
     /**
      * 配列の単一要素に値がある場合その値が出力されること
      * @throws Exception

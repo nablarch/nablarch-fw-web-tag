@@ -192,6 +192,43 @@ public class RadioButtonTagTest extends TagTestSupport<RadioButtonTag> {
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {"unknown"});
+
+        // input
+        target.setName("🙊🙊🙊_test");
+
+        // radio
+        target.setValue("🙈🙈🙈_test");
+
+        // nablarch
+        target.setLabel("🙉🙉🙉_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "id=\"nablarch_radio1\"",
+                "type=\"radio\"",
+                "name=\"🙊🙊🙊_test\"",
+                "value=\"🙈🙈🙈_test\" /><label for=\"nablarch_radio1\">🙉🙉🙉_test</label>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("🙊🙊🙊_test"));
+    }
+
     @Test
     public void testInputPageForChecked() throws Exception {
         

@@ -69,6 +69,8 @@ public class CodeSelectTagTest extends TagTestSupport<CodeSelectTag> {
         { "0008", "P", "2", "ja", "P0008", "いいえ", "0:NO", "0008-P-ja" },
         { "0009", "0", "2", "ja", "","いいえ", "0:NO", "0005-0-ja" },
         { "0009", "1", "1", "ja", "","はい", "1:YES", "0005-1-ja" },
+        { "0010", "01", "1", "ja", "🙊🙊🙊", "", "", "0010-01-ja" },
+        { "0010", "02", "1", "ja", "🙈🙈🙈", "", "", "0010-02-ja" },
     };
 
     private static final String[][] CODE_PATTERNS = {
@@ -373,6 +375,48 @@ public class CodeSelectTagTest extends TagTestSupport<CodeSelectTag> {
         }
 
         assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("🙊🙈🙉", new String[] {"03"});
+
+        // select
+        target.setName("🙊🙈🙉");
+
+        // nablarch
+        target.setCodeId("0010");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String startTag = Builder.lines(
+                "<select",
+                "name=\"🙊🙈🙉\">").replace(Builder.LS, " ");
+        String excludeStartTag = Builder.lines(
+                "<option value=\"01\">🙊🙊🙊</option>",
+                "<option value=\"02\">🙈🙈🙈</option></select>");
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = excludeStartTag.split(Builder.LS);
+        TagTestUtil.assertTag(splitActual[0], startTag, " ");
+        for (int i = 1; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i - 1], " ");
+        }
+
+        assertTrue(formContext.getInputNames().contains("🙊🙈🙉"));
     }
 
     @Test

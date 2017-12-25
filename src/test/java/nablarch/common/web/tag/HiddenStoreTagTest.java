@@ -54,6 +54,37 @@ public class HiddenStoreTagTest extends TagTestSupport<HiddenStoreTag> {
     }
 
     /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void test_requestScopeSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.setAttribute("name_test", "🙊🙊🙊", PageContext.REQUEST_SCOPE);
+        pageContext.getMockReq().getParams().put("name_test", new String[]{"request_parameter_value"});
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"hidden\"",
+                "name=\"name_test\"",
+                "value=\"🙊🙊🙊\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    /**
      * リクエストスコープに値が設定されておらず、
      * 別のスコープに値が設定されている場合にタグが出力されないことを確認
      *

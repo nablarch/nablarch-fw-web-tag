@@ -296,6 +296,10 @@ public class CodeCheckboxesTagTest extends TagTestSupport<CodeCheckboxesTag> {
         assertTrue(formContext.getInputNames().contains("name_test" + TagTestUtil.HTML));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
     @Test
     public void testInputPageForDefault() throws Exception {
 

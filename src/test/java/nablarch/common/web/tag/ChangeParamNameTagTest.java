@@ -81,7 +81,26 @@ public class ChangeParamNameTagTest extends TagTestSupport<ChangeParamNameTag> {
         assertThat(currentSubmissionInfo.getChangeParamNames().get(0).getParamName(), is("paramName_test"));
         assertThat(currentSubmissionInfo.getChangeParamNames().get(0).getInputName(), is("inputName_test"));
     }
-    
+
+    @Test
+    public void testSurrogatepairInputPage() throws Exception {
+
+        // nablarch
+        target.setParamName("🙊🙊🙊");
+        target.setInputName("🙈🙈🙈");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(currentSubmissionInfo.getChangeParamNames().size(), is(1));
+        assertThat(currentSubmissionInfo.getChangeParamNames().get(0).getParamName(), is("🙊🙊🙊"));
+        assertThat(currentSubmissionInfo.getChangeParamNames().get(0).getInputName(), is("🙈🙈🙈"));
+    }
+
     @Test
     public void testInputPageWithHtml() throws Exception {
         

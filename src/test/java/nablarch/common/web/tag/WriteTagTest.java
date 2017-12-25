@@ -73,12 +73,33 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
         
         // nablarch
         target.setName("entity.bbb");
-        
+
         assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
-        
+
         String actual = TagTestUtil.getOutput(pageContext);
         String expected = "value_test";
+        TagTestUtil.assertTag(actual, expected, " ");
+    }
+
+    /**
+     * サロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageSurrogatepair() throws Exception {
+
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("entity", new Entity("🙊🙊🙊"));
+
+        // nablarch
+        target.setName("entity.bbb");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "🙊🙊🙊";
         TagTestUtil.assertTag(actual, expected, " ");
     }
 
@@ -193,8 +214,51 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
         expected = "value_from_page";
         TagTestUtil.assertTag(actual, expected, " ");        
     }
-    
-    
+
+    /**
+     * スコープでサロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageWithoutSurrogatepairValue() throws Exception {
+        // ウィンドウスコープの値も出力できる。
+        pageContext.getMockReq().getParams().put("entity.bbb", new String[] {"🙈🙈🙈_from_param"});
+
+        // nablarch
+        target.setName("entity.bbb");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "🙈🙈🙈_from_param";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+
+        TagTestUtil.clearOutput(pageContext);
+
+        // ただし、ページスコープ、リクエストスコープの内容が優先される。
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("entity", new Entity("🙉🙉🙉_from_request"));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = "🙉🙉🙉_from_request";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        TagTestUtil.clearOutput(pageContext);
+        pageContext.setAttribute("entity", new Entity("🙊🙊🙊_from_page"));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = "🙊🙊🙊_from_page";
+        TagTestUtil.assertTag(actual, expected, " ");
+    }
+
     @Test
     public void testInputPageWithFormat() throws Exception {
         

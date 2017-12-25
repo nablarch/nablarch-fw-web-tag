@@ -213,6 +213,35 @@ public class TextTagTest extends TagTestSupport<TextTag> {
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {"🙊🙊🙊"});
+
+        // input
+        target.setName("name_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"text\"",
+                "name=\"name_test\"",
+                "value=\"🙊🙊🙊\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+    }
+
     @Test
     public void testInputPageWithoutValue() throws Exception {
         

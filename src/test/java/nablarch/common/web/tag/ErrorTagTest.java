@@ -119,6 +119,28 @@ public class ErrorTagTest extends TagTestSupport<ErrorTag> {
         assertThat(actual, is(expected));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        TagTestUtil.setErrorMessages(pageContext);
+
+        // nablarch
+        target.setName("entity.surrogatepair");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "<div class=\"nablarch_error\">🙊🙊🙊を入力して下さい。</div>";
+        assertThat(actual, is(expected));
+    }
+
     @Test
     public void testInputPageForNoError() throws Exception {
         

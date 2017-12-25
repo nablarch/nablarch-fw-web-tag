@@ -227,6 +227,7 @@ class TagTestUtil {
         validCtxt.addResultMessage("entity.aaa.xxx", "MSG11110", "AAA1");
         validCtxt.addResultMessage("entity.aaa.yyy", "MSG11110", "AAA2");
         validCtxt.addResultMessage("entity.aaa.zzz", "MSG11110", "AAA3");
+        validCtxt.addResultMessage("entity.surrogatepair", "MSG11110", "🙊🙊🙊");
         error.addMessages(validCtxt.getMessages());
 
         if (all) {
@@ -307,6 +308,24 @@ class TagTestUtil {
         List<Group<Integer>> groups = new ArrayList<Group<Integer>>();
         for (int i = 0; i < 5; i++) {
             groups.add(new Group<Integer>(i, "グループ" + i));
+        }
+        setList(pageContext, groups);
+    }
+
+    static void setListWithSurrogatepairStringId(PageContext pageContext) {
+        List<Group<String>> groups = new ArrayList<Group<String>>();
+        String[] surrogatepair = {"🙊🙊🙊","🙈🙈🙈","🙉🙉🙉","🙊🙈🙉","😸😸😸"};
+        for (int i = 0; i < 5; i++) {
+            groups.add(new Group<String>("G00" + i, surrogatepair[i] + i));
+        }
+        setList(pageContext, groups);
+    }
+
+    static void setListWithSurrogatepairValue(PageContext pageContext) {
+        List<Group<Integer>> groups = new ArrayList<Group<Integer>>();
+        String[] surrogatepair = {"🙊🙊🙊","🙈🙈🙈","🙉🙉🙉","🙊🙈🙉","😸😸😸"};
+        for (int i = 0; i < 5; i++) {
+            groups.add(new Group<Integer>(i, surrogatepair[i]));
         }
         setList(pageContext, groups);
     }

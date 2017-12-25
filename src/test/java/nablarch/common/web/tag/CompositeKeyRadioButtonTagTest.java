@@ -187,6 +187,90 @@ public class CompositeKeyRadioButtonTagTest extends TagTestSupport<CompositeKeyR
     }
 
     /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageCheckedBySurrogatepairParameter() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("test.key1", new String[] {"🙈🙈🙈"});
+        pageContext.getMockReq().getParams().put("test.key2", new String[] {"🙉🙉🙉"});
+
+        // generic
+        TagTestUtil.setGenericAttributes(target);
+
+        // focus
+        TagTestUtil.setFocusAttributes(target);
+
+        // input
+        target.setName("test.🙊🙊🙊");
+        target.setDisabled(true);
+        target.setOnchange("onchange_test");
+
+        // checkbox
+        target.setValue("value_test");
+
+        // HTML5
+        target.setAutofocus(true);
+
+        // nablarch
+        target.setLabel("🙊🙈🙉_test");
+        target.setErrorCss("errorCss_test");
+
+        target.setNamePrefix("test");
+        target.setKeyNames("key1,key2");
+
+        Map<String, String> values = new HashMap<String, String>() {
+            {
+                put("key1", "🙈🙈🙈");
+                put("key2", "🙉🙉🙉");
+            }
+        };
+        target.setValueObject(values);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "id=\"id_test\"",
+                "class=\"css_test\"",
+                "style=\"style_test\"",
+                "title=\"title_test\"",
+                "lang=\"lang_test\"",
+                "xml:lang=\"xmlLang_test\"",
+                "dir=\"dir_test\"",
+                "accesskey=\"accesskey_test\"",
+                "tabindex=\"3\"",
+                "type=\"radio\"",
+                "name=\"test.🙊🙊🙊\"",
+                "value=\"🙈🙈🙈,🙉🙉🙉\"",
+                "checked=\"checked\"",
+                "disabled=\"disabled\"",
+                "onclick=\"onclick_test\"",
+                "ondblclick=\"ondblclick_test\"",
+                "onchange=\"onchange_test\"",
+                "onmousedown=\"onmousedown_test\"",
+                "onmouseup=\"onmouseup_test\"",
+                "onmouseover=\"onmouseover_test\"",
+                "onmousemove=\"onmousemove_test\"",
+                "onmouseout=\"onmouseout_test\"",
+                "onkeypress=\"onkeypress_test\"",
+                "onkeydown=\"onkeydown_test\"",
+                "onkeyup=\"onkeyup_test\"",
+                "onfocus=\"onfocus_test\"",
+                "onblur=\"onblur_test\"",
+                "autofocus=\"autofocus\" /><label for=\"id_test\">🙊🙈🙉_test</label>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("test.🙊🙊🙊"));
+    }
+
+    /**
      * "test.value" のキーで CompositeKey を設定したらチェックされるテスト
      */
     @Test

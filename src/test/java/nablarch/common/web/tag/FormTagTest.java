@@ -782,7 +782,52 @@ public class FormTagTest extends TagTestSupport<FormTag> {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
     }
-    
+
+    @Test
+    public void testConfirmationPageForSurrogatepair() throws Exception {
+
+        pageContext.getMockReq().getParams().put("🙊🙊🙊.name", new String[] {"name_sample"});
+        pageContext.getMockReq().getParams().put("user.remarks", new String[] {"remarks_sample"});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String token = getTokenFromSession();
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = Builder.lines(
+                "",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                SUBMIT_FUNCTION,
+                "-->",
+                "</script>",
+                Builder.lines(
+                        "<form",
+                        "name=\"nablarch_form1\"",
+                        "method=\"post\">").replace(Builder.LS, " "),
+                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_token=" + token + "\" />",
+                "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                SUBMISSION_INFO_VAR + ".nablarch_form1 = {",
+                "};",
+                "-->",
+                "</script>",
+                "</form>",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
+                "-->",
+                "</script>").split(Builder.LS);
+        for (int i = 0; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
+        }
+    }
+
     @Test
     public void testConfirmationPageForNotUseToken() throws Exception {
         

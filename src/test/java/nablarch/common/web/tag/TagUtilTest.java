@@ -897,7 +897,7 @@ public class TagUtilTest {
         // ApplicationExceptionに12件のメッセージが設定されている場合
         TagTestUtil.setErrorMessages(pageContext);
         messages = TagUtil.getMessages(pageContext);
-        assertThat(messages.size(), is(12));
+        assertThat(messages.size(), is(13));
 
         // ApplicationException以外の例外が設定されている場合
         TagTestUtil.setErrorMessages(pageContext, new IllegalArgumentException("ignore"));
