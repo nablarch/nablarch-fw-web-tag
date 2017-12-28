@@ -55,7 +55,25 @@ public class RawWriteTagTest extends TagTestSupport<RawWriteTag> {
         final String actual = TagTestUtil.getOutput(pageContext);
         assertThat(actual, is("<script>hoge</script>"));
     }
-    
+
+    /**
+     * 入力画面で配列の要素がサロゲートペアの場合その値が出力されること
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageArrayWithSurrogatepairValue() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE)
+                .put("array", new String[] {"<script>🙊🙊🙊</script>"});
+
+        target.setName("array");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is("<script>🙊🙊🙊</script>"));
+    }
+
     /**
      * 入力画面で配列の要素がnullの場合は空文字列が出力されること
      * @throws Exception

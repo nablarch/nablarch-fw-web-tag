@@ -48,6 +48,7 @@ public class NablarchTagHandlerTest {
                 put("nablarch_hidden_submit_go", new ArrayList<String>() {{ add("go1=aaa|go2=bbb|chgParam2=chgSample2"); }});
                 put("nablarch_hidden_submit_cancel", new ArrayList<String>() {{ add("can1=ccc|can2=ddd"); }});
                 put("nablarch_hidden_submit_blank", new ArrayList<String>() {{ add(""); }});
+                put("nablarch_hidden_submit_surrogatepair", new ArrayList<String>() {{ add("go1=🙊🙊🙊|go2=🙈🙈🙈|chgParam2=chgSample2"); }});
             }
         };
         String hiddenValue;
@@ -311,6 +312,21 @@ public class NablarchTagHandlerTest {
         assertNull(request.getParam("can1"));
         assertNull(request.getParam("can2"));
         config.setUseHiddenEncryption(useHiddenEncryption);
+
+        // サロゲートペア対応
+        // submitName = "surrogatepair"
+        init("R0001", true);
+        request.setParam(HiddenEncryptionUtil.KEY_SUBMIT_NAME, "surrogatepair");
+        response = handler.handle(request, context);
+
+        assertThat(response.getStatusCode(), is(200));
+        assertNotNull(request.getParam("param1"));
+        assertNull(request.getParam(HiddenEncryptionUtil.KEY_HIDDEN_NAME));
+        assertThat(request.getParam("go1")[0], is("🙊🙊🙊"));
+        assertThat(request.getParam("go2")[0], is("🙈🙈🙈"));
+        assertNull(request.getParam("can1"));
+        assertNull(request.getParam("can2"));
+
     }
     
     /**
@@ -411,6 +427,8 @@ public class NablarchTagHandlerTest {
         request.setParam("chgParam1", "chgParam1_test");
         request.setParam("chgParam2", "chgParam2_test");
         request.setParam("chgParam3", "chgParam3_test");
+        //サロゲートペア対応
+        request.setParam("chgParam4", "chgParam4_🙊🙊🙊");
         HttpResponse response = handler.handle(request, context);
         
         assertThat(response.getStatusCode(), is(200));
@@ -424,7 +442,8 @@ public class NablarchTagHandlerTest {
         assertThat(Arrays.asList(request.getParam("chgParam1")), hasItems("chgParam1_test"));
         assertThat(Arrays.asList(request.getParam("chgParam2")), hasItems("chgSample2"));
         assertThat(Arrays.asList(request.getParam("chgParam3")), hasItems("chgParam3_test"));
-        
+        assertThat(Arrays.asList(request.getParam("chgParam4")), hasItems("chgParam4_🙊🙊🙊"));
+
         // hidden暗号化を使用しない場合。
         
         TagUtil.getCustomTagConfig().setUseHiddenEncryption(false);
@@ -432,6 +451,8 @@ public class NablarchTagHandlerTest {
         request.setParam("chgParam1", "chgParam1_test");
         request.setParam("chgParam2", "chgParam2_test");
         request.setParam("chgParam3", "chgParam3_test");
+        //サロゲートペア対応
+        request.setParam("chgParam4", "chgParam4_🙊🙊🙊");
         response = handler.handle(request, context);
         
         assertThat(response.getStatusCode(), is(200));
@@ -445,7 +466,8 @@ public class NablarchTagHandlerTest {
         assertThat(Arrays.asList(request.getParam("chgParam1")), hasItems("chgParam1_test"));
         assertThat(Arrays.asList(request.getParam("chgParam2")), hasItems("chgSample2"));
         assertThat(Arrays.asList(request.getParam("chgParam3")), hasItems("chgParam3_test"));
-        
+        assertThat(Arrays.asList(request.getParam("chgParam4")), hasItems("chgParam4_🙊🙊🙊"));
+
         TagUtil.getCustomTagConfig().setUseHiddenEncryption(defaultValue);
     }
     

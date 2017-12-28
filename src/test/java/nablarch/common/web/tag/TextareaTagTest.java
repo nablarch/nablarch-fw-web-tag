@@ -201,7 +201,41 @@ public class TextareaTagTest extends TagTestSupport<TextareaTag> {
         
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
-    
+
+    /**
+     * サロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {"🙈🙈🙈\n🙉🙉🙉\n🙊🙊🙊"});
+
+        // textarea
+        target.setName("name_test");
+        target.setRows(5);
+        target.setCols(40);
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<textarea",
+                "name=\"name_test\"",
+                "rows=\"5\"",
+                "cols=\"40\">").replace(Builder.LS, " ")
+                + "\n$value$</textarea>"
+                .replace("$value$", "🙈🙈🙈\n🙉🙉🙉\n🙊🙊🙊");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
     @Test
     public void testInputPageWithoutValue() throws Exception {
         

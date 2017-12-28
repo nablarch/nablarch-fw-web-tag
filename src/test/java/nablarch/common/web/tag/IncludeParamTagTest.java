@@ -121,6 +121,32 @@ public class IncludeParamTagTest extends TagTestSupport<IncludeParamTag> {
     }
 
     /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageUsingSurrogatepairValue() throws Exception {
+
+        IncludeContext includeContext = new IncludeContext();
+        IncludeContext.setIncludeContext(pageContext, includeContext);
+
+        // nablarch
+        target.setValue("🙊🙊🙊_test");
+        target.setParamName("🙈🙈🙈_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(includeContext.getParams().size(), is(1));
+        assertThat(includeContext.getParams().get("🙈🙈🙈_test").size(), is(1));
+        assertThat(includeContext.getParams().get("🙈🙈🙈_test").get(0), is("🙊🙊🙊_test"));
+    }
+
+    /**
      * value属性がBigDecimalの場合、指数表記にならないこと
      */
     @Test

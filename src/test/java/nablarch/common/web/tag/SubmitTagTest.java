@@ -251,6 +251,49 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         assertThat(info.getAction(), is(SubmissionAction.TRANSITION));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+        TagTestUtil.setUpDefaultConfig();
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // input
+        target.setName("𪛔𪛉𠀜");
+
+        // submit,button,image
+        target.setType("submit");
+        target.setValue("🙈🙈🙈");
+
+        // nablarch
+        target.setUri("./R12345");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"submit\"",
+                "name=\"𪛔𪛉𠀜\"",
+                "value=\"🙈🙈🙈\"",
+                "onclick=\"return window.nablarch_submit(event, this);\" />")
+                .replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("𪛔𪛉𠀜"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("𪛔𪛉𠀜"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionAction.TRANSITION));
+    }
+
     @Test
     public void testInputPageForInvalidLocation() throws Exception {
 

@@ -69,6 +69,8 @@ public class CodeCheckboxesTagTest extends TagTestSupport<CodeCheckboxesTag> {
         { "0008", "P", "2", "ja", "P0008", "いいえ", "0:NO", "0008-P-ja" },
         { "0009", "0", "2", "ja", "","いいえ", "0:NO", "0005-0-ja" },
         { "0009", "1", "1", "ja", "","はい", "1:YES", "0005-1-ja" },
+        { "0010", "1", "1", "ja", "🙊🙊🙊", "はい", "1:YES", "0010-1-ja" },
+        { "0010", "2", "1", "ja", "😸😸😸", "はい", "1:YES", "0010-1-ja" },
     };
 
     private static final String[][] CODE_PATTERNS = {
@@ -335,6 +337,53 @@ public class CodeCheckboxesTagTest extends TagTestSupport<CodeCheckboxesTag> {
                 String.format(temp, ++i + "", "03", checked, i + "", "処理実行中"),
                 String.format(temp, ++i + "", "04", unchecked, i + "", "処理実行完了"),
                 String.format(temp, ++i + "", "05", unchecked, i + "", "処理結果確認完了"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[] {"03"});
+
+        // input
+        target.setName("name_test");
+
+        // nablarch
+        target.setCodeId("0010");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_checkbox%s\"",
+                "type=\"checkbox\"",
+                "name=\"name_test\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_checkbox%s\">%s</label><br />").replace(Builder.LS, " ");
+        String checked = "checked=\"checked\"";
+        String unchecked = "unchecked";
+        int i = 0;
+        String expected = Builder.lines(
+                String.format(temp, ++i + "", "1", unchecked, i + "", "🙊🙊🙊"),
+                String.format(temp, ++i + "", "2", unchecked, i + "", "😸😸😸"))
                 .replace("unchecked ", "")
                 .replace(Builder.LS, "");
         TagTestUtil.assertTag(actual, expected, " ");

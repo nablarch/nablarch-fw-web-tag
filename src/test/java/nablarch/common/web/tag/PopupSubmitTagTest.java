@@ -69,6 +69,58 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
     }
 
     /**
+     * サロゲートペアを扱うテストケース
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+        TagTestUtil.setUpDefaultConfig();
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // input
+        target.setName("🙊🙊🙊_test");
+        target.setPopupWindowName("window_name");
+
+        // submit,button,image
+        target.setType("submit");
+        target.setValue("🙈🙈🙈_test");
+        target.setSrc("🙉🙉🙉_test");
+
+        // HTML5
+        target.setAutofocus(true);
+
+        // nablarch
+        target.setUri("./R12345");
+        target.setPopupOption("width=400, height=300");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"submit\"",
+                "name=\"🙊🙊🙊_test\"",
+                "value=\"🙈🙈🙈_test\"",
+                "src=\"🙉🙉🙉_test?nablarch_static_content_version=1.0.0\"",
+                "onclick=\"return window.nablarch_submit(event, this);\"",
+                "autofocus=\"autofocus\" />")
+                .replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("🙊🙊🙊_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("🙊🙊🙊_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+    }
+
+    /**
      * popupOptionプロパティが明示的に指定されていない場合、
      * デフォルト値のwindowOptionが設定されること。
      */

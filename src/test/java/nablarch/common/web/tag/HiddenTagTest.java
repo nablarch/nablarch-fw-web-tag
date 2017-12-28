@@ -190,6 +190,38 @@ public class HiddenTagTest extends TagTestSupport<HiddenTag> {
     }
 
     /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("🙊🙈🙉", new String[] {"🙊🙊🙊"});
+
+        // input
+        target.setName("🙊🙈🙉");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext), is(""));
+
+        List<HtmlAttributes> InfoList = formContext.getHiddenTagInfoList();
+        assertThat(InfoList.size(), is(1));
+
+        HtmlAttributes attrs = InfoList.get(0);
+        assertThat(attrs.<String>get(HtmlAttribute.TYPE), is("hidden"));
+        assertThat(attrs.<String>get(HtmlAttribute.NAME), is("🙊🙈🙉"));
+        assertThat(attrs.<String>get(HtmlAttribute.VALUE), is("🙊🙊🙊"));
+        assertTrue(formContext.getInputNames().contains("🙊🙈🙉"));
+
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+    }
+
+    /**
      * 値がBigDecimal型の場合に指数表記にならないこと。
      * @throws Exception
      */
@@ -376,7 +408,7 @@ public class HiddenTagTest extends TagTestSupport<HiddenTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         
-        pageContext.getMockReq().getParams().put("name_test", new String[] {"data1", "data2", "data3"});
+        pageContext.getMockReq().getParams().put("name_test", new String[] {"data1", "data2", "data3", "🙊🙊🙊"});
         
         // input
         target.setName("name_test");
@@ -386,13 +418,17 @@ public class HiddenTagTest extends TagTestSupport<HiddenTag> {
         assertThat(TagTestUtil.getOutput(pageContext), is(""));
         
         InfoList = formContext.getHiddenTagInfoList();
-        assertThat(InfoList.size(), is(3));
+        assertThat(InfoList.size(), is(4));
         
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             HtmlAttributes attrs = InfoList.get(i);
             assertThat(attrs.<String>get(HtmlAttribute.TYPE), is("hidden"));
             assertThat(attrs.<String>get(HtmlAttribute.NAME), is("name_test"));
-            assertThat(attrs.<String>get(HtmlAttribute.VALUE), is("data" + (i + 1)));
+            if(i == 3){
+                assertThat(attrs.<String>get(HtmlAttribute.VALUE), is("🙊🙊🙊"));
+            }else{
+                assertThat(attrs.<String>get(HtmlAttribute.VALUE), is("data" + (i + 1)));
+            }
         }
         assertTrue(formContext.getInputNames().contains("name_test"));
 
@@ -403,7 +439,7 @@ public class HiddenTagTest extends TagTestSupport<HiddenTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         
-        pageContext.setAttribute("name_test", Arrays.asList(new String[] {"val1", "val2", "val3"}));
+        pageContext.setAttribute("name_test", Arrays.asList(new String[] {"val1", "val2", "val3", "🙊🙊🙊"}));
         
         // input
         target.setName("name_test");
@@ -413,13 +449,17 @@ public class HiddenTagTest extends TagTestSupport<HiddenTag> {
         assertThat(TagTestUtil.getOutput(pageContext), is(""));
         
         InfoList = formContext.getHiddenTagInfoList();
-        assertThat(InfoList.size(), is(3));
+        assertThat(InfoList.size(), is(4));
         
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             HtmlAttributes attrs = InfoList.get(i);
             assertThat(attrs.<String>get(HtmlAttribute.TYPE), is("hidden"));
             assertThat(attrs.<String>get(HtmlAttribute.NAME), is("name_test"));
-            assertThat(attrs.<String>get(HtmlAttribute.VALUE), is("val" + (i + 1)));
+            if(i == 3){
+                assertThat(attrs.<String>get(HtmlAttribute.VALUE), is("🙊🙊🙊"));
+            }else{
+                assertThat(attrs.<String>get(HtmlAttribute.VALUE), is("val" + (i + 1)));
+            }
         }
         assertTrue(formContext.getInputNames().contains("name_test"));
 

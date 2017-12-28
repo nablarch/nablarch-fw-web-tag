@@ -184,6 +184,34 @@ public class ImgTagTest extends TagTestSupport<ImgTag> {
         assertFalse(formContext.getInputNames().contains("name_test"));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // img
+        target.setSrc("./R12345");
+        target.setAlt("🙊🙊🙊_test");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<img",
+                "src=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "?nablarch_static_content_version=1.0.0" + '"',
+                "alt=\"🙊🙊🙊_test\" />").replace(Builder.LS, " ");
+        System.out.println(actual);
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
     @Test
     public void testInputPageForSecure() throws Exception {
         

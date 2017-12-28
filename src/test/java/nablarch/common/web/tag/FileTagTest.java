@@ -204,6 +204,38 @@ public class FileTagTest extends TagTestSupport<FileTag> {
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepairValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("🙊🙊🙊", new String[] {"😸😸😸"});
+
+        // input
+        target.setName("🙊🙊🙊");
+        target.setTitle("🙊🙈🙉");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "title=\"🙊🙈🙉\"",
+                "type=\"file\"",
+                "name=\"🙊🙊🙊\"",
+                "value=\"\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("🙊🙊🙊"));
+    }
+
     @Test
     public void testInputPageWithoutValue() throws Exception {
 
@@ -399,6 +431,33 @@ public class FileTagTest extends TagTestSupport<FileTag> {
         TagTestUtil.assertTag(actual, expected, " ");
 
         assertFalse(formContext.getInputNames().contains("name_test"));
+    }
+
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testConfirmationPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("🙊🙊🙊", new String[] {"😸😸😸"});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("🙊🙊🙊");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "😸😸😸";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("🙊🙊🙊"));
     }
 
     @Test

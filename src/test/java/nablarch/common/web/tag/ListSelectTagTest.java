@@ -257,6 +257,50 @@ public class ListSelectTagTest extends TagTestSupport<ListSelectTag> {
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForCheckedWithParamSurrogatepairValue() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("🙊🙈🙉", new String[] {"3"});
+
+        TagTestUtil.setListWithSurrogatepairValue(pageContext);
+
+        // select
+        target.setName("🙊🙈🙉");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String startTag = "<select name=\"🙊🙈🙉\">";
+        String excludeStartTag = Builder.lines(
+                "<option value=\"0\">🙊🙊🙊</option>",
+                "<option value=\"1\">🙈🙈🙈</option>",
+                "<option value=\"2\">🙉🙉🙉</option>",
+                "<option value=\"3\" selected=\"selected\">🙊🙈🙉</option>",
+                "<option value=\"4\">😸😸😸</option></select>");
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = excludeStartTag.split(Builder.LS);
+        TagTestUtil.assertTag(splitActual[0], startTag, " ");
+        for (int i = 1; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i - 1], " ");
+        }
+
+        assertTrue(formContext.getInputNames().contains("🙊🙈🙉"));
+    }
+
     @Test
     public void testInputPageForCheckedWithScopeValue() throws Exception {
         

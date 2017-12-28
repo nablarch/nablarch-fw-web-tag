@@ -29,6 +29,7 @@ public class MessageTagTest extends TagTestSupport<MessageTag> {
     private static final String[][] MESSAGES = {
         { "TEST0001", "ja", "テストメッセージ。0[{0}],1[{1}],2[{2}],3[{3}],4[{4}],5[{5}],6[{6}],7[{7}],8[{8}],9[{9}]" , "en", "TEST_MESSAGE.9[{9}],0[{0}],1[{1}],2[{2}],3[{3}],4[{4}],5[{5}],6[{6}],7[{7}],8[{8}]" },
         { "TEST0002", "ja", "<div id=\"id\" style=''style''>\nテスト\n</div>" , "en", "<div id=\"id\" style=''style''>\nTEST\n</div>" },
+        { "TEST0003", "ja", "サロゲートペア。0[{0}],1[{1}],2[{2}]" , "en", "SURROGATE_PAIR.0[{0}],1[{1}],2[{2}]" },
     };
 
     @BeforeClass
@@ -382,5 +383,50 @@ public class MessageTagTest extends TagTestSupport<MessageTag> {
         for (int i = 0; i < 10; i++) {
             ObjectUtil.setProperty(tag, "option" + i, "test" + i);
         }
+    }
+
+    private void setOptionsSurrogatepair(MessageTag tag) {
+        for (int i = 0; i < 10; i++) {
+            ObjectUtil.setProperty(tag, "option" + i, "🙊🙈🙉" + i);
+        }
+    }
+
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testValForSurrogatepair() throws Exception {
+
+        String actual;
+
+        target.setMessageId("TEST0003");
+        target.setVar("🙊🙈🙉");
+        setOptionsSurrogatepair(target);
+
+        // 日本語
+        TagTestUtil.clearOutput(pageContext);
+        ThreadContext.setLanguage(new Locale("ja"));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+        assertThat(pageContext.getAttribute("🙊🙈🙉", PageContext.REQUEST_SCOPE).toString(),
+                is("サロゲートペア。0[🙊🙈🙉0],1[🙊🙈🙉1],2[🙊🙈🙉2]"));
+
+        // 英語
+        TagTestUtil.clearOutput(pageContext);
+        ThreadContext.setLanguage(new Locale("en"));
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+        assertThat(pageContext.getAttribute("🙊🙈🙉", PageContext.REQUEST_SCOPE).toString(),
+                is("SURROGATE_PAIR.0[🙊🙈🙉0],1[🙊🙈🙉1],2[🙊🙈🙉2]"));
+
     }
 }

@@ -255,6 +255,56 @@ public class ListCheckboxesTagTest extends TagTestSupport<ListCheckboxesTag> {
         assertTrue(formContext.getInputNames().contains("name_test"));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("🙊🙈🙉", new String[] {"G001", "G003"});
+
+        TagTestUtil.setListWithSurrogatepairStringId(pageContext);
+
+        // input
+        target.setName("🙊🙈🙉");
+
+        // nablarch
+        target.setListName("groups");
+        target.setElementLabelProperty("name");
+        target.setElementValueProperty("groupId");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_checkbox%s\"",
+                "type=\"checkbox\"",
+                "name=\"🙊🙈🙉\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_checkbox%s\">%s</label><br />").replace(Builder.LS, " ");
+        String checked = "checked=\"checked\"";
+        String unchecked = "unchecked";
+        int i = 0;
+        String expected = Builder.lines(
+                String.format(temp, ++i + "", "G000", unchecked, i + "", "🙊🙊🙊0"),
+                String.format(temp, ++i + "", "G001", checked, i + "", "🙈🙈🙈1"),
+                String.format(temp, ++i + "", "G002", unchecked, i + "", "🙉🙉🙉2"),
+                String.format(temp, ++i + "", "G003", checked, i + "", "🙊🙈🙉3"),
+                String.format(temp, ++i + "", "G004", unchecked, i + "", "😸😸😸4"))
+                .replace("unchecked ", "")
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("🙊🙈🙉"));
+    }
+
     @Test
     public void testInputPageForCheckedWithParamValue() throws Exception {
         

@@ -80,6 +80,8 @@ public class CodeTagTest extends TagTestSupport<CodeTag> {
         { "0008", "P", "2", "ja", "P0008", "いいえ", "0:NO", "0008-P-ja" },
         { "0009", "0", "2", "ja", "","いいえ", "0:NO", "0005-0-ja" },
         { "0009", "1", "1", "ja", "","はい", "1:YES", "0005-1-ja" },
+        { "0010", "1", "2", "ja", "🙊🙊🙊", "", "", "0010-N-ja" },
+        { "0010", "2", "2", "ja", "😸😸😸", "", "", "0010-N-ja" },
     };
 
     private static final String[][] CODE_PATTERNS = {
@@ -106,6 +108,8 @@ public class CodeTagTest extends TagTestSupport<CodeTag> {
     	{ "0008", "P", "0", "0", "0" },
     	{ "0009", "1", "0", "0", "0" },
     	{ "0009", "0", "0", "0", "0" },
+        { "0010", "1", "0", "0", "0" },
+        { "0010", "2", "0", "0", "0" },
     };
 
     @Before
@@ -660,6 +664,33 @@ public class CodeTagTest extends TagTestSupport<CodeTag> {
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
         assertThat(TagTestUtil.getOutput(pageContext),
                    is("<ul><li>処理実行中</li><li>処理実行完了</li></ul>"));
+    }
+
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testConfirmationPageWithRequestSurrogatepairValue() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        pageContext.getMockReq().getParams().put("entity.bbb", new String[] {"1", "2"});
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setCodeId("0010");
+
+        target.setListFormat("ul");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+        assertThat(TagTestUtil.getOutput(pageContext),
+                is("<ul><li>🙊🙊🙊</li><li>😸😸😸</li></ul>"));
     }
 
     @Test

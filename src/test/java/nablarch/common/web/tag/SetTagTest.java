@@ -42,7 +42,33 @@ public class SetTagTest extends TagTestSupport<SetTag> {
         assertThat(pageContext.getAttribute("var_test", PageContext.REQUEST_SCOPE).toString(),
                    is("value_test"));
     }
-    
+
+    /**
+     * サロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageUsingNameSurrogatepair() throws Exception {
+
+        String[] value = new String[] {"🙊🙈🙉"};
+        pageContext.getMockReq().getParams().put("entity.bbb", value);
+
+        // nablarch
+        target.setName("entity.bbb");
+        target.setVar("𪛔𪛉𠀜");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertThat(pageContext.getAttribute("𪛔𪛉𠀜", PageContext.REQUEST_SCOPE).toString(),
+                is("🙊🙈🙉"));
+    }
+
     @Test
     public void testInputPageUsingNameByNoSingleValue() throws Exception {
         

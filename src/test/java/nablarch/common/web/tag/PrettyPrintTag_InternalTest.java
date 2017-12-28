@@ -44,6 +44,13 @@ public class PrettyPrintTag_InternalTest extends TagTestSupport<WriteTag> {
             "<ol><li><p>hoge</p></li></ol>"
         );
 
+        //サロゲートペア対応
+        specPrettyPrint(
+                "ol,li,p", "",
+                "<ol><li><p>🙊🙈🙉</p></li></ol>",
+                "<ol><li><p>🙊🙈🙉</p></li></ol>"
+        );
+
         specPrettyPrint(
             "ol,li", "",
             "<ol><li><p>hoge</p></li></ol>",

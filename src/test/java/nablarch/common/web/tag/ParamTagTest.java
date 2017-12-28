@@ -157,6 +157,25 @@ public class ParamTagTest extends TagTestSupport<ParamTag> {
         assertThat(currentSubmissionInfo.getParamsMap(), hasEntry(is("array_param"), contains("a", "", "c")));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース
+     * @throws Exception
+     */
+    @Test
+    public void testMultiArrayWithSurrogatepairValue() throws Exception {
+        pageContext.setAttribute("array", new String[] {"a", null, "c","🙊🙈🙉"});
+        target.setName("array");
+        target.setParamName("array_param");
+
+        target.doStartTag();
+        target.doEndTag();
+
+        final String actual = TagTestUtil.getOutput(pageContext);
+        assertThat(actual, is(""));
+
+        assertThat(currentSubmissionInfo.getParamsMap(), hasEntry(is("array_param"), contains("a", "", "c","🙊🙈🙉")));
+    }
+
     @Test
     public void testListWithNullValue() throws Exception {
         pageContext.setAttribute("list", Collections.singletonList(null));
@@ -350,7 +369,8 @@ public class ParamTagTest extends TagTestSupport<ParamTag> {
         配列の場合
         **********************************************************/
         
-        pageContext.getMockReq().getParams().put("entity.bbb", new String[] {"test1", "test2", "test3"});
+        //サロゲートペアを追加
+        pageContext.getMockReq().getParams().put("entity.bbb", new String[] {"test1", "test2", "test3","🙊🙈🙉"});
         
         // nablarch
         target.setName("entity.bbb");
@@ -366,19 +386,21 @@ public class ParamTagTest extends TagTestSupport<ParamTag> {
         TagTestUtil.assertTag(actual, expected, " ");
 
         assertThat(currentSubmissionInfo.getParamsMap().size(), is(1));
-        assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").size(), is(3));
+        assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").size(), is(4));
         for (int i = 0; i < 3; i++) {
             assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").get(i), is("test" + (i + 1)));
         }
+        assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").get(3), is("🙊🙈🙉"));
 
         /**********************************************************
         リストの場合
         **********************************************************/
         
         initFormContext("dummy2");
-        
+
+        //サロゲートペアを追加
         pageContext.setAttribute("entity",
-                new HashMap<String, Object>() {{ put("bbb", Arrays.asList(new String[] {"val1", "val2", "val3"}));}});
+                new HashMap<String, Object>() {{ put("bbb", Arrays.asList(new String[] {"val1", "val2", "val3", "🙊🙈🙉"}));}});
         
         // nablarch
         target.setName("entity.bbb");
@@ -394,10 +416,11 @@ public class ParamTagTest extends TagTestSupport<ParamTag> {
         TagTestUtil.assertTag(actual, expected, " ");
 
         assertThat(currentSubmissionInfo.getParamsMap().size(), is(1));
-        assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").size(), is(3));
+        assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").size(), is(4));
         for (int i = 0; i < 3; i++) {
             assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").get(i), is("val" + (i + 1)));
         }
+        assertThat(currentSubmissionInfo.getParamsMap().get("paramName_test").get(3), is("🙊🙈🙉"));
 
         /**********************************************************
         リストの場合(値がnullの場合)

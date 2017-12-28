@@ -230,6 +230,47 @@ public class SubmitLinkTagTest extends TagTestSupport<SubmitLinkTag> {
         assertThat(info.getAction(), is(SubmissionAction.TRANSITION));
     }
 
+    /**
+     * サロゲートペアを扱うテストケース
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        TagTestUtil.setUpDefaultConfig();
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // a
+        target.setName("𪛔𪛉𠀜");
+
+        // title
+        target.setTitle("😸😸😸");
+
+        // nablarch
+        target.setUri("./R12345");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<a",
+                "title=\"😸😸😸\"",
+                "name=\"𪛔𪛉𠀜\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"return window.nablarch_submit(event, this);\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("𪛔𪛉𠀜"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("𪛔𪛉𠀜"));
+    }
+
     @Test
     public void testInputPageForInvalidLocation() throws Exception {
 

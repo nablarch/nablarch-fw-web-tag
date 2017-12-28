@@ -61,6 +61,48 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
     }
 
     /**
+     * サロゲートペアを扱うテストケース
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+        TagTestUtil.setUpDefaultConfig();
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // a
+        target.setName("🙊🙊🙊_test");
+
+        target.setPopupWindowName("🙊🙈🙉");
+
+        // nablarch
+        target.setUri("./R12345");
+        target.setPopupOption("width=400, height=300");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<a",
+                "name=\"🙊🙊🙊_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"return window.nablarch_submit(event, this);\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("🙊🙊🙊_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+    }
+
+    /**
      * 不正なURI（末尾にリクエストIDが存在しないURI）を指定した場合のケース。
      *
      * リクエストIDがURIから取得出来ないため、{@link JspException}が送出される。

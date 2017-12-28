@@ -68,6 +68,7 @@ public class CodeCheckboxTagTest extends TagTestSupport<CodeCheckboxTag> {
         { "0008", "P", "2", "ja", "P0008", "いいえ", "0:NO", "0008-P-ja" },
         { "0009", "0", "2", "ja", "","いいえ", "0:NO", "0005-0-ja" },
         { "0009", "1", "1", "ja", "","はい", "1:YES", "0005-1-ja" },
+        { "0010", "1", "1", "ja", "😸😸😸", "はい", "1:YES", "0005-1-ja" },
     };
 
     private static final String[][] CODE_PATTERNS = {
@@ -380,6 +381,51 @@ public class CodeCheckboxTagTest extends TagTestSupport<CodeCheckboxTag> {
 
         assertTrue(formContext.getInputNames().contains("name_test"));
         assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.NAME), is("nablarch_cbx_off_param_name_test"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.VALUE), is("0"));
+    }
+
+    /**
+     * サロゲートペアを扱うテストケース。
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForSurrogatepair() throws Exception {
+
+        TagTestUtil.setUpCodeTagTest();
+
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
+        // input
+        target.setName("🙊🙈🙉");
+
+        // nablarch
+        target.setCodeId("0010");
+
+        String temp = Builder.lines(
+                "<input",
+                "id=\"nablarch_checkbox1\"",
+                "type=\"checkbox\"",
+                "name=\"🙊🙈🙉\"",
+                "value=\"%s\"",
+                "%s /><label for=\"nablarch_checkbox1\">%s</label>").replace(Builder.LS, " ");
+
+        // チェックありの場合
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        pageContext.getMockReq().getParams().put("🙊🙈🙉", new String[] {"1"});
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+
+        String expected = Builder.lines(String.format(temp, "1", "checked=\"checked\"", "😸😸😸"))
+                .replace(Builder.LS, "");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("🙊🙈🙉"));
+        assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.NAME), is("nablarch_cbx_off_param_🙊🙈🙉"));
         assertThat(formContext.getHiddenTagInfoList().get(0).<String>get(HtmlAttribute.VALUE), is("0"));
     }
 
