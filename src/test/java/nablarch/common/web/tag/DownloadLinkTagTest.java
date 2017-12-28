@@ -69,6 +69,9 @@ public class DownloadLinkTagTest extends TagTestSupport<DownloadLinkTag> {
         // a
         target.setName("🙊🙊🙊");
 
+        // title
+        target.setTitle("😸😸😸");
+
         // nablarch
         target.setUri("./R12345");
 
@@ -78,6 +81,7 @@ public class DownloadLinkTagTest extends TagTestSupport<DownloadLinkTag> {
         String actual = TagTestUtil.getOutput(pageContext);
         String expected = Builder.lines(
                 "<a",
+                "title=\"😸😸😸\"",
                 "name=\"🙊🙊🙊\"",
                 "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
                 "onclick=\"return window.nablarch_submit(event, this);\"></a>"

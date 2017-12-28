@@ -214,6 +214,7 @@ public class CheckboxTagTest extends TagTestSupport<CheckboxTag> {
 
         // input
         target.setName("🙊🙈🙉");
+        target.setValue("😸😸😸");
 
         // nablarch
         target.setLabel("🙊🙊🙊");
@@ -228,7 +229,7 @@ public class CheckboxTagTest extends TagTestSupport<CheckboxTag> {
                 "id=\"nablarch_checkbox1\"",
                 "type=\"checkbox\"",
                 "name=\"🙊🙈🙉\"",
-                "value=\"1\" /><label for=\"nablarch_checkbox1\">🙊🙊🙊</label>").replace(Builder.LS, " ");
+                "value=\"😸😸😸\" /><label for=\"nablarch_checkbox1\">🙊🙊🙊</label>").replace(Builder.LS, " ");
         TagTestUtil.assertTag(actual, expected, " ");
 
         assertTrue(formContext.getInputNames().contains("🙊🙈🙉"));

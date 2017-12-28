@@ -230,6 +230,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
 
         // button
         target.setName("🙊🙊🙊");
+        target.setValue("🙊🙊🙊_test");
 
         // nablarch
         target.setUri("./R12345");
@@ -241,6 +242,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         String expected = Builder.lines(
                 "<button",
                 "name=\"🙊🙊🙊\"",
+                "value=\"🙊🙊🙊_test\"",
                 "onclick=\"return window.nablarch_submit(event, this);\"></button>"
         ).replace(Builder.LS, " ");
         TagTestUtil.assertTag(actual, expected, " ");

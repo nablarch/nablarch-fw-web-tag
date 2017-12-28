@@ -786,11 +786,12 @@ public class FormTagTest extends TagTestSupport<FormTag> {
     @Test
     public void testConfirmationPageForSurrogatepair() throws Exception {
 
-        pageContext.getMockReq().getParams().put("🙊🙊🙊.name", new String[] {"name_sample"});
+        pageContext.getMockReq().getParams().put("user.name", new String[] {"name_sample"});
         pageContext.getMockReq().getParams().put("user.remarks", new String[] {"remarks_sample"});
 
         TagUtil.setConfirmationPage(pageContext);
 
+        target.setTitle("🙊🙈🙉");
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
@@ -807,6 +808,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "</script>",
                 Builder.lines(
                         "<form",
+                        "title=\"🙊🙈🙉\"",
                         "name=\"nablarch_form1\"",
                         "method=\"post\">").replace(Builder.LS, " "),
                 "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_token=" + token + "\" />",

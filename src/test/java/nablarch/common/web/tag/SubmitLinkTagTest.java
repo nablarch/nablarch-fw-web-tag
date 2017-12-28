@@ -245,6 +245,9 @@ public class SubmitLinkTagTest extends TagTestSupport<SubmitLinkTag> {
         // a
         target.setName("𪛔𪛉𠀜");
 
+        // title
+        target.setTitle("😸😸😸");
+
         // nablarch
         target.setUri("./R12345");
 
@@ -254,6 +257,7 @@ public class SubmitLinkTagTest extends TagTestSupport<SubmitLinkTag> {
         String actual = TagTestUtil.getOutput(pageContext);
         String expected = Builder.lines(
                 "<a",
+                "title=\"😸😸😸\"",
                 "name=\"𪛔𪛉𠀜\"",
                 "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
                 "onclick=\"return window.nablarch_submit(event, this);\"></a>"

@@ -218,6 +218,7 @@ public class FileTagTest extends TagTestSupport<FileTag> {
 
         // input
         target.setName("🙊🙊🙊");
+        target.setTitle("🙊🙈🙉");
 
         assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -225,6 +226,7 @@ public class FileTagTest extends TagTestSupport<FileTag> {
         String actual = TagTestUtil.getOutput(pageContext);
         String expected = Builder.lines(
                 "<input",
+                "title=\"🙊🙈🙉\"",
                 "type=\"file\"",
                 "name=\"🙊🙊🙊\"",
                 "value=\"\"",

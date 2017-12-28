@@ -78,6 +78,7 @@ public class DownloadButtonTagTest extends TagTestSupport<DownloadButtonTag> {
         // nablarch
         target.setUri("./R12345");
 
+        target.setValue("🙊🙈🙉");
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
@@ -85,6 +86,7 @@ public class DownloadButtonTagTest extends TagTestSupport<DownloadButtonTag> {
         String expected = Builder.lines(
                 "<button",
                 "name=\"🙊🙊🙊\"",
+                "value=\"🙊🙈🙉\"",
                 "onclick=\"return window.nablarch_submit(event, this);\""
                 ,"autofocus=\"autofocus\"></button>"
         ).replace(Builder.LS, " ");
