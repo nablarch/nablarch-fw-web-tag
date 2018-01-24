@@ -14,6 +14,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
 import nablarch.common.util.WebRequestUtil;
+import nablarch.common.web.WebConfigFinder;
 import nablarch.common.web.exclusivecontrol.HttpExclusiveControlUtil;
 import nablarch.common.web.hiddenencryption.HiddenEncryptionUtil;
 import nablarch.common.web.tag.ChangeParamNameTag.ChangeParamName;
@@ -23,6 +24,7 @@ import nablarch.core.log.Logger;
 import nablarch.core.log.LoggerManager;
 import nablarch.core.util.Builder;
 import nablarch.fw.web.post.PostResubmitPreventHandler;
+import nablarch.fw.web.servlet.NablarchHttpServletRequestWrapper;
 
 /**
  * サブミット制御(ボタンとアクションの紐付け、二重サブミット防止)と不正画面遷移チェックを行うformタグを出力するクラス。
@@ -335,8 +337,9 @@ public class FormTag extends GenericAttributesTagSupport {
      * @throws JspException JSP例外
      */
     private void setTokenToSessionAndFormContext(PageContext pageContext) throws JspException {
-        String token = TokenUtil.generateToken(pageContext);
-        TagUtil.getFormContext(pageContext).addHiddenTagInfo(TokenUtil.KEY_HIDDEN_TOKEN, token);
+        String name = WebConfigFinder.getWebConfig().getDoubleSubmissionTokenParameterName();
+        String token = TokenUtil.generateToken((NablarchHttpServletRequestWrapper) pageContext.getRequest());
+        TagUtil.getFormContext(pageContext).addHiddenTagInfo(name, token);
     }
     
     /**
