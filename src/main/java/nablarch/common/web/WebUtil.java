@@ -31,7 +31,9 @@ public final class WebUtil {
      * @see nablarch.core.message.MessageLevel
      * @param context 実行コンテキスト
      * @param messages メッセージ
+     * @deprecated <a href="https://nablarch.github.io/docs/LATEST/doc/application_framework/application_framework/libraries/message.html#message-level" target='_blank'>メッセージレベルの使い分け</a>を参照
      */
+    @Deprecated
     public static void notifyMessages(ExecutionContext context, Message... messages) {
 
         if (messages == null || messages.length == 0) {
