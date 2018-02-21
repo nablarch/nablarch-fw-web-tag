@@ -19,6 +19,9 @@ public class WriteTag extends CustomTagSupport {
 
     /** 出力対象の名前 */
     private String name;
+
+    /** 出力する値 */
+    private String value;
     
     /** HTMLエスケープをするか否か */
     private boolean htmlEscape = true;
@@ -50,7 +53,15 @@ public class WriteTag extends CustomTagSupport {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    /**
+     * 出力する値を設定する。
+     * @param value 出力する値
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     /**
      * HTMLエスケープをするか否かを設定する。<br>
      * デフォルトはtrue。
@@ -130,15 +141,22 @@ public class WriteTag extends CustomTagSupport {
      * format属性が指定されている場合は、name属性に対応する値をフォーマットする。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
-        Object value = TagUtil.getSingleValue(pageContext, name);
+        Object obj;
         if (value != null) {
+            obj = value;
+        } else {
+            obj = TagUtil.getSingleValue(pageContext, name);
+        }
+
+        if (obj != null) {
             if (valueFormat != null) {
-                value = TagUtil.formatValue(pageContext, name, TagUtil.createFormatSpec(valueFormat), value);
+                obj = TagUtil.formatValue(pageContext, name, TagUtil.createFormatSpec(valueFormat), obj);
             }
             String output = htmlEscape
-                          ? TagUtil.escapeHtml(value, withHtmlFormat, safeTags, safeAttributes)
-                          : StringUtil.toString(value);
+                    ? TagUtil.escapeHtml(obj, withHtmlFormat, safeTags, safeAttributes)
+                    : StringUtil.toString(obj);
             TagUtil.print(pageContext, output);
         }
         return SKIP_BODY;

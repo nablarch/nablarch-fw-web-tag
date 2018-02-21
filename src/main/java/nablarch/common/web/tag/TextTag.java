@@ -119,7 +119,15 @@ public class TextTag extends InputTagSupport {
     public void setValueFormat(String valueFormat) {
         writer.setValueFormat(valueFormat);
     }
-    
+
+    /**
+     * 出力する値を設定する。
+     * @param value 出力する値
+     */
+    public void setValue(String value) {
+        writer.setValue(value);
+    }
+
     /**
      * {@inheritDoc}
      * <pre>
@@ -136,6 +144,7 @@ public class TextTag extends InputTagSupport {
      * フォーマットが指定されている場合は、入力データを指定されたフォーマット後にHTMLエスケープして出力する。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         checkChildElementsOfForm();
         getAttributes().put(HtmlAttribute.TYPE, "text");
@@ -149,7 +158,10 @@ public class TextTag extends InputTagSupport {
      * @author Kiyohito Itoh
      */
     private static final class TextTagWriter extends SinglevaluedInputTagWriterSupport {
-        
+
+        /** 出力する値 */
+        private String value;
+
         /** 出力時のフォーマット */
         private String valueFormat;
         
@@ -157,7 +169,7 @@ public class TextTag extends InputTagSupport {
         public TextTagWriter() {
             super("input");
         }
-        
+
         /**
          * 出力時のフォーマットを設定する。
          * <pre>
@@ -186,6 +198,14 @@ public class TextTag extends InputTagSupport {
         }
 
         /**
+         * 出力する値を設定する。
+         * @param value 出力する値
+         */
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        /**
          * {@inheritDoc}
          * <pre>
          * valueFormat属性が指定されている場合はvalue属性の値をフォーマットし、
@@ -193,13 +213,19 @@ public class TextTag extends InputTagSupport {
          * </pre>
          */
         @Override
-        protected String createInputTag(PageContext pageContext, HtmlAttributes attributes, Object value) {
+        protected String createInputTag(PageContext pageContext, HtmlAttributes attributes, Object valueFromName) {
+            Object obj;
+            if (value != null) {
+                obj = value;
+            } else {
+                obj = valueFromName;
+            }
             if (valueFormat != null) {
                 String paramName = createFormatSpecParamName(attributes);
                 // valueのフォーマット
                 FormatSpec formatSpec = TagUtil.createFormatSpec(valueFormat);
-                value = TagUtil.formatValue(
-                        pageContext, attributes.<String>get(HtmlAttribute.NAME), formatSpec, value);
+                obj = TagUtil.formatValue(
+                        pageContext, attributes.<String>get(HtmlAttribute.NAME), formatSpec, obj);
                 if (pageContext.getRequest().getParameter(paramName) == null) {
                     // フォーマット仕様をhiddenに追加する。
                     // 複数回hiddenに追加されないように、リクエストパラメータに値が含まれていない時のみ追加する。
@@ -212,7 +238,7 @@ public class TextTag extends InputTagSupport {
                     attributes.put(HtmlAttribute.AUTOCOMPLETE, "off");
                 }
             }
-            return super.createInputTag(pageContext, attributes, value);
+            return super.createInputTag(pageContext, attributes, obj);
         }
 
         /**
@@ -303,12 +329,18 @@ public class TextTag extends InputTagSupport {
          * </pre>
          */
         @Override
-        protected String createOutputTag(PageContext pageContext, HtmlAttributes attributes, Object value) {
-            if (valueFormat != null) {
-                value = TagUtil.formatValue(pageContext, attributes.<String>get(HtmlAttribute.NAME),
-                                            TagUtil.createFormatSpec(valueFormat), value);
+        protected String createOutputTag(PageContext pageContext, HtmlAttributes attributes, Object valueFromName) {
+            Object obj;
+            if (value != null) {
+                obj = value;
+            } else {
+                obj = valueFromName;
             }
-            return super.createOutputTag(pageContext, attributes, value);
+            if (valueFormat != null) {
+                obj = TagUtil.formatValue(pageContext, attributes.<String>get(HtmlAttribute.NAME),
+                        TagUtil.createFormatSpec(valueFormat), obj);
+            }
+            return super.createOutputTag(pageContext, attributes, obj);
         }
     }
 

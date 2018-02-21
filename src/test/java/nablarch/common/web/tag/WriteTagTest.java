@@ -587,4 +587,17 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
         final String actual = TagTestUtil.getOutput(pageContext);
         assertThat(actual, is(""));
     }
+
+    @Test
+    public void value属性があればその値を出力すること() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("entity", new Entity("201007"));
+        target.setValue("valueAttribute");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "valueAttribute";
+        TagTestUtil.assertTag(actual, expected, " ");
+    }
 }

@@ -357,6 +357,11 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
 
 
@@ -5157,7 +5162,7 @@
     <body-content>empty</body-content>
     <attribute>
       <name>name</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
@@ -5167,6 +5172,11 @@
     </attribute>
     <attribute>
       <name>valueFormat</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>value</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
