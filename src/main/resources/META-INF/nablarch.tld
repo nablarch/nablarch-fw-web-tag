@@ -5407,4 +5407,15 @@
     <path>/META-INF/tags/table.tag</path>
   </tag-file>
 
+  <function>
+    <name>format</name>
+    <function-class>nablarch.core.text.FormatterUtil</function-class>
+    <function-signature>java.lang.String format(java.lang.String, java.lang.Object, java.lang.String)</function-signature>
+  </function>
+  <function>
+    <name>formatDefaultPattern</name>
+    <function-class>nablarch.core.text.FormatterUtil</function-class>
+    <function-signature>java.lang.String format(java.lang.String, java.lang.Object)</function-signature>
+  </function>
+
 </taglib>
