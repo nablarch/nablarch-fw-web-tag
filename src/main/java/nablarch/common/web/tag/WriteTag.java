@@ -22,7 +22,10 @@ public class WriteTag extends CustomTagSupport {
 
     /** 出力する値 */
     private String value;
-    
+
+    /** value属性の値を使用するか否か */
+    private boolean useValueAttr = false;
+
     /** HTMLエスケープをするか否か */
     private boolean htmlEscape = true;
     
@@ -59,6 +62,7 @@ public class WriteTag extends CustomTagSupport {
      * @param value 出力する値
      */
     public void setValue(String value) {
+        useValueAttr = true;
         this.value = value;
     }
 
@@ -135,7 +139,8 @@ public class WriteTag extends CustomTagSupport {
     /**
      * {@inheritDoc}
      * <pre>
-     * name属性に対応する値を出力する。
+     * name属性に対応する値もしくはvalue属性の値を出力する。
+     * name属性とvalue属性両方とも指定された場合は例外を送出する。
      * name属性に対応する値は、変数スコープのみから取得する。(リクエストパラメータは取得先に含まない)
      * name属性に対応する値が取得できない場合は何も出力しない。
      * format属性が指定されている場合は、name属性に対応する値をフォーマットする。
@@ -143,8 +148,12 @@ public class WriteTag extends CustomTagSupport {
      */
     @Override
     public int doStartTag() throws JspException {
+        if (useValueAttr && !StringUtil.isNullOrEmpty(name)) {
+            throw new IllegalArgumentException(String.format("name and value was invalid. must specify either name or value. name = [%s], value = [%s]",
+                    name, value));
+        }
         Object obj;
-        if (value != null) {
+        if (useValueAttr) {
             obj = value;
         } else {
             obj = TagUtil.getSingleValue(pageContext, name);

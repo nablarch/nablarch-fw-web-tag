@@ -125,6 +125,7 @@ public class TextTag extends InputTagSupport {
      * @param value 出力する値
      */
     public void setValue(String value) {
+        writer.setUseValueAttr(true);
         writer.setValue(value);
     }
 
@@ -161,6 +162,9 @@ public class TextTag extends InputTagSupport {
 
         /** 出力する値 */
         private String value;
+
+        /** value属性の値を使用するか否か。 */
+        private boolean useValueAttr = false;
 
         /** 出力時のフォーマット */
         private String valueFormat;
@@ -206,6 +210,14 @@ public class TextTag extends InputTagSupport {
         }
 
         /**
+         * value属性の値を使用するか否かを設定する。
+         * @param useValueAttr value属性を使用するか否か。
+         */
+        public void setUseValueAttr(boolean useValueAttr) {
+            this.useValueAttr = useValueAttr;
+        }
+
+        /**
          * {@inheritDoc}
          * <pre>
          * valueFormat属性が指定されている場合はvalue属性の値をフォーマットし、
@@ -215,7 +227,7 @@ public class TextTag extends InputTagSupport {
         @Override
         protected String createInputTag(PageContext pageContext, HtmlAttributes attributes, Object valueFromName) {
             Object obj;
-            if (value != null) {
+            if (useValueAttr) {
                 obj = value;
             } else {
                 obj = valueFromName;
@@ -331,7 +343,7 @@ public class TextTag extends InputTagSupport {
         @Override
         protected String createOutputTag(PageContext pageContext, HtmlAttributes attributes, Object valueFromName) {
             Object obj;
-            if (value != null) {
+            if (useValueAttr) {
                 obj = value;
             } else {
                 obj = valueFromName;
