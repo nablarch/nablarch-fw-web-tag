@@ -5413,7 +5413,7 @@
     <function-signature>java.lang.String format(java.lang.String, java.lang.Object, java.lang.String)</function-signature>
   </function>
   <function>
-    <name>formatDefaultPattern</name>
+    <name>formatByDefault</name>
     <function-class>nablarch.core.text.FormatterUtil</function-class>
     <function-signature>java.lang.String format(java.lang.String, java.lang.Object)</function-signature>
   </function>

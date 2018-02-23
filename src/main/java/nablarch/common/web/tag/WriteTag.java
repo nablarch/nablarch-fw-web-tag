@@ -149,7 +149,7 @@ public class WriteTag extends CustomTagSupport {
     @Override
     public int doStartTag() throws JspException {
         if (useValueAttr && !StringUtil.isNullOrEmpty(name)) {
-            throw new IllegalArgumentException(String.format("name and value was invalid. must specify either name or value. name = [%s], value = [%s]",
+            throw new IllegalArgumentException(String.format("must specify either name or value. name = [%s], value = [%s]",
                     name, value));
         }
         Object obj;
