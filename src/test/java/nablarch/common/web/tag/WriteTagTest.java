@@ -16,12 +16,18 @@ import nablarch.core.repository.SystemRepository;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author Kiyohito Itoh
  */
 public class WriteTagTest extends TagTestSupport<WriteTag> {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Before
     public void setupThreadContext() throws Exception {
         ThreadContext.setLanguage(Locale.JAPANESE);
@@ -586,5 +592,28 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
 
         final String actual = TagTestUtil.getOutput(pageContext);
         assertThat(actual, is(""));
+    }
+
+    @Test
+    public void value属性があればその値を出力すること() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("entity", new Entity("201007"));
+        target.setValue("valueAttribute");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "valueAttribute";
+        TagTestUtil.assertTag(actual, expected, " ");
+    }
+
+    @Test
+    public void name属性とvalue属性が両方指定されている場合例外が送出されること() throws Exception {
+        pageContext.getAttributes(PageContext.REQUEST_SCOPE).put("entity", new Entity("201007"));
+        target.setName("entity.bbb");
+        target.setValue("valueAttribute");
+
+        expectedException.expect(IllegalArgumentException.class);
+        target.doStartTag();
     }
 }

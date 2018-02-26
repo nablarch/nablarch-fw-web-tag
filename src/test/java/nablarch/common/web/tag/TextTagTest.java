@@ -1045,5 +1045,53 @@ public class TextTagTest extends TagTestSupport<TextTag> {
             assertThat(e.getMessage(), is("invalid location of the text tag. the text tag must locate in the form tag."));
         }
     }
-    
+
+    @Test
+    public void 入力表示時にカスタムタグのvalue属性に値が設定された場合その値が表示されること() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[]{"value_test"});
+
+        // input
+        target.setName("name_test");
+        target.setValue("customTagValueAttribute");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<input",
+                "type=\"text\"",
+                "name=\"name_test\"",
+                "value=\"customTagValueAttribute\"",
+                "/>").replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertTrue(formContext.getInputNames().contains("name_test"));
+    }
+
+    @Test
+    public void 確認表示時にカスタムタグのvalue属性に値が設定された場合その値が表示されること() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        pageContext.getMockReq().getParams().put("name_test", new String[]{"value_test"});
+
+        TagUtil.setConfirmationPage(pageContext);
+
+        // input
+        target.setName("name_test");
+        target.setValue("customTagValueAttribute");
+
+        assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = "customTagValueAttribute";
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+    }
 }
