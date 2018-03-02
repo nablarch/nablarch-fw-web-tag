@@ -31,11 +31,11 @@ import nablarch.fw.web.HttpRequest;
  *
  * 本クラスは、画面処理に依存しない楽観的ロック機能の処理を{@link ExclusiveControlUtil}に委譲する。
  * 
+ * {@link nablarch.common.dao.UniversalDao UniversalDao}を使用する場合には、
+ * このクラスではなく{@link nablarch.common.dao.UniversalDao UniversalDao}を使用して排他制御を行うこと。
+ * 
  * @author Kiyohito Itoh
- * @deprecated 本クラスはNablarchバージョン5以降では非推奨となっている。
- * バージョン5以降で排他制御機能を利用する場合には、{@link nablarch.common.dao.UniversalDao}を利用すること。
  */
-@Deprecated
 @Published
 public final class HttpExclusiveControlUtil {
 
