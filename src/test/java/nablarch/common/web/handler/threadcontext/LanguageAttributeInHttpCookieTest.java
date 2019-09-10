@@ -2,6 +2,7 @@ package nablarch.common.web.handler.threadcontext;
 
 import nablarch.common.handler.threadcontext.ThreadContextHandler;
 import nablarch.core.ThreadContext;
+import nablarch.core.exception.IllegalConfigurationException;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.repository.di.DiContainer;
 import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
@@ -33,6 +34,8 @@ import static org.junit.matchers.JUnitMatchers.containsString;
  * @author Kiyohito Itoh
  */
 public class LanguageAttributeInHttpCookieTest {
+
+    private static final String HTTP_SERVER_FACTORY_KEY = "httpServerFactory";
 
     @BeforeClass
     public static void setUpClass() {
@@ -308,7 +311,7 @@ public class LanguageAttributeInHttpCookieTest {
         setUpRepository("nablarch/common/web/handler/threadcontext/cookie_secure.xml");
         HttpServer server = createServer();
         HttpResponse res = server.startLocal()
-                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), null);
+                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), new ExecutionContext());
 
         // HttpCookie#valueOf(String)がおかしいのでtoStringしてアサート
         assertThat("Cookieにsecure属性が付与されていること",
@@ -322,7 +325,7 @@ public class LanguageAttributeInHttpCookieTest {
     public void testSecureCookieFalse() {
         HttpServer server = createServer();
         HttpResponse res = server.startLocal()
-                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), null);
+                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), new ExecutionContext());
                 // HttpCookie#valueOf(String)がおかしいのでtoStringしてアサート
         assertThat(res.toString(), containsString(
                 "Set-Cookie: cookieNameTest=ja;Path=/"));
@@ -338,7 +341,11 @@ public class LanguageAttributeInHttpCookieTest {
      * @return クッキーの設定を行うHttpServer
      */
     private HttpServer createServer() {
-        return new HttpServer().setHandlerQueue(Arrays.asList(
+        HttpServerFactory factory = SystemRepository.get(HTTP_SERVER_FACTORY_KEY);
+        if (factory == null) {
+            throw new IllegalConfigurationException("could not find component. name=[" + HTTP_SERVER_FACTORY_KEY + "].");
+        }
+        return factory.create().setHandlerQueue(Arrays.asList(
                 new HttpResponseHandler(),
                 new HttpRequestHandler() {
                     public HttpResponse handle(HttpRequest req, ExecutionContext ctx) {

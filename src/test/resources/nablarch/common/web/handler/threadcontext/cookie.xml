@@ -6,7 +6,10 @@
     xmlns="http://tis.co.jp/nablarch/component-configuration"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration  ../../component-configuration.xsd">
-  
+
+  <!-- JDKごとにテストで使用するjettyのバージョンの変更 -->
+  <import file="jetty-config.xml"/>
+
   <component name="languageAttribute"
              class="nablarch.common.web.handler.threadcontext.LanguageAttributeInHttpCookie">
     <property name="defaultLanguage" value="es" />
