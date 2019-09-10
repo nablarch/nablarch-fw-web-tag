@@ -362,13 +362,13 @@ public class TagUtilTest {
 
         value = "2011/09/28";
         pageContext = new MockPageContext();
-        pageContext.getRequest().getParameterMap().put(name, value);
+        pageContext.getRequest().getParameterMap().put(name, new String[] { value });
         assertThat(TagUtil.formatValue(pageContext, name, spec("dateString{yyyy/MM/dd}"), value), is("2011/09/28"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{yyyy/MM/dd}"), value), is("2011/09/28"));
 
         value = "09/28/2011";
         pageContext = new MockPageContext();
-        pageContext.getRequest().getParameterMap().put(name, value);
+        pageContext.getRequest().getParameterMap().put(name, new String[] { value });
         assertThat(TagUtil.formatValue(pageContext, name, spec("dateString{MM/dd/yyyy}"), value), is("09/28/2011"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{MM/dd/yyyy}"), value), is("09/28/2011"));
 
@@ -377,13 +377,13 @@ public class TagUtilTest {
 
         value = "20110928";
         pageContext = new MockPageContext();
-        pageContext.getRequest().getParameterMap().put(name, value);
+        pageContext.getRequest().getParameterMap().put(name, new String[] { value });
         assertThat(TagUtil.formatValue(pageContext, name, spec("dateString{yyyy/MM/dd}"), value), is("2011/09/28"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{yyyy/MM/dd}"), value), is("2011/09/28"));
 
         value = "09282011";
         pageContext = new MockPageContext();
-        pageContext.getRequest().getParameterMap().put(name, value);
+        pageContext.getRequest().getParameterMap().put(name, new String[] { value });
         assertThat(TagUtil.formatValue(pageContext, name, spec("dateString{MM/dd/yyyy}"), value), is("09/28/2011"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{MM/dd/yyyy}"), value), is("09/28/2011"));
 
@@ -391,7 +391,7 @@ public class TagUtilTest {
         // リクエストパラメータとリクエストスコープで名前が重複した場合
 
         pageContext = new MockPageContext();
-        pageContext.getRequest().getParameterMap().put(name, "01312012");
+        pageContext.getRequest().getParameterMap().put(name, new String[] { "01312012" });
         pageContext.setAttribute(name, "20120131", PageContext.REQUEST_SCOPE);
         assertThat(TagUtil.formatValue(pageContext, name, spec("dateString{MM/dd/yyyy}"), "20120131"), is("01/31/2012"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{MM/dd/yyyy}"), "20120131"), is("01/31/2012"));
