@@ -20,8 +20,6 @@
     <version>5u15-SNAPSHOT</version>
   </parent>
 
-
-
   <profiles>
     <profile>
       <!-- Java11以外ではテストにjetty6を使用する。 -->
@@ -95,7 +93,6 @@
         </plugins>
       </build>
     </profile>
-
   </profiles>
 
   <dependencies>
@@ -162,10 +159,16 @@
     </dependency>
   </dependencies>
   <build>
-    <resources>
-      <resource>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/java</directory>
+      </testResource>
+      <testResource>
         <directory>${env.resources}</directory>
-      </resource>
-    </resources>
+      </testResource>
+    </testResources>
   </build>
 </project>
