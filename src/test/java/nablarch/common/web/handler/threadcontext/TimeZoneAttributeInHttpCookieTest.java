@@ -313,10 +313,11 @@ public class TimeZoneAttributeInHttpCookieTest {
                                  .handle(new MockHttpRequest("GET / HTTP/1.1"), new ExecutionContext());
 
         // HttpCookie#valueOf(String)がおかしいのでtoStringしてアサート
+        // Jetty9にてSet-Cookieの各ディレクティブの間に半角スペースが入るようになったため削除してからアサート
         assertThat("Cookieにsecure属性が付与されていること",
-                   res.toString(),
+                   res.toString().replaceAll(" ", ""),
                    containsString(
-                           "Set-Cookie: nablarch_timeZone=Asia/Tokyo;Path=/;Secure"));
+                           "Set-Cookie:nablarch_timeZone=Asia/Tokyo;Path=/;Secure"));
     }
 
     /** Cookieにsecure属性を付与する設定でない場合、Cookieにsecure属性が設定されないこと */
@@ -326,8 +327,9 @@ public class TimeZoneAttributeInHttpCookieTest {
         HttpResponse res = server.startLocal()
                                  .handle(new MockHttpRequest("GET / HTTP/1.1"), new ExecutionContext());
         // HttpCookie#valueOf(String)がおかしいのでtoStringしてアサート
-        assertThat(res.toString(), containsString(
-                "Set-Cookie: cookieNameTest=Asia/Tokyo;Path=/"));
+        // Jetty9にてSet-Cookieの各ディレクティブの間に半角スペースが入るようになったため削除してからアサート
+        assertThat(res.toString().replaceAll(" ", ""), containsString(
+                "Set-Cookie:cookieNameTest=Asia/Tokyo;Path=/"));
 
         assertThat("Secure属性が付与されていないこと",
                    res.toString(),
