@@ -3,12 +3,14 @@ package nablarch.common.web.tag;
 
 import nablarch.core.util.annotation.Published;
 
+import javax.servlet.jsp.tagext.DynamicAttributes;
+
 /**
  * HTMLのタグを出力するクラスの実装をサポートするクラス。
  * @author Kiyohito Itoh
  */
 @Published(tag = "architect")
-public abstract class HtmlTagSupport extends CustomTagSupport {
+public abstract class HtmlTagSupport extends CustomTagSupport implements DynamicAttributes {
     
     /** HTMLの属性 */
     private HtmlAttributes attributes = new HtmlAttributes();
@@ -19,6 +21,11 @@ public abstract class HtmlTagSupport extends CustomTagSupport {
      */
     protected HtmlAttributes getAttributes() {
         return attributes;
+    }
+
+    @Override
+    public void setDynamicAttribute(String uri, String localName, Object value) {
+        attributes.put(localName, value);
     }
     
     /**

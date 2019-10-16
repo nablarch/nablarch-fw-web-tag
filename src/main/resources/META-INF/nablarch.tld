@@ -181,6 +181,7 @@
     <name>text</name>
     <tag-class>nablarch.common.web.tag.TextTag</tag-class>
     <body-content>empty</body-content>
+    <dynamic-attributes>true</dynamic-attributes>
     <!-- generic attributes -->
     <attribute>
       <name>id</name>
