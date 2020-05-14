@@ -2032,6 +2032,12 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         target.setAcceptCharset("acceptCharset_test");
         target.setTarget("target_test");
 
+        // GETリクエストの場合にCSRFトークンが出力されないことを確認するため、
+        // リクエスト属性にCSRFトークンを設定する。
+        WebConfig webConfig = WebConfigFinder.getWebConfig();
+        MockServletRequest request = pageContext.getMockReq();
+        request.getAttributesMap().put(webConfig.getCsrfTokenSessionStoredVarName(), "csrf-token-test");
+
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
