@@ -339,9 +339,8 @@ public class FormTag extends GenericAttributesTagSupport {
     /**
      * CSRFトークンがリクエスト属性に存在すればフォームコンテキストに設定する。
      * @param pageContext ページコンテキスト
-     * @throws JspException JSP例外
      */
-    private void setCsrfTokenToFormContext(PageContext pageContext) throws JspException {
+    private void setCsrfTokenToFormContext(PageContext pageContext) {
         WebConfig config = WebConfigFinder.getWebConfig();
         Object csrfToken = pageContext.getRequest().getAttribute(config.getCsrfTokenSessionStoredVarName());
         if (csrfToken != null) {
