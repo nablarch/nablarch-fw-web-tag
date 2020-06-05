@@ -15,6 +15,8 @@ import java.util.Map;
 
 import javax.servlet.jsp.tagext.Tag;
 
+import nablarch.common.web.WebConfig;
+import nablarch.common.web.WebConfigFinder;
 import nablarch.common.web.handler.MockPageContext;
 import nablarch.common.web.handler.WebTestUtil;
 import nablarch.common.web.hiddenencryption.HiddenEncryptionUtil;
@@ -22,6 +24,7 @@ import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 import nablarch.core.util.Builder;
 import nablarch.fw.web.handler.KeitaiAccessHandler;
 
+import nablarch.test.support.web.servlet.MockServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -2029,6 +2032,12 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         target.setAcceptCharset("acceptCharset_test");
         target.setTarget("target_test");
 
+        // GETリクエストの場合にCSRFトークンが出力されないことを確認するため、
+        // リクエスト属性にCSRFトークンを設定する。
+        WebConfig webConfig = WebConfigFinder.getWebConfig();
+        MockServletRequest request = pageContext.getMockReq();
+        request.getAttributesMap().put(webConfig.getCsrfTokenSessionStoredVarName(), "csrf-token-test");
+
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
@@ -2266,5 +2275,50 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         // テストコードでリクエストパラメータのnullが空文字に置き変わっていることをassert出来ない。
         // そのため、doEndTag()が正常に終了することで問題ないことを確認する。
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+    }
+
+    /**
+     * CSRFトークンがリクエストスコープに格納されている場合は、CSRFトークンがhiddenタグに出力されること。
+     */
+    @Test
+    public void testInputPageForDefaultWithCsrfToken() throws Exception {
+
+        WebConfig webConfig = WebConfigFinder.getWebConfig();
+        MockServletRequest request = pageContext.getMockReq();
+        request.getAttributesMap().put(webConfig.getCsrfTokenSessionStoredVarName(), "csrf-token-test");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String[] splitActual = actual.split(TagUtil.getCustomTagConfig().getLineSeparator());
+        String[] splitExpected = Builder.lines(
+                "",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                SUBMIT_FUNCTION,
+                "-->",
+                "</script>",
+                Builder.lines(
+                        "<form",
+                        "name=\"nablarch_form1\"",
+                        "method=\"post\">").replace(Builder.LS, " "),
+                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"csrf-token=csrf-token-test\" />",
+                "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                SUBMISSION_INFO_VAR + ".nablarch_form1 = {",
+                "};",
+                "-->",
+                "</script>",
+                "</form>",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
+                "-->",
+                "</script>").split(Builder.LS);;
+        for (int i = 0; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
+        }
     }
 }

@@ -14,6 +14,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
 import nablarch.common.util.WebRequestUtil;
+import nablarch.common.web.WebConfig;
 import nablarch.common.web.WebConfigFinder;
 import nablarch.common.web.exclusivecontrol.HttpExclusiveControlUtil;
 import nablarch.common.web.hiddenencryption.HiddenEncryptionUtil;
@@ -241,7 +242,9 @@ public class FormTag extends GenericAttributesTagSupport {
      * サブミット制御のJavaScriptの出力が完了する前にサブミットされることを防ぐため、
      * サブミット制御のJavaScriptの出力が完了したことを示すマーカを閉じタグの直後に出力する。
      * ここで出力したマーカをサブミット関数が参照し、サブミット可否の判定に使用する。
-     * 
+     *
+     * CSRFトークンがリクエスト属性に存在すればhiddenタグに追加する。
+     *
      * 楽観的ロックで使用するバージョン番号をhiddenタグに追加する。
      * 
      * ウィンドウスコープ変数のプレフィックスが指定されている場合は、リクエストパラメータからhiddenタグを出力する。
@@ -265,7 +268,9 @@ public class FormTag extends GenericAttributesTagSupport {
             outputCloseTag();
             return EVAL_PAGE;
         }
-        
+
+        setCsrfTokenToFormContext(pageContext);
+
         boolean printToken = useToken != null ? useToken : TagUtil.isConfirmationPage(pageContext);
         if (printToken) {
             setTokenToSessionAndFormContext(pageContext);
@@ -330,7 +335,20 @@ public class FormTag extends GenericAttributesTagSupport {
             formContext.addHiddenTagInfo(HttpExclusiveControlUtil.VERSION_PARAM_NAME, version);
         }
     }
-    
+
+    /**
+     * CSRFトークンがリクエスト属性に存在すればフォームコンテキストに設定する。
+     * @param pageContext ページコンテキスト
+     */
+    private void setCsrfTokenToFormContext(PageContext pageContext) {
+        WebConfig config = WebConfigFinder.getWebConfig();
+        Object csrfToken = pageContext.getRequest().getAttribute(config.getCsrfTokenSessionStoredVarName());
+        if (csrfToken != null) {
+            TagUtil.getFormContext(pageContext)
+                    .addHiddenTagInfo(config.getCsrfTokenParameterName(), csrfToken.toString());
+        }
+    }
+
     /**
      * トークンを生成し、セッションスコープとフォームコンテキストに設定する。
      * @param pageContext ページコンテキスト

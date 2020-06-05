@@ -2,6 +2,7 @@ package nablarch.common.web.handler.threadcontext;
 
 import nablarch.common.handler.threadcontext.ThreadContextHandler;
 import nablarch.core.ThreadContext;
+import nablarch.core.exception.IllegalConfigurationException;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.repository.di.DiContainer;
 import nablarch.core.repository.di.config.xml.XmlComponentDefinitionLoader;
@@ -33,6 +34,8 @@ import static org.junit.matchers.JUnitMatchers.containsString;
  * @author Kiyohito Itoh
  */
 public class TimeZoneAttributeInHttpCookieTest {
+
+    private static final String HTTP_SERVER_FACTORY_KEY = "httpServerFactory";
 
     @BeforeClass
     public static void setUpClass() {
@@ -307,13 +310,14 @@ public class TimeZoneAttributeInHttpCookieTest {
         setUpRepository("nablarch/common/web/handler/threadcontext/cookie_secure.xml");
         HttpServer server = createServer();
         HttpResponse res = server.startLocal()
-                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), null);
+                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), new ExecutionContext());
 
         // HttpCookie#valueOf(String)がおかしいのでtoStringしてアサート
+        // Jetty9にてSet-Cookieの各ディレクティブの間に半角スペースが入るようになったため削除してからアサート
         assertThat("Cookieにsecure属性が付与されていること",
-                   res.toString(),
+                   res.toString().replaceAll(" ", ""),
                    containsString(
-                           "Set-Cookie: nablarch_timeZone=Asia/Tokyo;Path=/;Secure"));
+                           "Set-Cookie:nablarch_timeZone=Asia/Tokyo;Path=/;Secure"));
     }
 
     /** Cookieにsecure属性を付与する設定でない場合、Cookieにsecure属性が設定されないこと */
@@ -321,10 +325,11 @@ public class TimeZoneAttributeInHttpCookieTest {
     public void testSecureCookieFalse() {
         HttpServer server = createServer();
         HttpResponse res = server.startLocal()
-                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), null);
+                                 .handle(new MockHttpRequest("GET / HTTP/1.1"), new ExecutionContext());
         // HttpCookie#valueOf(String)がおかしいのでtoStringしてアサート
-        assertThat(res.toString(), containsString(
-                "Set-Cookie: cookieNameTest=Asia/Tokyo;Path=/"));
+        // Jetty9にてSet-Cookieの各ディレクティブの間に半角スペースが入るようになったため削除してからアサート
+        assertThat(res.toString().replaceAll(" ", ""), containsString(
+                "Set-Cookie:cookieNameTest=Asia/Tokyo;Path=/"));
 
         assertThat("Secure属性が付与されていないこと",
                    res.toString(),
@@ -336,7 +341,11 @@ public class TimeZoneAttributeInHttpCookieTest {
      * @return クッキーの設定を行うHttpServer
      */
     private HttpServer createServer() {
-        return new HttpServer().setHandlerQueue(Arrays.asList(
+        HttpServerFactory factory = SystemRepository.get(HTTP_SERVER_FACTORY_KEY);
+        if (factory == null) {
+            throw new IllegalConfigurationException("could not find component. name=[" + HTTP_SERVER_FACTORY_KEY + "].");
+        }
+        return factory.create().setHandlerQueue(Arrays.asList(
                 new HttpResponseHandler(),
                 new HttpRequestHandler() {
                     public HttpResponse handle(HttpRequest req, ExecutionContext ctx) {
