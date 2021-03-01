@@ -25,6 +25,9 @@ public class HtmlAttributes {
     /** 属性を保持するマップ */
     private Map<HtmlAttribute, Object> attributes = new HashMap<HtmlAttribute, Object>();
 
+    /** 動的属性を保持するマップ */
+    private Map<String, Object> dynamicAttributes = new HashMap<String, Object>();
+
     /**
      * 属性を設定する。<br>
      * <br>
@@ -38,6 +41,18 @@ public class HtmlAttributes {
     }
 
     /**
+     * 動的属性を設定する。<br>
+     * <br>
+     * 既に存在する場合は上書き。
+     *
+     * @param attribute 動的属性の名前
+     * @param value 動的属性の値
+     */
+    public void putDynamicAttribute(String attribute, Object value) {
+        dynamicAttributes.put(attribute, value);
+    }
+
+    /**
      * 属性を設定する。<br>
      * <br>
      * 既に存在する場合は上書き。
@@ -46,6 +61,7 @@ public class HtmlAttributes {
      */
     public void putAll(HtmlAttributes other) {
         attributes.putAll(other.attributes);
+        dynamicAttributes.putAll(other.dynamicAttributes);
     }
 
     /**
@@ -74,6 +90,7 @@ public class HtmlAttributes {
      */
     public void clear() {
         attributes.clear();
+        dynamicAttributes.clear();
     }
 
     /**
@@ -81,7 +98,7 @@ public class HtmlAttributes {
      * @return 空の場合はtrue
      */
     public boolean isEmpty() {
-        return attributes.isEmpty();
+        return attributes.isEmpty() && dynamicAttributes.isEmpty();
     }
 
     /**
@@ -99,10 +116,10 @@ public class HtmlAttributes {
      * @return XHTMLタグの属性に指定できる形式の文字列
      */
     public String toHTML(String tagName) {
-        if (attributes.isEmpty()) {
+        if (isEmpty()) {
             return "";
         }
-        StringBuilder sb = new StringBuilder(attributes.size() * 20);
+        StringBuilder sb = new StringBuilder((attributes.size() + dynamicAttributes.size()) * 20);
         for (HtmlAttribute attr : HtmlAttribute.values()) {
             if (!attributes.containsKey(attr)) {
                 continue;
@@ -128,6 +145,13 @@ public class HtmlAttributes {
                 escapeValue = TagUtil.addStaticContentVersion(escapeValue);
             }
             sb.append(String.format("%s=\"%s\"", attr.getXHtmlName(), escapeValue));
+        }
+        for (Map.Entry<String, Object> dynamicAttribute : dynamicAttributes.entrySet()) {
+            if (sb.length() != 0) {
+                sb.append(' ');
+            }
+            String escapeValue = TagUtil.escapeHtml(dynamicAttribute.getValue(), false);
+            sb.append(String.format("%s=\"%s\"", dynamicAttribute.getKey(), escapeValue));
         }
         return sb.toString();
     }

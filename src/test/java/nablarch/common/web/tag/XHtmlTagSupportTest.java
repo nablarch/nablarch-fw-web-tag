@@ -37,6 +37,7 @@ public class XHtmlTagSupportTest {
         assertTrue(tag.getAttributes().toHTML("input").length() == 0);
         
         tag.setId("id_test");
+        tag.setDynamicAttribute(null, "dyna-name", "dyna-value");
         assertTrue(tag.getAttributes().toHTML("input").length() != 0);
         
         tag.doFinally();

@@ -46,4 +46,29 @@ public class XHtmlAttributesTest {
         
         assertThat(attributes.toHTML("input"), is("class=\"class_test\" name=\"name_test\" src=\"image.png?nablarch_static_content_version=&lt;1.0&gt;\""));
     }
+
+    @Test
+    public void testToHTMLWithDynamicAttribute() throws UnsupportedEncodingException {
+
+        HtmlAttributes attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, "name_test");
+        attributes.put(HtmlAttribute.CLASS, "class_test");
+        attributes.put(HtmlAttribute.TYPE, null);
+        attributes.put(HtmlAttribute.SRC, "image.png");
+
+        attributes.putDynamicAttribute("dyna-name", "dyna-value");
+
+        assertThat(attributes.toHTML("input"), is("class=\"class_test\" name=\"name_test\" src=\"image.png?nablarch_static_content_version=&lt;1.0&gt;\" dyna-name=\"dyna-value\""));
+    }
+
+    @Test
+    public void testToHTMLWithDynamicAttributeOnly() throws UnsupportedEncodingException {
+
+        HtmlAttributes attributes = new HtmlAttributes();
+
+        attributes.putDynamicAttribute("dyna-name", "dyna-value");
+        attributes.putDynamicAttribute("dyna-name2", "dyna-value2");
+
+        assertThat(attributes.toHTML("input"), is("dyna-name=\"dyna-value\" dyna-name2=\"dyna-value2\""));
+    }
 }
