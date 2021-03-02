@@ -1,8 +1,11 @@
 package nablarch.common.web.tag;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import nablarch.core.repository.ObjectLoader;
 import nablarch.core.repository.SystemRepository;
@@ -70,5 +73,55 @@ public class XHtmlAttributesTest {
         attributes.putDynamicAttribute("dyna-name2", "dyna-value2");
 
         assertThat(attributes.toHTML("input"), is("dyna-name=\"dyna-value\" dyna-name2=\"dyna-value2\""));
+    }
+
+    @Test
+    public void testToHTMLWithBooleanAttribute() throws UnsupportedEncodingException {
+
+        HtmlAttributes attributes = new HtmlAttributes();
+
+        attributes.putDynamicAttribute("dyna-name", "dyna-value");
+        attributes.putDynamicAttribute("dyna-name2", "dyna-value2");
+        attributes.putDynamicAttribute("async", Boolean.TRUE);
+
+        assertThat(attributes.toHTML("input"), is("dyna-name=\"dyna-value\" dyna-name2=\"dyna-value2\" async=\"async\""));
+
+        attributes = new HtmlAttributes();
+
+        attributes.putDynamicAttribute("dyna-name", "dyna-value");
+        attributes.putDynamicAttribute("dyna-name2", "dyna-value2");
+        attributes.putDynamicAttribute("async", Boolean.FALSE);
+
+        assertThat(attributes.toHTML("input"), is("dyna-name=\"dyna-value\" dyna-name2=\"dyna-value2\""));
+    }
+
+    @Test
+    public void testToHTMLWithCustomBooleanAttribute() throws UnsupportedEncodingException {
+
+        Set<String> current = TagUtil.getCustomTagConfig().getDynamitBooleanAttributes();
+
+        TagUtil.getCustomTagConfig().setDynamitBooleanAttributes(
+                Arrays.asList("bool-test")
+        );
+
+        HtmlAttributes attributes = new HtmlAttributes();
+
+        attributes.putDynamicAttribute("dyna-name", "dyna-value");
+        attributes.putDynamicAttribute("dyna-name2", "dyna-value2");
+        attributes.putDynamicAttribute("async", Boolean.TRUE);
+        attributes.putDynamicAttribute("bool-test", Boolean.TRUE);
+
+        assertThat(attributes.toHTML("input"), is("dyna-name=\"dyna-value\" dyna-name2=\"dyna-value2\" async=\"true\" bool-test=\"bool-test\""));
+
+        attributes = new HtmlAttributes();
+
+        attributes.putDynamicAttribute("dyna-name", "dyna-value");
+        attributes.putDynamicAttribute("dyna-name2", "dyna-value2");
+        attributes.putDynamicAttribute("async", Boolean.FALSE);
+        attributes.putDynamicAttribute("bool-test", Boolean.FALSE);
+
+        assertThat(attributes.toHTML("input"), is("dyna-name=\"dyna-value\" dyna-name2=\"dyna-value2\" async=\"false\""));
+
+        TagUtil.getCustomTagConfig().setDynamitBooleanAttributes(new ArrayList<String>(current));
     }
 }

@@ -1,8 +1,11 @@
 package nablarch.common.web.tag;
 
+import nablarch.core.util.StringUtil;
 import nablarch.core.util.annotation.Published;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +29,16 @@ public class HtmlAttributes {
     private Map<HtmlAttribute, Object> attributes = new HashMap<HtmlAttribute, Object>();
 
     /** 動的属性を保持するマップ */
-    private Map<String, Object> dynamicAttributes = new HashMap<String, Object>();
+    private List<DynamicAttribute> dynamicAttributes = new ArrayList<DynamicAttribute>();
+
+    private final class DynamicAttribute {
+        private String name;
+        private Object value;
+        private DynamicAttribute(String name, Object value) {
+            this.name = name;
+            this.value = value;
+        }
+    }
 
     /**
      * 属性を設定する。<br>
@@ -49,7 +61,7 @@ public class HtmlAttributes {
      * @param value 動的属性の値
      */
     public void putDynamicAttribute(String attribute, Object value) {
-        dynamicAttributes.put(attribute, value);
+        dynamicAttributes.add(new DynamicAttribute(attribute, value));
     }
 
     /**
@@ -61,7 +73,7 @@ public class HtmlAttributes {
      */
     public void putAll(HtmlAttributes other) {
         attributes.putAll(other.attributes);
-        dynamicAttributes.putAll(other.dynamicAttributes);
+        dynamicAttributes.addAll(other.dynamicAttributes);
     }
 
     /**
@@ -146,12 +158,22 @@ public class HtmlAttributes {
             }
             sb.append(String.format("%s=\"%s\"", attr.getXHtmlName(), escapeValue));
         }
-        for (Map.Entry<String, Object> dynamicAttribute : dynamicAttributes.entrySet()) {
+        CustomTagConfig config = TagUtil.getCustomTagConfig();
+        for (DynamicAttribute dynamicAttribute : dynamicAttributes) {
+            String name = dynamicAttribute.name;
+            Object value = dynamicAttribute.value;
+            if (config.getDynamitBooleanAttributes().contains(name)) {
+                if (Boolean.parseBoolean(StringUtil.toString(value))) {
+                    value = name;
+                } else {
+                    continue;
+                }
+            }
             if (sb.length() != 0) {
                 sb.append(' ');
             }
-            String escapeValue = TagUtil.escapeHtml(dynamicAttribute.getValue(), false);
-            sb.append(String.format("%s=\"%s\"", dynamicAttribute.getKey(), escapeValue));
+            String escapeValue = TagUtil.escapeHtml(value, false);
+            sb.append(String.format("%s=\"%s\"", name, escapeValue));
         }
         return sb.toString();
     }
