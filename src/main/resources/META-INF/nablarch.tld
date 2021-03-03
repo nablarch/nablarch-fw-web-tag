@@ -489,32 +489,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -523,11 +497,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -677,32 +646,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -711,11 +654,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -865,32 +803,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -899,11 +811,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1053,32 +960,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -1087,11 +968,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1241,32 +1117,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -1275,11 +1125,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1429,32 +1274,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -1463,11 +1282,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1617,32 +1431,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -1651,11 +1439,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1805,32 +1588,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -1839,11 +1596,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -1993,32 +1745,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -2027,11 +1753,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -2181,32 +1902,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -2215,11 +1910,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -2369,32 +2059,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -2403,11 +2067,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
@@ -2557,32 +2216,6 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <!-- type:text -->
-    <attribute>
-      <name>readonly</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>size</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>maxlength</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onselect</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>onchange</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
     <!-- HTML5 -->
     <attribute>
       <name>autocomplete</name>
@@ -2591,11 +2224,6 @@
     </attribute>
     <attribute>
       <name>autofocus</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>placeholder</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
