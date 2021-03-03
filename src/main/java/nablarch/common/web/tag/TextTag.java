@@ -148,12 +148,20 @@ public class TextTag extends InputTagSupport {
     @Override
     public int doStartTag() throws JspException {
         checkChildElementsOfForm();
-        getAttributes().put(HtmlAttribute.TYPE, "text");
+        getAttributes().put(HtmlAttribute.TYPE, getTypeValue());
         writer.writeTag(pageContext, getAttributes());
         TagUtil.setNameToFormContext(pageContext, getAttributes());
         return SKIP_BODY;
     }
-    
+
+    /**
+     * type属性の値を取得する。
+     * @return type属性の値
+     */
+    protected String getTypeValue() {
+        return getTagName();
+    }
+
     /**
      * textタグを出力するクラスの実装をサポートするクラス。
      * @author Kiyohito Itoh
