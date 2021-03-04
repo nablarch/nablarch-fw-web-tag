@@ -259,7 +259,7 @@ public class CustomTagConfig {
     private String popupOption = null;
 
     /** 動的属性でBooleanとして扱う属性 */
-    private Set<String> dynamitBooleanAttributes = new HashSet<String>(
+    private Set<String> dynamicBooleanAttributes = new HashSet<String>(
             Arrays.asList(new String[] {
                     "async",
                     "autofocus",
@@ -1945,15 +1945,15 @@ public class CustomTagConfig {
      * 動的属性でBooleanとして扱う属性を取得する。
      * @return 動的属性でBooleanとして扱う属性
      */
-    public Set<String> getDynamitBooleanAttributes() {
-        return dynamitBooleanAttributes;
+    public Set<String> getDynamicBooleanAttributes() {
+        return dynamicBooleanAttributes;
     }
 
     /**
      * 動的属性でBooleanとして扱う属性を設定する。
-     * @param dynamitBooleanAttributes 動的属性でBooleanとして扱う属性
+     * @param dynamicBooleanAttributes 動的属性でBooleanとして扱う属性
      */
-    public void setDynamitBooleanAttributes(List<String> dynamitBooleanAttributes) {
-        this.dynamitBooleanAttributes = new HashSet<String>(dynamitBooleanAttributes);
+    public void setDynamicBooleanAttributes(List<String> dynamicBooleanAttributes) {
+        this.dynamicBooleanAttributes = new HashSet<String>(dynamicBooleanAttributes);
     }
 }

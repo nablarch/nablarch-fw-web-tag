@@ -98,9 +98,9 @@ public class XHtmlAttributesTest {
     @Test
     public void testToHTMLWithCustomBooleanAttribute() throws UnsupportedEncodingException {
 
-        Set<String> current = TagUtil.getCustomTagConfig().getDynamitBooleanAttributes();
+        Set<String> current = TagUtil.getCustomTagConfig().getDynamicBooleanAttributes();
 
-        TagUtil.getCustomTagConfig().setDynamitBooleanAttributes(
+        TagUtil.getCustomTagConfig().setDynamicBooleanAttributes(
                 Arrays.asList("bool-test")
         );
 
@@ -122,6 +122,6 @@ public class XHtmlAttributesTest {
 
         assertThat(attributes.toHTML("input"), is("dyna-name=\"dyna-value\" dyna-name2=\"dyna-value2\" async=\"false\""));
 
-        TagUtil.getCustomTagConfig().setDynamitBooleanAttributes(new ArrayList<String>(current));
+        TagUtil.getCustomTagConfig().setDynamicBooleanAttributes(new ArrayList<String>(current));
     }
 }

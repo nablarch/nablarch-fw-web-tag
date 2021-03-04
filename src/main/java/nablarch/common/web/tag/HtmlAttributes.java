@@ -162,7 +162,7 @@ public class HtmlAttributes {
         for (DynamicAttribute dynamicAttribute : dynamicAttributes) {
             String name = dynamicAttribute.name;
             Object value = dynamicAttribute.value;
-            if (config.getDynamitBooleanAttributes().contains(name)) {
+            if (config.getDynamicBooleanAttributes().contains(name)) {
                 if (Boolean.parseBoolean(StringUtil.toString(value))) {
                     value = name;
                 } else {
