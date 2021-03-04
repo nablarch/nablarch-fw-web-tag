@@ -1,5 +1,6 @@
 package nablarch.common.web.tag;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -256,6 +257,27 @@ public class CustomTagConfig {
 
     /** ポップアップのオプション情報 */
     private String popupOption = null;
+
+    /** 動的属性でBooleanとして扱う属性 */
+    private Set<String> dynamicBooleanAttributes = new HashSet<String>(
+            Arrays.asList(
+                    "async",
+                    "autofocus",
+                    "checked",
+                    "disabled",
+                    "formnovalidate",
+                    "hidden",
+                    "ismap",
+                    "itemscope",
+                    "multiple",
+                    "nomodule",
+                    "novalidate",
+                    "readonly",
+                    "required",
+                    "reversed",
+                    "selected"
+            )
+    );
 
     /**
      * 言語対応のリソースパスを取得する際に使用する{@link ResourcePathRule}。
@@ -1917,5 +1939,21 @@ public class CustomTagConfig {
      */
     public void setUseGetRequest(boolean useGetRequest) {
         this.useGetRequest = useGetRequest;
+    }
+
+    /**
+     * 動的属性でBooleanとして扱う属性を取得する。
+     * @return 動的属性でBooleanとして扱う属性
+     */
+    public Set<String> getDynamicBooleanAttributes() {
+        return dynamicBooleanAttributes;
+    }
+
+    /**
+     * 動的属性でBooleanとして扱う属性を設定する。
+     * @param dynamicBooleanAttributes 動的属性でBooleanとして扱う属性
+     */
+    public void setDynamicBooleanAttributes(List<String> dynamicBooleanAttributes) {
+        this.dynamicBooleanAttributes = new HashSet<String>(dynamicBooleanAttributes);
     }
 }
