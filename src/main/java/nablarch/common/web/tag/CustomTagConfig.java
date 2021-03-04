@@ -260,7 +260,7 @@ public class CustomTagConfig {
 
     /** 動的属性でBooleanとして扱う属性 */
     private Set<String> dynamicBooleanAttributes = new HashSet<String>(
-            Arrays.asList(new String[] {
+            Arrays.asList(
                     "async",
                     "autofocus",
                     "checked",
@@ -276,7 +276,7 @@ public class CustomTagConfig {
                     "required",
                     "reversed",
                     "selected"
-            })
+            )
     );
 
     /**
