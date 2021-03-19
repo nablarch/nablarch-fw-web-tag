@@ -31,7 +31,7 @@ public class HtmlAttributes {
     /** 動的属性を保持するマップ */
     private List<DynamicAttribute> dynamicAttributes = new ArrayList<DynamicAttribute>();
 
-    private final class DynamicAttribute {
+    private static final class DynamicAttribute {
         private String name;
         private Object value;
         private DynamicAttribute(String name, Object value) {
