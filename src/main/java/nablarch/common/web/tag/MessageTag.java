@@ -3,8 +3,8 @@ package nablarch.common.web.tag;
 import java.util.Arrays;
 import java.util.Locale;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
 
 import nablarch.core.message.Message;
 import nablarch.core.message.MessageLevel;

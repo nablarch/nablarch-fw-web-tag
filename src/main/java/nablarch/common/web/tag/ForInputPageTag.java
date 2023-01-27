@@ -1,6 +1,6 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * 入力画面向けの表示内容を出力するクラス。

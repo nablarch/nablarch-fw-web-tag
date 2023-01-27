@@ -1,7 +1,7 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * 入力データ復元とHTMLエスケープを行うinputタグ(type="file")を出力するクラス。

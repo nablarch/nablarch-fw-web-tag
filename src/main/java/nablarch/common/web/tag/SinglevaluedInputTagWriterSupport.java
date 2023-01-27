@@ -3,8 +3,8 @@ package nablarch.common.web.tag;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * 単一値の入力項目の実装をサポートするクラス。
@@ -58,8 +58,8 @@ public class SinglevaluedInputTagWriterSupport implements Serializable {
     /**
      * 単一値の入力項目を出力する。
      * <pre>
-     * 入力画面の場合は、{@link #createInputTag(javax.servlet.jsp.PageContext, HtmlAttributes, Object)}に処理を移譲する。
-     * 確認画面の場合は、{@link #createOutputTag(javax.servlet.jsp.PageContext, HtmlAttributes, Object)}に処理を移譲する。
+     * 入力画面の場合は、{@link #createInputTag(jakarta.servlet.jsp.PageContext, HtmlAttributes, Object)}に処理を移譲する。
+     * 確認画面の場合は、{@link #createOutputTag(jakarta.servlet.jsp.PageContext, HtmlAttributes, Object)}に処理を移譲する。
      * </pre>
      * @param pageContext ページコンテキスト
      * @param attributes 属性

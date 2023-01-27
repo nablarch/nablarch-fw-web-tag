@@ -1,6 +1,6 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * サブミット時に追加するパラメータを指定するクラス。

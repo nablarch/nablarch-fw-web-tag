@@ -3,7 +3,7 @@ package nablarch.common.web.tag;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import nablarch.common.util.WebRequestUtil;
 

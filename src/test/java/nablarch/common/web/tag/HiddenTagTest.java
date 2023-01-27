@@ -3,8 +3,8 @@ package nablarch.common.web.tag;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.Tag;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;

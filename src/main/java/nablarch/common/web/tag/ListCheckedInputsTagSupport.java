@@ -3,8 +3,8 @@ package nablarch.common.web.tag;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * 複数のchecked属性を持つinputタグを出力するクラスの実装をサポートするクラス。

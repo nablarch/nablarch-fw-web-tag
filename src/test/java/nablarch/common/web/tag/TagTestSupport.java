@@ -11,8 +11,8 @@ import nablarch.test.support.web.servlet.MockServletFilterConfig;
 import org.junit.After;
 import org.junit.Before;
 
-import javax.servlet.jsp.tagext.Tag;
-import javax.servlet.jsp.tagext.TryCatchFinally;
+import jakarta.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.TryCatchFinally;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;

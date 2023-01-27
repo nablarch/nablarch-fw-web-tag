@@ -2,7 +2,7 @@ package nablarch.common.web.tag;
 
 import nablarch.common.web.handler.MockPageContext.MockJspWriter;
 
-import javax.servlet.jsp.tagext.BodyContent;
+import jakarta.servlet.jsp.tagext.BodyContent;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;

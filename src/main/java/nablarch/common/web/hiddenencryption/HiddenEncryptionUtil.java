@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 
 import nablarch.common.encryption.AesEncryptor;
 import nablarch.common.encryption.Encryptor;

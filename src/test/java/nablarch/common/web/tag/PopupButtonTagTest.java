@@ -5,8 +5,8 @@ import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 import nablarch.core.util.Builder;
 import org.junit.Test;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;

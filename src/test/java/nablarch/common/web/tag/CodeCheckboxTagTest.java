@@ -8,8 +8,8 @@ import static org.junit.Assert.fail;
 import java.util.Collections;
 import java.util.Locale;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.core.ThreadContext;
 import nablarch.core.util.Builder;

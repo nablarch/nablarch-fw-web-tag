@@ -7,7 +7,7 @@ import nablarch.common.web.tag.TagUtil.PatternHolder;
 import nablarch.core.ThreadContext;
 import nablarch.core.util.StringUtil;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 import java.util.Date;
 import java.util.Locale;
 
