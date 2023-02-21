@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 
 import nablarch.common.web.handler.MockPageContext;
 import nablarch.common.web.handler.WebTestUtil;

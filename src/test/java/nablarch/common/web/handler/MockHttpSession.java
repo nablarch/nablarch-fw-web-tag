@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 
 /**
  * @author Kiyohito Itoh
  */
-public class MockHttpSession implements javax.servlet.http.HttpSession {
+public class MockHttpSession implements jakarta.servlet.http.HttpSession {
     
     private String id;
     private ServletContext servletContext;
@@ -75,14 +75,6 @@ public class MockHttpSession implements javax.servlet.http.HttpSession {
 
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @deprecated
-     */
-    public javax.servlet.http.HttpSessionContext getSessionContext() {
-        throw new UnsupportedOperationException();
     }
 
     /**

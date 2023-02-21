@@ -287,7 +287,7 @@ public class CustomTagConfig {
     /**
      * 入力系のタグで name 属性に指定した名称に対応する値を取得する際に、値を保持するオブジェクトが 
      * null であれば null を設定されたものとして動作するか否か。
-     * @see TagUtil#getValue(javax.servlet.jsp.PageContext, String, boolean)
+     * @see TagUtil#getValue(jakarta.servlet.jsp.PageContext, String, boolean)
      */
     private boolean useValueAsNullIfObjectExists = true;
 
@@ -1838,7 +1838,7 @@ public class CustomTagConfig {
      * デフォルトは{@code true}。
      * 
      * @param useValueAsNullIfObjectExists 値を保持するオブジェクトが{@code null}の際に、{@code null}として動作させる場合は{@code true}
-     * @see TagUtil#getValue(javax.servlet.jsp.PageContext, String, boolean)
+     * @see TagUtil#getValue(jakarta.servlet.jsp.PageContext, String, boolean)
      */
     public void setUseValueAsNullIfObjectExists(boolean useValueAsNullIfObjectExists) {
         this.useValueAsNullIfObjectExists = useValueAsNullIfObjectExists;

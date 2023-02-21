@@ -1,7 +1,7 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.handler.WebTestUtil;
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;

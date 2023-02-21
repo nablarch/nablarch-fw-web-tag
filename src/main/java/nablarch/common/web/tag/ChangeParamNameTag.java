@@ -1,6 +1,6 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * ポップアップ用のサブミット時にパラメータ名を変更するクラス。

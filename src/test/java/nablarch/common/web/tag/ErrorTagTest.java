@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Locale;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.core.ThreadContext;
 

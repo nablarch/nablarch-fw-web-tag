@@ -25,7 +25,7 @@ import nablarch.test.support.web.servlet.MockServletRequest;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;

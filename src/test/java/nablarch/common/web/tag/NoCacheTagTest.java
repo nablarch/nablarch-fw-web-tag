@@ -3,7 +3,7 @@ package nablarch.common.web.tag;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.core.util.Builder;
 
@@ -32,10 +32,10 @@ public class NoCacheTagTest extends TagTestSupport<NoCacheTag> {
                 .replace(Builder.LS, TagUtil.getCustomTagConfig().getLineSeparator());
         TagTestUtil.assertTag(actual, expected, " ");
         
-        assertThat(pageContext.getMockRes().getHeader("Expires").get(0), is("0"));
-        assertThat(pageContext.getMockRes().getHeader("Cache-Control").get(0), is("no-store, no-cache, must-revalidate"));
-        assertThat(pageContext.getMockRes().getHeader("Cache-Control").get(1), is("post-check=0, pre-check=0"));
-        assertThat(pageContext.getMockRes().getHeader("Pragma").get(0), is("no-cache"));
+        assertThat(pageContext.getMockRes().getHeaderList("Expires").get(0), is("0"));
+        assertThat(pageContext.getMockRes().getHeaderList("Cache-Control").get(0), is("no-store, no-cache, must-revalidate"));
+        assertThat(pageContext.getMockRes().getHeaderList("Cache-Control").get(1), is("post-check=0, pre-check=0"));
+        assertThat(pageContext.getMockRes().getHeaderList("Pragma").get(0), is("no-cache"));
     }
     
     @Test
@@ -54,9 +54,9 @@ public class NoCacheTagTest extends TagTestSupport<NoCacheTag> {
                 .replace(Builder.LS, TagUtil.getCustomTagConfig().getLineSeparator());
         TagTestUtil.assertTag(actual, expected, " ");
         
-        assertThat(pageContext.getMockRes().getHeader("Expires").get(0), is("0"));
-        assertThat(pageContext.getMockRes().getHeader("Cache-Control").get(0), is("no-store, no-cache, must-revalidate"));
-        assertThat(pageContext.getMockRes().getHeader("Cache-Control").get(1), is("post-check=0, pre-check=0"));
-        assertThat(pageContext.getMockRes().getHeader("Pragma").get(0), is("no-cache"));
+        assertThat(pageContext.getMockRes().getHeaderList("Expires").get(0), is("0"));
+        assertThat(pageContext.getMockRes().getHeaderList("Cache-Control").get(0), is("no-store, no-cache, must-revalidate"));
+        assertThat(pageContext.getMockRes().getHeaderList("Cache-Control").get(1), is("post-check=0, pre-check=0"));
+        assertThat(pageContext.getMockRes().getHeaderList("Pragma").get(0), is("no-cache"));
     }
 }

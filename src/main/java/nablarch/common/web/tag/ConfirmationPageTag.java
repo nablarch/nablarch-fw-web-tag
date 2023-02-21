@@ -2,8 +2,8 @@ package nablarch.common.web.tag;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * JSPが確認画面であることを示すクラス。<br>
@@ -29,7 +29,7 @@ public class ConfirmationPageTag extends CustomTagSupport {
      * <pre>
      * JSPが確認画面であることを示すフラグをリクエストスコープに設定する。
      * パスが指定されている場合は、フォワードを行う。
-     * {@link TagUtil#getResourcePathForLanguage(javax.servlet.jsp.PageContext, String)}メソッドを呼び出し、
+     * {@link TagUtil#getResourcePathForLanguage(jakarta.servlet.jsp.PageContext, String)}メソッドを呼び出し、
      * 指定されたパスを言語対応のリソースパスに変換してからフォワードを行う。
      * </pre>
      */

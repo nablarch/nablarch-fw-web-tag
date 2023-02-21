@@ -16,7 +16,7 @@ import nablarch.test.support.web.servlet.MockServletRequest;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.nullValue;

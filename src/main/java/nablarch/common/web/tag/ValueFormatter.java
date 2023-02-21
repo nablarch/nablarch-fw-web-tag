@@ -1,6 +1,6 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 
 import nablarch.core.util.annotation.Published;
 

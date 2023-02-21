@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.handler.WebTestUtil;
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;

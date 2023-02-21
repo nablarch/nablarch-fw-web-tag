@@ -1,6 +1,6 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * 事前に登録されたHTMLタグをそのまま出力する。

@@ -3,7 +3,7 @@ package nablarch.common.web.tag;
 import nablarch.core.util.Builder;
 import org.junit.Test;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 import java.math.BigDecimal;
 import java.util.Collections;
 

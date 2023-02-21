@@ -2,7 +2,7 @@ package nablarch.common.web.tag;
 
 import java.util.Date;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 
 import nablarch.core.ThreadContext; // SUPPRESS CHECKSTYLE Javadocで使うから。
 

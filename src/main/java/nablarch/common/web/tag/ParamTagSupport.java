@@ -2,7 +2,7 @@ package nablarch.common.web.tag;
 
 import java.util.Collection;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 import nablarch.core.util.StringUtil;
 
