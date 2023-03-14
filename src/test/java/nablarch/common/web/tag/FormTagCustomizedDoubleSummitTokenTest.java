@@ -30,7 +30,6 @@ public class FormTagCustomizedDoubleSummitTokenTest extends TagTestSupport<FormT
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        pageContext = new MockPageContext(true);
         target.setPageContext(pageContext);
     }
 
