@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.jsp.JspException;
 import jakarta.servlet.jsp.PageContext;
 
@@ -356,7 +357,8 @@ public class FormTag extends GenericAttributesTagSupport {
      */
     private void setTokenToSessionAndFormContext(PageContext pageContext) throws JspException {
         String name = WebConfigFinder.getWebConfig().getDoubleSubmissionTokenParameterName();
-        String token = TokenUtil.generateToken((NablarchHttpServletRequestWrapper) pageContext.getRequest());
+        final HttpServletRequest httpServletRequest = (HttpServletRequest) pageContext.getRequest();
+        String token = TokenUtil.generateToken(new NablarchHttpServletRequestWrapper(httpServletRequest));
         TagUtil.getFormContext(pageContext).addHiddenTagInfo(name, token);
     }
     
