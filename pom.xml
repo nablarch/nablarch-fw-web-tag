@@ -113,7 +113,7 @@
         <directory>src/test/java</directory>
       </testResource>
       <testResource>
-        <directory>${project.basedir}/src/test/env/${jetty.version}/resources</directory>
+        <directory>${project.basedir}/src/env/${jetty.version}/resources</directory>
       </testResource>
     </testResources>
 
