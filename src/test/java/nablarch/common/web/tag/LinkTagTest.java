@@ -1,6 +1,6 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.handler.WebTestUtil;
 import nablarch.core.util.Builder;

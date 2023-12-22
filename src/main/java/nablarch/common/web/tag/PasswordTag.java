@@ -2,8 +2,8 @@ package nablarch.common.web.tag;
 
 import nablarch.core.util.StringUtil;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * 入力データ復元とHTMLエスケープを行うinputタグ(type="password")を出力するクラス。

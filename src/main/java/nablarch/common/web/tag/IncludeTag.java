@@ -6,8 +6,8 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.jsp.JspException;
 
 import nablarch.core.util.StringUtil;
 
@@ -42,7 +42,7 @@ public class IncludeTag extends CustomTagSupport {
     /**
      * {@inheritDoc}
      * <p/>
-     * {@link TagUtil#getResourcePathForLanguage(javax.servlet.jsp.PageContext, String)}
+     * {@link TagUtil#getResourcePathForLanguage(jakarta.servlet.jsp.PageContext, String)}
      * メソッドを呼び出し、指定されたパスを言語対応のリソースパスに変換してからインクルードを行う。
      * <p/>
      * インクルードコンテキストに設定されたパラメータからクエリー文字列を作成しパスに追加する。

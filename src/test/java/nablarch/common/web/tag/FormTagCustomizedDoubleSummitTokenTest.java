@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,6 @@ public class FormTagCustomizedDoubleSummitTokenTest extends TagTestSupport<FormT
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        pageContext = new MockPageContext(true);
         target.setPageContext(pageContext);
     }
 

@@ -8,7 +8,7 @@ import nablarch.core.util.Builder;
 import nablarch.test.support.web.WebTestUtil;
 import org.junit.Test;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 import java.util.SortedSet;
 import java.util.TreeSet;
 

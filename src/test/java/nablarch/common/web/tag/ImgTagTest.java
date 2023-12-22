@@ -2,8 +2,8 @@ package nablarch.common.web.tag;
 
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.handler.WebTestUtil;
 import nablarch.core.ThreadContext;

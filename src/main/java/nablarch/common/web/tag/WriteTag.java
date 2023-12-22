@@ -5,7 +5,7 @@ import nablarch.core.util.StringUtil;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * 名前に対応する値を出力するクラス。

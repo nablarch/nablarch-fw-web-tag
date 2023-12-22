@@ -3,7 +3,7 @@ package nablarch.common.web.tag;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import org.junit.Test;
 

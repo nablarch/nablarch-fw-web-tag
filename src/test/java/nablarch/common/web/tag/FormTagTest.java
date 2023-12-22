@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.WebConfig;
 import nablarch.common.web.WebConfigFinder;
@@ -239,7 +239,6 @@ public class FormTagTest extends TagTestSupport<FormTag> {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        pageContext = new MockPageContext(true);
         target.setPageContext(pageContext);
         TagUtil.getCustomTagConfig().setUseHiddenEncryption(false);
     }
@@ -1769,7 +1768,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
         // autocompleteDisableTarget = "password"の場合
 
-        pageContext = new MockPageContext(true);
+        pageContext = new MockPageContext();
         target = new FormTag();
         target.setPageContext(pageContext);
         TagUtil.getCustomTagConfig().setAutocompleteDisableTarget("password");

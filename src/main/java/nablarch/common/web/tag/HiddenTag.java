@@ -4,7 +4,7 @@ import nablarch.core.util.StringUtil;
 
 import java.util.Collection;
 
-import javax.servlet.jsp.JspException;
+import jakarta.servlet.jsp.JspException;
 
 /**
  * 入力データ復元とHTMLエスケープを行うinputタグ(type="hidden")を出力するクラス。

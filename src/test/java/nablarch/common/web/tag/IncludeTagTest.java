@@ -8,9 +8,9 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.handler.MockPageContext;
 

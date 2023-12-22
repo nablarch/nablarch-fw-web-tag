@@ -1,7 +1,7 @@
 package nablarch.common.web.tag;
 
-import javax.servlet.jsp.tagext.TagSupport;
-import javax.servlet.jsp.tagext.TryCatchFinally;
+import jakarta.servlet.jsp.tagext.TagSupport;
+import jakarta.servlet.jsp.tagext.TryCatchFinally;
 
 import nablarch.core.log.Logger;
 import nablarch.core.log.LoggerManager;

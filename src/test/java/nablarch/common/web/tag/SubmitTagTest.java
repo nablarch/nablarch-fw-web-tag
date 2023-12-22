@@ -11,9 +11,9 @@ import nablarch.fw.web.handler.KeitaiAccessHandler;
 import nablarch.test.support.web.servlet.MockServletRequest;
 import org.junit.Test;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.Tag;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.tagext.Tag;
 import java.util.SortedSet;
 import java.util.TreeSet;
 

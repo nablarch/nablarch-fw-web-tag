@@ -2,7 +2,7 @@ package nablarch.common.web.tag;
 
 
 import nablarch.core.util.annotation.Published;
-import javax.servlet.jsp.tagext.DynamicAttributes;
+import jakarta.servlet.jsp.tagext.DynamicAttributes;
 
 /**
  * HTMLのタグを出力するクラスの実装をサポートするクラス。

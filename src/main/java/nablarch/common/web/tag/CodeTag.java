@@ -2,8 +2,8 @@ package nablarch.common.web.tag;
 
 import java.util.Collection;
 import java.util.List;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.JspException;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * コード値を出力するクラス。
@@ -113,7 +113,7 @@ public class CodeTag extends HtmlTagSupport {
          * </br>
          * 表示専用タグのため、取得先は変数スコープのみとする。
          * name属性が指定された場合は、表示専用タグのため、変数スコープから取得した値を返す。
-         * name属性が指定されない場合は、{@link CodeTagWriterSupport#getList(javax.servlet.jsp.PageContext)}に処理を委譲し、すべてのコード値を返す。
+         * name属性が指定されない場合は、{@link CodeTagWriterSupport#getList(jakarta.servlet.jsp.PageContext)}に処理を委譲し、すべてのコード値を返す。
          */
         protected Collection<?> getValues(PageContext pageContext, HtmlAttributes attributes) {
             String name = attributes.get(HtmlAttribute.NAME);
