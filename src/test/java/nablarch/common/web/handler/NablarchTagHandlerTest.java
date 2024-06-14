@@ -311,7 +311,6 @@ public class NablarchTagHandlerTest {
         assertNull(request.getParam("go2"));
         assertNull(request.getParam("can1"));
         assertNull(request.getParam("can2"));
-        config.setUseHiddenEncryption(useHiddenEncryption);
 
         // サロゲートペア対応
         // submitName = "surrogatepair"
@@ -327,6 +326,7 @@ public class NablarchTagHandlerTest {
         assertNull(request.getParam("can1"));
         assertNull(request.getParam("can2"));
 
+        config.setUseHiddenEncryption(useHiddenEncryption);
     }
     
     /**
@@ -519,7 +519,9 @@ public class NablarchTagHandlerTest {
     public void testHandlerForUseGetRequest() {
     	
         NablarchTagHandler handler = new NablarchTagHandler();
-        
+        // Hidden暗号化した値を使用してテストしているため、Hidden暗号化を使用する設定が必要
+        TagUtil.getCustomTagConfig().setUseHiddenEncryption(true);
+
         // GETリクエスト使用かつリクエストのメソッドが"GET"の場合、ハンドラ内の処理が実行されないこと
         init("R0001", true);
         request.setMethod("GET");
