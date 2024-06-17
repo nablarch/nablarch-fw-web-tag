@@ -9,20 +9,32 @@ import nablarch.common.web.tag.TagUtil;
 import nablarch.core.ThreadContext;
 import nablarch.core.repository.SystemRepository;
 import nablarch.fw.ExecutionContext;
-import nablarch.fw.web.*;
 
+import nablarch.fw.web.HttpErrorResponse;
+import nablarch.fw.web.HttpRequest;
+import nablarch.fw.web.HttpRequestHandler;
+import nablarch.fw.web.HttpResponse;
+import nablarch.fw.web.MockHttpRequest;
 import nablarch.fw.web.servlet.ServletExecutionContext;
 import nablarch.test.support.web.servlet.MockServletRequest;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.jsp.PageContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.hasItems;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author Kiyohito Itoh
@@ -37,7 +49,6 @@ public class NablarchTagHandlerTest {
         SystemRepository.clear();
     }
 
-    @SuppressWarnings({ "serial" })
     private void init(String requestId, boolean enc) {
         
         MockPageContext pageContext = new MockPageContext();
@@ -59,7 +70,7 @@ public class NablarchTagHandlerTest {
         }
         
         context = new ServletExecutionContext(initServletReq(), null, null);
-        context.setHandlerQueue(Arrays.asList(new FinalHandler()));
+        context.setHandlerQueue(Collections.singletonList(new FinalHandler()));
         context.setSessionScopeMap(pageContext.getAttributes(PageContext.SESSION_SCOPE));
         
         
@@ -145,7 +156,7 @@ public class NablarchTagHandlerTest {
 
         // nablarch_hidden param is multiple
         init("R0001", true);
-        request.setParam(HiddenEncryptionUtil.KEY_HIDDEN_NAME, new String[] {"test1", "test2"});
+        request.setParam(HiddenEncryptionUtil.KEY_HIDDEN_NAME, "test1", "test2");
         try {
             handler.handle(request, context);
             fail();
@@ -169,7 +180,7 @@ public class NablarchTagHandlerTest {
 
         // nablarch_submit param is multiple
         init("R0001", true);
-        request.setParam(HiddenEncryptionUtil.KEY_SUBMIT_NAME, new String[] {"test1", "test2"});
+        request.setParam(HiddenEncryptionUtil.KEY_SUBMIT_NAME, "test1", "test2");
         try {
             handler.handle(request, context);
             fail();
@@ -181,7 +192,7 @@ public class NablarchTagHandlerTest {
 
         // not hit submitName
         init("R0001", true);
-        request.setParam(HiddenEncryptionUtil.KEY_SUBMIT_NAME, new String[] {"unknown"});
+        request.setParam(HiddenEncryptionUtil.KEY_SUBMIT_NAME, "unknown");
         try {
             handler.handle(request, context);
             fail();
@@ -196,7 +207,6 @@ public class NablarchTagHandlerTest {
     /**
      * hiddenタグを暗号化しないリクエストIDの設定に応じて動作すること。
      */
-    @SuppressWarnings("serial")
     @Test
     public void testHandlerForIgnoreRequestIds() {
         CustomTagConfig config = TagUtil.getCustomTagConfig();
@@ -356,7 +366,7 @@ public class NablarchTagHandlerTest {
         
         // 2nd (Ex. when forwarding)
         
-        context.setHandlerQueue(Arrays.asList(new FinalHandler()));
+        context.setHandlerQueue(Collections.singletonList(new FinalHandler()));
         response = handler.handle(request, context);
         
         assertThat(response.getStatusCode(), is(200));
@@ -398,7 +408,7 @@ public class NablarchTagHandlerTest {
         // 2nd (Ex. when forwarding)
         
         ThreadContext.setRequestId("R9999");
-        context.setHandlerQueue(Arrays.asList(new FinalHandler()));
+        context.setHandlerQueue(Collections.singletonList(new FinalHandler()));
         response = handler.handle(request, context);
         
         assertThat(response.getStatusCode(), is(200));

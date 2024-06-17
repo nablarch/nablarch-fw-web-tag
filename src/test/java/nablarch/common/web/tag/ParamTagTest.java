@@ -1,9 +1,7 @@
 package nablarch.common.web.tag;
 
-import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.iterableWithSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -14,12 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import javax.servlet.jsp.tagext.Tag;
-
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.collection.IsCollectionWithSize;
-import org.hamcrest.collection.IsIterableContainingInOrder;
-import org.hamcrest.collection.IsMapContaining;
-import org.hamcrest.core.IsCollectionContaining;
 
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 
