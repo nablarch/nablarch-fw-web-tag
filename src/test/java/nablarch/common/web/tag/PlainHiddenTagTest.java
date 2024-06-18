@@ -1,14 +1,12 @@
 package nablarch.common.web.tag;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
