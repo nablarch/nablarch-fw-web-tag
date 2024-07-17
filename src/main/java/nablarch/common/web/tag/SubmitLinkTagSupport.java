@@ -23,6 +23,8 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
     /** {@link BodyContent} */
     private BodyContent bodyContent;
 
+    private Boolean suppressCallNablarchSubmit = null;
+
     /**
      * サブミット先のURIを設定する。
      * @param uri サブミット先のURI
@@ -37,6 +39,10 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
      */
     public void setSecure(Boolean secure) {
         this.secure = secure;
+    }
+
+    public void setSuppressCallNablarchSubmit(Boolean suppressCallNablarchSubmit) {
+        this.suppressCallNablarchSubmit = suppressCallNablarchSubmit;
     }
 
     /**
@@ -97,6 +103,8 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
         }
 
         checkChildElementsOfForm();
+
+        String tagName = "a";
         String requestId = WebRequestUtil.getRequestId(uri);
         if (requestId == null) {
             // サブミット制御では、リクエストIDがnullになるuriを許容しない。
@@ -107,9 +115,11 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
         }
         String encodedUri = TagUtil.encodeUri(pageContext, uri, secure);
         getAttributes().put(HtmlAttribute.HREF, encodedUri);
-        TagUtil.editOnclickAttributeForSubmission(pageContext, getAttributes());
         DisplayMethod displayMethodResult = TagUtil.getDisplayMethod(requestId, displayMethod);
         setSubmissionInfoToFormContext(requestId, encodedUri, displayMethodResult);
+
+        // サブミット情報を追加した後にスクリプトの生成を行う
+        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), Boolean.TRUE.equals(suppressCallNablarchSubmit));
 
         switch (displayMethodResult) {
         case DISABLED:
@@ -119,7 +129,7 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
         case NODISPLAY:
             return SKIP_BODY;
         default:
-            TagUtil.print(pageContext, TagUtil.createStartTag("a", getAttributes()));
+            TagUtil.print(pageContext, TagUtil.createStartTag(tagName, getAttributes()));
             return EVAL_BODY_INCLUDE;
         }
     }

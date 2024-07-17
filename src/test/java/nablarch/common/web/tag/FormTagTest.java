@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.WebConfig;
@@ -23,7 +22,6 @@ import nablarch.common.web.hiddenencryption.HiddenEncryptionUtil;
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 import nablarch.core.util.Builder;
 import nablarch.fw.web.handler.KeitaiAccessHandler;
-
 import nablarch.test.support.web.servlet.MockServletRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +43,10 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
             // サブミット時に呼ばれる関数
             "function $fwPrefix$submit(event, element) {",
+            "    if (element == null) {",
+            "        element = event.target;",
+            "    }",
+
             "    var isAnchor = element.tagName.match(/a/i);",
 
                  // formタグを取得する。

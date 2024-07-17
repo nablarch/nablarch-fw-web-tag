@@ -584,7 +584,7 @@ public class FormTag extends GenericAttributesTagSupport {
         }
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         if (isFirstForm()) {
-            TagUtil.print(pageContext, ls + TagUtil.createScriptTag(getSubmitFunction()));
+            TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, getSubmitFunction()));
         }
     }
 
@@ -601,6 +601,17 @@ public class FormTag extends GenericAttributesTagSupport {
 
         StringBuilder javaScript = new StringBuilder();
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
+
+        FormContext formContext = TagUtil.getFormContext(pageContext);
+
+        List<String> inlineOnclickSubmissionScripts = formContext.getInlineSubmissionScripts();
+        if (!inlineOnclickSubmissionScripts.isEmpty()) {
+            for (String script : inlineOnclickSubmissionScripts) {
+                javaScript.append(ls).append(script);
+            }
+
+            javaScript.append(ls).append(ls);
+        }
 
         String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
         
@@ -643,7 +654,7 @@ public class FormTag extends GenericAttributesTagSupport {
         }
         javaScript.append("};");
         
-        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(javaScript.toString()));
+        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, javaScript.toString()));
     }
 
     /**
@@ -661,7 +672,7 @@ public class FormTag extends GenericAttributesTagSupport {
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
         javaScript.append(SUBMISSION_END_MARK_PREFIX).append(".").append(formName).append(" = true;");
-        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(javaScript.toString()));
+        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, javaScript.toString()));
     }
 
     /**
@@ -759,6 +770,10 @@ public class FormTag extends GenericAttributesTagSupport {
             
             // サブミット時に呼ばれる関数
             "function $fwPrefix$submit(event, element) {",
+
+            "    if (element == null) {",
+            "        element = event.target;",
+            "    }",
 
             "    var isAnchor = element.tagName.match(/a/i);",
 

@@ -1,31 +1,5 @@
 package nablarch.common.web.tag;    // SUPPRESS CHECKSTYLE カスタムタグの共通処理を局所化するため。
 
-import static nablarch.fw.ExecutionContext.FW_PREFIX;
-import static nablarch.fw.ExecutionContext.THROWN_APPLICATION_EXCEPTION_KEY;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-
 import nablarch.common.code.CodeUtil;
 import nablarch.common.web.HtmlTagUtil;
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
@@ -45,6 +19,31 @@ import nablarch.core.validation.ValidationResultMessage;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.handler.KeitaiAccessHandler;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static nablarch.fw.ExecutionContext.FW_PREFIX;
+import static nablarch.fw.ExecutionContext.THROWN_APPLICATION_EXCEPTION_KEY;
 
 /**
  * カスタムタグの作成を助けるユーティリティ。
@@ -227,13 +226,17 @@ public final class TagUtil {
      * @param javaScript scriptタグのボディに指定するJavaScript
      * @return scriptタグ
      */
-    public static String createScriptTag(String javaScript) {
+    public static String createScriptTag(PageContext pageContext, String javaScript) {
 
         CustomTagConfig config = getCustomTagConfig();
         String ls = config.getLineSeparator();
 
         HtmlAttributes attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.TYPE, "text/javascript");
+
+        if (hasCspNonce(pageContext)) {
+            attributes.put(HtmlAttribute.NONCE, getCspNonce(pageContext));
+        }
 
         return new StringBuilder()
                 .append(createStartTag("script", attributes))
@@ -245,6 +248,14 @@ public final class TagUtil {
                 .append(config.getScriptBodySuffix())
                 .append(ls)
                 .append(createEndTag("script")).toString();
+    }
+
+    public static boolean hasCspNonce(PageContext pageContext) {
+        return StringUtil.hasValue(getCspNonce(pageContext));
+    }
+
+    public static String getCspNonce(PageContext pageContext) {
+        return (String) getSingleValueOnScope(pageContext, CustomTagConfig.CSP_NONCE_KEY);
     }
 
     /**
@@ -715,20 +726,66 @@ public final class TagUtil {
                     .getPathForLanguage(path, (HttpServletRequest) pageContext.getRequest());
     }
 
+    public static void registerOnclickForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
+        if (hasCspNonce(pageContext)) {
+            registerOnclickScriptForSubmission(pageContext, tagName, attributes, suppressCallNablarchSubmit);
+        } else {
+            editOnclickAttributeForSubmission(pageContext, attributes, suppressCallNablarchSubmit);
+        }
+    }
+
+    private static void registerOnclickScriptForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
+        if (!jsSupported(pageContext)) {
+            return;
+        }
+
+        String onclick = attributes.get(HtmlAttribute.ONCLICK);
+        if (!StringUtil.isNullOrEmpty(onclick)) {
+            // onclick属性が指定されていた場合はスクリプトを登録しない
+            return;
+        }
+
+        if (suppressCallNablarchSubmit) {
+            // Nablarchのsubmit関数の呼び出し出力が抑制されている場合は、スクリプトを登録しない
+            return;
+        }
+
+        CustomTagConfig customTagConfig = TagUtil.getCustomTagConfig();
+        String ls = customTagConfig.getLineSeparator();
+        FormContext formContext = getFormContext(pageContext);
+        StringBuilder javaScript = new StringBuilder();
+        javaScript.append("document.querySelector(\"");
+        javaScript.append(tagName);
+        javaScript.append("[name='");
+        javaScript.append(attributes.get(HtmlAttribute.NAME));
+        // 通常addEventListenerを使うところだが、従来の実装がonclick属性に直接設定するものだったため、
+        // 動作を近いものにするためにonclickプロパティを使用している
+        javaScript.append("']\").onclick = window.");
+        javaScript.append(ExecutionContext.FW_PREFIX + "submit;");
+        formContext.addInlineSubmissionScript(javaScript.toString());
+    }
+
     /**
      * サブミット制御のためにonclick属性を編集する。<br>
      * onclick属性が編集されている場合は編集しない。
      * @param pageContext ページコンテキスト
      * @param attributes 属性
      */
-    public static void editOnclickAttributeForSubmission(PageContext pageContext, HtmlAttributes attributes) {
+    private static void editOnclickAttributeForSubmission(PageContext pageContext, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
         if (!jsSupported(pageContext)) {
             return;
         }
         String onclick = attributes.get(HtmlAttribute.ONCLICK);
         if (!StringUtil.isNullOrEmpty(onclick)) {
+            // onclick属性が指定されていた場合はスクリプトを登録しない
             return;
         }
+
+        if (suppressCallNablarchSubmit) {
+            // Nablarchのsubmit関数の呼び出し出力が抑制されている場合は、スクリプトを登録しない
+            return;
+        }
+
         attributes.put(HtmlAttribute.ONCLICK, ONCLICK_FOR_SUBMISSION);
     }
 

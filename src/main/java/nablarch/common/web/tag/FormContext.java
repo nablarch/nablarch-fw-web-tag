@@ -36,6 +36,8 @@ public class FormContext {
     
     /** カレントのサブミット情報 */
     private SubmissionInfo currentSubmissionInfo;
+
+    private List<String> inlineSubmissionScripts = new ArrayList<String>();
     
     /**
      * コンストラクタ。
@@ -187,5 +189,14 @@ public class FormContext {
             }
         }
         return null;
+    }
+
+    public void addInlineSubmissionScript(String script) {
+        inlineSubmissionScripts.add(script);
+    }
+
+
+    public List<String> getInlineSubmissionScripts() {
+        return inlineSubmissionScripts;
     }
 }

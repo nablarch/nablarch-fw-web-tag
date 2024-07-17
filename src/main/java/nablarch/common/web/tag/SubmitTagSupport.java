@@ -24,6 +24,8 @@ public abstract class SubmitTagSupport extends InputTagSupport {
     
     /** URIをhttpsにするか否か */
     private Boolean secure = null;
+
+    private Boolean suppressCallNablarchSubmit = null;
     
     /**
      * サブミット先のURIを設定する。
@@ -39,6 +41,10 @@ public abstract class SubmitTagSupport extends InputTagSupport {
      */
     public void setSecure(Boolean secure) {
         this.secure = secure;
+    }
+
+    public void setSuppressCallNablarchSubmit(Boolean suppressCallNablarchSubmit) {
+        this.suppressCallNablarchSubmit = suppressCallNablarchSubmit;
     }
 
     /**
@@ -125,13 +131,17 @@ public abstract class SubmitTagSupport extends InputTagSupport {
      */
     public int doStartTag() throws JspException {
         checkChildElementsOfForm();
+
+        String tagName = "input";
         String requestId = WebRequestUtil.getRequestId(uri);
         String encodedUri = TagUtil.encodeUri(pageContext, uri, secure);
         String submitName = getAttributes().get(HtmlAttribute.NAME);
 
-        TagUtil.editOnclickAttributeForSubmission(pageContext, getAttributes());
         DisplayMethod displayMethodResult = TagUtil.getDisplayMethod(requestId, displayMethod);
         setSubmissionInfoToFormContext(requestId, encodedUri, displayMethodResult);
+
+        // サブミット情報を追加した後にスクリプトの生成を行う
+        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), Boolean.TRUE.equals(suppressCallNablarchSubmit));
 
         if (DisplayMethod.DISABLED == displayMethodResult) {
             getAttributes().put(HtmlAttribute.DISABLED, true);
@@ -156,7 +166,7 @@ public abstract class SubmitTagSupport extends InputTagSupport {
             );
         }
 
-        TagUtil.print(pageContext, TagUtil.createTagWithoutBody("input", getAttributes()));
+        TagUtil.print(pageContext, TagUtil.createTagWithoutBody(tagName, getAttributes()));
         return EVAL_BODY_INCLUDE;
     }
 
