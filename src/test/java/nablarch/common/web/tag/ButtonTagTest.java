@@ -1,5 +1,15 @@
 package nablarch.common.web.tag;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import javax.servlet.jsp.tagext.Tag;
+
 import nablarch.common.permission.BasicPermission;
 import nablarch.common.permission.Permission;
 import nablarch.common.permission.PermissionUtil;
@@ -7,15 +17,6 @@ import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.Builder;
 import nablarch.test.support.web.WebTestUtil;
 import org.junit.Test;
-
-import javax.servlet.jsp.tagext.Tag;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * {@link ButtonTag}及び{@link ButtonTagSupport}のテスト。
@@ -219,6 +220,46 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
     }
 
     /**
+     * CSP対応用のnonceをリクエストスコープに保存した時に、スクリプトが直接buttonタグのonclick属性に
+     * 出力されるのではなく、フォームコンテキストにためこまれることを確認する
+     */
+    @Test
+    public void testInputPageForHasCspNonce() throws Exception {
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        // nonce
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        // button
+        target.setName("name_test");
+
+        // nablarch
+        target.setUri("./R12345");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        assertThat(formContext.getInlineSubmissionScripts().size(), is(1));
+        List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
+        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"button[name='name_test']\").onclick = window.nablarch_submit;"));
+    }
+
+    /**
      * サロゲートペアを扱うテストケース。
      * @throws Exception
      */
@@ -392,6 +433,258 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         assertThat(info.getName(), is("name_test"));
         assertThat(info.getUri(), is("http://nablarch.co.jp" + WebTestUtil.CONTEXT_PATH + "/R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
         assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+    }
+
+    /**
+     * onclick属性を指定した時に、CSPのnonceの有無に関わらず指定した属性値がそのまま出力されることを確認する。
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForOnclick() throws Exception {
+
+        TagTestUtil.setUpDefaultConfig();
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // button
+        target.setName("name_test");
+        target.setOnclick("onclick_test");
+
+        // nablarch
+        target.setUri("./R12345");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"",
+                "onclick=\"onclick_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // CSP対応用のnonceを含めている場合
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"",
+                "onclick=\"onclick_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        // スクリプトは登録されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // suppressCallNablarchSubmitをtrueにした場合
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // nablarch
+        target.setSuppressCallNablarchSubmit(true);
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"",
+                "onclick=\"onclick_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        // スクリプトは登録されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // suppressCallNablarchSubmitをtrueにした場合（CSP）
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        // nablarch
+        target.setSuppressCallNablarchSubmit(true);
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"",
+                "onclick=\"onclick_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        // スクリプトは登録されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+    }
+
+    /**
+     * SuppressCallNablarchSubmit属性に{@code true}を指定した時に、CSPのnonceの有無に関わらず
+     * サブミット用のスクリプトが出力されなくなることを確認する。
+     */
+    @Test
+    public void testInputPageForSuppressCallNablarchSubmit() throws Exception {
+
+        TagTestUtil.setUpDefaultConfig();
+
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // button
+        target.setName("name_test");
+
+        // nablarch
+        target.setUri("./R12345");
+        target.setSuppressCallNablarchSubmit(true);
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // CSP対応用のnonceを含めている場合
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // onclickを指定した場合はそのまま出力される
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // input
+        target.setOnclick("onclick_test");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"",
+                "onclick=\"onclick_test\"></button>"
+                ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // onclickを指定した場合はそのまま出力される（CSP）
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<button",
+                "name=\"name_test\"",
+                "onclick=\"onclick_test\"></button>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
     }
 
     @Test
