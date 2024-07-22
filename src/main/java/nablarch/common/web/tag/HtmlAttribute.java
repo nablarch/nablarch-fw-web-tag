@@ -256,6 +256,7 @@ public enum HtmlAttribute {
     /** placeholder属性 */
     PLACEHOLDER,
 
+    /** nonce属性 */
     NONCE;
 
     /**

@@ -23,6 +23,7 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
     /** URIをhttpsにするか否か */
     private Boolean secure = null;
 
+    /** カスタムタグが生成するsubmit関数の出力を抑制するか否か。抑制する場合は{@code true} */
     private Boolean suppressCallNablarchSubmit = null;
 
     /**
@@ -41,6 +42,12 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
         this.secure = secure;
     }
 
+    /**
+     * カスタムタグが生成するsubmit関数の出力を抑制するか否かを設定する。
+     * 抑制する場合は{@code true}。
+     *
+     * @param suppressCallNablarchSubmit カスタムタグが生成するsubmit関数の出力を抑制するか否か
+     */
     public void setSuppressCallNablarchSubmit(Boolean suppressCallNablarchSubmit) {
         this.suppressCallNablarchSubmit = suppressCallNablarchSubmit;
     }

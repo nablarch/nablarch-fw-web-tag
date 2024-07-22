@@ -223,6 +223,21 @@ public final class TagUtil {
      * }
      * </pre>
      *
+     * <p>
+     * また、セキュアハンドラでnonceが生成されていた場合は、scriptタグにnonce属性を自動で付加する。
+     * </p>
+     *
+     * <pre>
+     * {@literal
+     * <script type="text/javascript" nonce="[セキュアハンドラで生成したnonce]">
+     * //<![CDATA[
+     *     (ここに指定されたJavaScriptがくる)
+     * //]]>
+     * </script>
+     * }
+     * </pre>
+     *
+     * @param pageContext ページコンテキスト
      * @param javaScript scriptタグのボディに指定するJavaScript
      * @return scriptタグ
      */
@@ -254,6 +269,12 @@ public final class TagUtil {
         return StringUtil.hasValue(getCspNonce(pageContext));
     }
 
+    /**
+     * リクエストスコープに格納されているnonceを取得する。取得できなかった場合は{@code null}を返却する
+     *
+     * @param pageContext ページコンテキスト
+     * @return リクエストスコープに格納されているnonce
+     */
     public static String getCspNonce(PageContext pageContext) {
         return (String) getSingleValueOnScope(pageContext, CustomTagConfig.CSP_NONCE_KEY);
     }
@@ -726,6 +747,27 @@ public final class TagUtil {
                     .getPathForLanguage(path, (HttpServletRequest) pageContext.getRequest());
     }
 
+    /**
+     * クリック時のサブミット情報を登録し、JavaScriptを生成する
+     *
+     * <pre></pre>
+     * リクエストスコープにCSP対応用のnonceが保存されているか否かで動作が変わる。
+     *
+     * ・CSP対応用のnonceが保存されていた場合
+     * 　・{@link FormTag}が生成するscriptタグの一部として出力する
+     * 　・本メソッド実行時には出力せずフォームコンテキストへの登録のみとし、{@link FormTag}の処理でためこんだスクリプトを一括で出力する
+     * ・CSP対応用のnonceが保存されていない場合
+     * 　・対象のタグのonclick属性としてイベントハンドラを出力する
+     *
+     * なお、いずれの場合も属性にonclickが指定されている場合、または{@code suppressCallNablarchSubmit}プロパティが
+     * {@code true}の場合はスクリプトを生成しない。
+     * </pre>
+     *
+     * @param pageContext ページコンテキスト
+     * @param tagName クリック対象のタグ名
+     * @param attributes 属性
+     * @param suppressCallNablarchSubmit Nablarchのsubmit関数の呼び出しを抑制するか否か。{@code true}の場合は抑制する
+     */
     public static void registerOnclickForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
         if (hasCspNonce(pageContext)) {
             registerOnclickScriptForSubmission(pageContext, tagName, attributes, suppressCallNablarchSubmit);
@@ -734,6 +776,18 @@ public final class TagUtil {
         }
     }
 
+    /**
+     * クリック時に動作するスクリプトと、{@link FormTag}が出力するスクリプトと同じタイミングで
+     * 出力するようにフォームコンテキストに登録する。
+     *
+     * onclick属性が編集されている場合、または{@code suppressCallNablarchSubmit}プロパティが{@code true}の
+     * 場合は登録しない。
+     *
+     * @param pageContext ページコンテキスト
+     * @param tagName クリック対象のタグ名
+     * @param attributes 属性
+     * @param suppressCallNablarchSubmit Nablarchのsubmit関数の呼び出しを抑制するか否か。{@code true}の場合は抑制する
+     */
     private static void registerOnclickScriptForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
         if (!jsSupported(pageContext)) {
             return;
@@ -767,9 +821,11 @@ public final class TagUtil {
 
     /**
      * サブミット制御のためにonclick属性を編集する。<br>
-     * onclick属性が編集されている場合は編集しない。
+     * onclick属性が編集されている場合は、または{@code suppressCallNablarchSubmit}プロパティが{@code true}の
+     * 場合は編集しない。
      * @param pageContext ページコンテキスト
      * @param attributes 属性
+     * @param suppressCallNablarchSubmit Nablarchのsubmit関数の呼び出しを抑制するか否か。{@code true}の場合は抑制する
      */
     private static void editOnclickAttributeForSubmission(PageContext pageContext, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
         if (!jsSupported(pageContext)) {
