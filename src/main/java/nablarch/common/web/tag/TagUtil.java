@@ -265,6 +265,13 @@ public final class TagUtil {
                 .append(createEndTag("script")).toString();
     }
 
+    /**
+     * リクエストスコープにCSP対応用のnonceが保存されているか否か確認する。
+     * nonceが保存されている場合、{@code true}を返却する。
+     *
+     * @param pageContext ページコンテキスト
+     * @return リクエストスコープにCSP対応用のnonceが保存されている場合{@code true}
+     */
     public static boolean hasCspNonce(PageContext pageContext) {
         return StringUtil.hasValue(getCspNonce(pageContext));
     }
@@ -748,7 +755,8 @@ public final class TagUtil {
     }
 
     /**
-     * クリック時のサブミット情報を登録し、JavaScriptを生成する
+     * クリック時のサブミット情報を登録し、JavaScriptを生成する。
+     * {@link TagUtil#setSubmissionInfoToFormContext} を使ったサブミット情報登録後に呼び出すこと。
      *
      * <pre></pre>
      * リクエストスコープにCSP対応用のnonceが保存されているか否かで動作が変わる。
