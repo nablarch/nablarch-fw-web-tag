@@ -604,6 +604,8 @@ public class FormTag extends GenericAttributesTagSupport {
 
         FormContext formContext = TagUtil.getFormContext(pageContext);
 
+        // サブミット用のスクリプトが登録されていた場合は、合わせて出力する。
+        // CSP対応のため、HTMLタグの属性に直接出力するのではなくscriptタグ内に含める。
         List<String> inlineOnclickSubmissionScripts = formContext.getInlineSubmissionScripts();
         if (!inlineOnclickSubmissionScripts.isEmpty()) {
             for (String script : inlineOnclickSubmissionScripts) {
