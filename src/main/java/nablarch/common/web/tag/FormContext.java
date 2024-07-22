@@ -8,7 +8,6 @@ import java.util.Set;
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 import nablarch.core.util.StringUtil;
 
-
 /**
  * フォームのコンテキスト情報を保持するクラス。<br>
  * このコンテキスト情報はページコンテキストに格納する。
@@ -37,6 +36,7 @@ public class FormContext {
     /** カレントのサブミット情報 */
     private SubmissionInfo currentSubmissionInfo;
 
+    /** サブミット用のスクリプト。CSP対応用nonce生成時に、このリストにためこみ一括出力する */
     private List<String> inlineSubmissionScripts = new ArrayList<String>();
     
     /**
@@ -191,11 +191,20 @@ public class FormContext {
         return null;
     }
 
+    /**
+     * サブミット用のスクリプトを登録する
+     *
+     * @param script サブミット用のスクリプト
+     */
     public void addInlineSubmissionScript(String script) {
         inlineSubmissionScripts.add(script);
     }
 
-
+    /**
+     * これまでに登録されたサブミット用のスクリプト群を返却する
+     *
+     * @return サブミット用のスクリプト群
+     */
     public List<String> getInlineSubmissionScripts() {
         return inlineSubmissionScripts;
     }
