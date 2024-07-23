@@ -2655,7 +2655,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         );
     }
 
-    private void assertTagOutputAndClearOutput(String... expectedArray) {
+    private final void assertTagOutputAndClearOutput(String... expectedArray) {
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         String actual = TagTestUtil.getOutput(pageContext);
         String[] splitActual = actual.split(ls);

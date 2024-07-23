@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.jsp.JspException;
 
 import nablarch.common.util.WebRequestUtil;
-import nablarch.fw.ExecutionContext;
 
 /**
  * サブミット制御を行うbuttonタグを出力するクラスの実装をサポートするクラス。

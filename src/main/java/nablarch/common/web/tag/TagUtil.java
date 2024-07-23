@@ -739,7 +739,7 @@ public final class TagUtil {
                 return CURRENT_PATH_RELATIVE_PATH;
             }
         }
-    };
+    }
 
     /**
      * 言語対応のリソースパスを取得する。

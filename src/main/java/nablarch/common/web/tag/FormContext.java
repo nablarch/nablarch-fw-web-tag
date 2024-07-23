@@ -37,7 +37,7 @@ public class FormContext {
     private SubmissionInfo currentSubmissionInfo;
 
     /** サブミット用のスクリプト。CSP対応用nonce生成時に、このリストにためこみ一括出力する */
-    private List<String> inlineSubmissionScripts = new ArrayList<String>();
+    private final List<String> inlineSubmissionScripts = new ArrayList<String>();
     
     /**
      * コンストラクタ。
@@ -192,7 +192,7 @@ public class FormContext {
     }
 
     /**
-     * サブミット用のスクリプトを登録する
+     * サブミット用のスクリプトを登録する。
      *
      * @param script サブミット用のスクリプト
      */
@@ -201,7 +201,7 @@ public class FormContext {
     }
 
     /**
-     * これまでに登録されたサブミット用のスクリプト群を返却する
+     * これまでに登録されたサブミット用のスクリプト群を返却する。
      *
      * @return サブミット用のスクリプト群
      */
