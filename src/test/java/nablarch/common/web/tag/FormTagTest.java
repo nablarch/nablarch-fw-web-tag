@@ -1,12 +1,12 @@
 package nablarch.common.web.tag;
 
 import static nablarch.fw.ExecutionContext.FW_PREFIX;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -484,7 +484,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "<!--",
                 SUBMISSION_END_MARK_PREFIX + ".name_test" + TagTestUtil.ESC_HTML + " = true;",
                 "-->",
-                "</script>").split(Builder.LS);;
+                "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
@@ -522,7 +522,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "<!--",
                 SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
                 "-->",
-                "</script>").split(Builder.LS);;
+                "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
@@ -1764,7 +1764,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "<!--",
                 SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
                 "-->",
-                "</script>").split(Builder.LS);;
+                "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
@@ -1805,7 +1805,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "<!--",
                 SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
                 "-->",
-                "</script>").split(Builder.LS);;
+                "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
@@ -1900,7 +1900,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "<!--",
                 SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
                 "-->",
-                "</script>").split(Builder.LS);;
+                "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
@@ -1945,7 +1945,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "<!--",
                 SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
                 "-->",
-                "</script>").split(Builder.LS);;
+                "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
@@ -2318,9 +2318,355 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "<!--",
                 SUBMISSION_END_MARK_PREFIX + ".nablarch_form1 = true;",
                 "-->",
-                "</script>").split(Builder.LS);;
+                "</script>").split(Builder.LS);
         for (int i = 0; i < splitActual.length; i++) {
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
+    }
+
+    /**
+     * nonceを設定しない状態でformタグ（複数含む）を構築すると、子要素になっているイベントハンドラが
+     * 生成するJavaScriptが対象のタグの属性に直接書き出されることを確認する。
+     */
+    @Test
+    public void testMultipleFormsScriptsNoNonce() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        target.setName("my_form1");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                // nonceが付与されている
+                "<script type=\"text/javascript\">",
+                "<!--",
+                SUBMIT_FUNCTION,
+                "-->",
+                "</script>",
+                "<form name=\"my_form1\" method=\"post\">"
+        );
+
+        // form1内のコントロール（button, submit, linkのパターンを網羅）
+        ButtonTag buttonTag1 = new ButtonTag();
+        buttonTag1.setPageContext(pageContext);
+        buttonTag1.setName("my_form1_button1");
+        buttonTag1.setUri("./my_form1_button1");
+        buttonTag1.doStartTag();
+        buttonTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                // onclickイベントハンドラが直接設定される
+                "<button name=\"my_form1_button1\" onclick=\"return window.nablarch_submit(event, this);\"></button>"
+        );
+
+        PopupSubmitTag popupSubmitTag1 = new PopupSubmitTag();
+        popupSubmitTag1.setPageContext(pageContext);
+        popupSubmitTag1.setName("my_form1_popup_submit1");
+        popupSubmitTag1.setUri("./my_form1_popup_submit1");
+        popupSubmitTag1.doStartTag();
+        popupSubmitTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                // onclickイベントハンドラが直接設定される
+                "<input name=\"my_form1_popup_submit1\" onclick=\"return window.nablarch_submit(event, this);\" />"
+        );
+
+        DownloadLinkTag downloadLinkTag1 = new DownloadLinkTag();
+        downloadLinkTag1.setPageContext(pageContext);
+        downloadLinkTag1.setName("my_form1_download_link1");
+        downloadLinkTag1.setUri("./my_form1_download_link1");
+        downloadLinkTag1.doStartTag();
+        downloadLinkTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                // onclickイベントハンドラが直接設定される
+                "<a name=\"my_form1_download_link1\" href=\"./my_form1_download_link1_encode_suffix\" onclick=\"return window.nablarch_submit(event, this);\"></a>"
+        );
+
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form1_popup_submit1=|nablarch_hidden_submit_my_form1_download_link1=|nablarch_hidden_submit_my_form1_button1=\" />",
+                "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                "nablarch_submission_info.my_form1 = {",
+                "\"my_form1_button1\": { \"action\": \"./my_form1_button1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"TRANSITION\" },",
+                "\"my_form1_popup_submit1\": { \"action\": \"./my_form1_popup_submit1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"POPUP\", \"popupWindowName\": null, \"popupOption\": \"\", \"changeParamNames\": {} },",
+                "\"my_form1_download_link1\": { \"action\": \"./my_form1_download_link1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"DOWNLOAD\", \"changeParamNames\": {} }",
+                "};",
+                "-->",
+                "</script>",
+                "</form>",
+                // nonceが付与されている
+                "<script type=\"text/javascript\">",
+                "<!--",
+                "nablarch_submission_info.endMark.my_form1 = true;",
+                "-->",
+                "</script>"
+        );
+
+        // form 2つ目
+        FormTag formTag2 = new FormTag();
+        formTag2.setPageContext(pageContext);
+
+        formTag2.setName("my_form2");
+
+        assertThat(formTag2.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                "<form name=\"my_form2\" method=\"post\">"
+        );
+
+        // form2内のコントロール（button, submit, linkのパターンを網羅）
+        SubmitTag submitTag1 = new SubmitTag();
+        submitTag1.setPageContext(pageContext);
+        submitTag1.setName("my_form2_submit1");
+        submitTag1.setUri("./my_form2_submit1");
+        submitTag1.doStartTag();
+        submitTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                // onclickイベントハンドラが直接設定される
+                "<input name=\"my_form2_submit1\" onclick=\"return window.nablarch_submit(event, this);\" />"
+        );
+
+        PopupLinkTag popupLinkTag1 = new PopupLinkTag();
+        popupLinkTag1.setPageContext(pageContext);
+        popupLinkTag1.setName("my_form2_popup_link1");
+        popupLinkTag1.setUri("./my_form2_popup_link1");
+        popupLinkTag1.doStartTag();
+        popupLinkTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                // onclickイベントハンドラが直接設定される
+                "<a name=\"my_form2_popup_link1\" href=\"./my_form2_popup_link1_encode_suffix\" onclick=\"return window.nablarch_submit(event, this);\"></a>"
+        );
+
+        DownloadButtonTag downloadButtonTag1 = new DownloadButtonTag();
+        downloadButtonTag1.setPageContext(pageContext);
+        downloadButtonTag1.setName("my_form2_download_button1");
+        downloadButtonTag1.setUri("./my_form2_download_button1");
+        downloadButtonTag1.doStartTag();
+        downloadLinkTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                // onclickイベントハンドラが直接設定される
+                "<button name=\"my_form2_download_button1\" onclick=\"return window.nablarch_submit(event, this);\"></a>"
+        );
+
+        assertThat(formTag2.doEndTag(), is(Tag.EVAL_PAGE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form2_submit1=|nablarch_hidden_submit_my_form2_download_button1=|nablarch_hidden_submit_my_form2_popup_link1=\" />",
+                "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
+                "<script type=\"text/javascript\">",
+                "<!--",
+                "nablarch_submission_info.my_form2 = {",
+                "\"my_form2_submit1\": { \"action\": \"./my_form2_submit1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"TRANSITION\" },",
+                "\"my_form2_popup_link1\": { \"action\": \"./my_form2_popup_link1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"POPUP\", \"popupWindowName\": null, \"popupOption\": \"\", \"changeParamNames\": {} },",
+                "\"my_form2_download_button1\": { \"action\": \"./my_form2_download_button1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"DOWNLOAD\", \"changeParamNames\": {} }",
+                "};",
+                "-->",
+                "</script>",
+                "</form>",
+                // nonceが付与されている
+                "<script type=\"text/javascript\">",
+                "<!--",
+                "nablarch_submission_info.endMark.my_form2 = true;",
+                "-->",
+                "</script>"
+        );
+    }
+
+    /**
+     * nonceを設定した状態でformタグ（複数含む）を構築すると、子要素になっているイベントハンドラが
+     * 生成するJavaScriptがscriptタグ内に書き出されることを確認する。
+     */
+    @Test
+    public void testMultipleFormsScriptsHasNonce() throws Exception {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        String nonce = "abcde";
+
+        // nonce
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce);
+
+        target.setName("my_form1");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                // nonceが付与されている
+                "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
+                "<!--",
+                SUBMIT_FUNCTION,
+                "-->",
+                "</script>",
+                "<form name=\"my_form1\" method=\"post\">"
+        );
+
+        // form1内のコントロール（button, submit, linkのパターンを網羅）
+        ButtonTag buttonTag1 = new ButtonTag();
+        buttonTag1.setPageContext(pageContext);
+        buttonTag1.setName("my_form1_button1");
+        buttonTag1.setUri("./my_form1_button1");
+        buttonTag1.doStartTag();
+        buttonTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                "<button name=\"my_form1_button1\"></button>"
+        );
+
+        PopupSubmitTag popupSubmitTag1 = new PopupSubmitTag();
+        popupSubmitTag1.setPageContext(pageContext);
+        popupSubmitTag1.setName("my_form1_popup_submit1");
+        popupSubmitTag1.setUri("./my_form1_popup_submit1");
+        popupSubmitTag1.doStartTag();
+        popupSubmitTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                "<input name=\"my_form1_popup_submit1\" />"
+        );
+
+        DownloadLinkTag downloadLinkTag1 = new DownloadLinkTag();
+        downloadLinkTag1.setPageContext(pageContext);
+        downloadLinkTag1.setName("my_form1_download_link1");
+        downloadLinkTag1.setUri("./my_form1_download_link1");
+        downloadLinkTag1.doStartTag();
+        downloadLinkTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                "<a name=\"my_form1_download_link1\" href=\"./my_form1_download_link1_encode_suffix\"></a>"
+        );
+
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form1_popup_submit1=|nablarch_hidden_submit_my_form1_download_link1=|nablarch_hidden_submit_my_form1_button1=\" />",
+                "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
+                "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
+                "<!--",
+                "",
+                // formの要素に対するイベントハンドラ
+                "document.querySelector(\"button[name='my_form1_button1']\").onclick = window.nablarch_submit;",
+                "document.querySelector(\"input[name='my_form1_popup_submit1']\").onclick = window.nablarch_submit;",
+                "document.querySelector(\"a[name='my_form1_download_link1']\").onclick = window.nablarch_submit;",
+                "",
+                "nablarch_submission_info.my_form1 = {",
+                "\"my_form1_button1\": { \"action\": \"./my_form1_button1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"TRANSITION\" },",
+                "\"my_form1_popup_submit1\": { \"action\": \"./my_form1_popup_submit1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"POPUP\", \"popupWindowName\": null, \"popupOption\": \"\", \"changeParamNames\": {} },",
+                "\"my_form1_download_link1\": { \"action\": \"./my_form1_download_link1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"DOWNLOAD\", \"changeParamNames\": {} }",
+                "};",
+                "-->",
+                "</script>",
+                "</form>",
+                // nonceが付与されている
+                "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
+                "<!--",
+                "nablarch_submission_info.endMark.my_form1 = true;",
+                "-->",
+                "</script>"
+        );
+
+        // form 2つ目
+        FormTag formTag2 = new FormTag();
+        formTag2.setPageContext(pageContext);
+
+        formTag2.setName("my_form2");
+
+        assertThat(formTag2.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                "<form name=\"my_form2\" method=\"post\">"
+        );
+
+        // form2内のコントロール（button, submit, linkのパターンを網羅）
+        SubmitTag submitTag1 = new SubmitTag();
+        submitTag1.setPageContext(pageContext);
+        submitTag1.setName("my_form2_submit1");
+        submitTag1.setUri("./my_form2_submit1");
+        submitTag1.doStartTag();
+        submitTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                "<input name=\"my_form2_submit1\" />"
+        );
+
+        PopupLinkTag popupLinkTag1 = new PopupLinkTag();
+        popupLinkTag1.setPageContext(pageContext);
+        popupLinkTag1.setName("my_form2_popup_link1");
+        popupLinkTag1.setUri("./my_form2_popup_link1");
+        popupLinkTag1.doStartTag();
+        popupLinkTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                "<a name=\"my_form2_popup_link1\" href=\"./my_form2_popup_link1_encode_suffix\"></a>"
+        );
+
+        DownloadButtonTag downloadButtonTag1 = new DownloadButtonTag();
+        downloadButtonTag1.setPageContext(pageContext);
+        downloadButtonTag1.setName("my_form2_download_button1");
+        downloadButtonTag1.setUri("./my_form2_download_button1");
+        downloadButtonTag1.doStartTag();
+        downloadLinkTag1.doEndTag();
+
+        assertTagOutputAndClearOutput(
+                "<button name=\"my_form2_download_button1\"></a>"
+        );
+
+        assertThat(formTag2.doEndTag(), is(Tag.EVAL_PAGE));
+
+        assertTagOutputAndClearOutput(
+                "",
+                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form2_submit1=|nablarch_hidden_submit_my_form2_download_button1=|nablarch_hidden_submit_my_form2_popup_link1=\" />",
+                "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
+                "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
+                "<!--",
+                "",
+                // formの要素に対するイベントハンドラ
+                "document.querySelector(\"input[name='my_form2_submit1']\").onclick = window.nablarch_submit;",
+                "document.querySelector(\"a[name='my_form2_popup_link1']\").onclick = window.nablarch_submit;",
+                "document.querySelector(\"button[name='my_form2_download_button1']\").onclick = window.nablarch_submit;",
+                "",
+                "nablarch_submission_info.my_form2 = {",
+                "\"my_form2_submit1\": { \"action\": \"./my_form2_submit1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"TRANSITION\" },",
+                "\"my_form2_popup_link1\": { \"action\": \"./my_form2_popup_link1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"POPUP\", \"popupWindowName\": null, \"popupOption\": \"\", \"changeParamNames\": {} },",
+                "\"my_form2_download_button1\": { \"action\": \"./my_form2_download_button1_encode_suffix\", \"allowDoubleSubmission\": true, \"submissionAction\": \"DOWNLOAD\", \"changeParamNames\": {} }",
+                "};",
+                "-->",
+                "</script>",
+                "</form>",
+                // nonceが付与されている
+                "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
+                "<!--",
+                "nablarch_submission_info.endMark.my_form2 = true;",
+                "-->",
+                "</script>"
+        );
+    }
+
+    private void assertTagOutputAndClearOutput(String... expectedArray) {
+        String ls = TagUtil.getCustomTagConfig().getLineSeparator();
+        String actual = TagTestUtil.getOutput(pageContext);
+        String[] splitActual = actual.split(ls);
+        String[] splitExpected = Builder.lines(expectedArray).split(Builder.LS);
+
+        for (int i = 0; i < splitActual.length; i++) {
+            TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
+        }
+
+        assertThat(splitActual.length, is(splitExpected.length));
+
+        TagTestUtil.clearOutput(pageContext);
     }
 }
