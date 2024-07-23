@@ -1806,7 +1806,7 @@ public class TagUtilTest {
 
     @Test
     public void testRegisterOnclickForSubmission() {
-        FormContext formContext = TagTestUtil.createFormContext();
+        FormContext formContext = TagTestUtil.createFormContextByName("test_form1");
         TagUtil.setFormContext(pageContext, formContext);
 
         String name = "button_name1";
@@ -1857,7 +1857,7 @@ public class TagUtilTest {
         List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
         assertThat(inlineSubmissionScripts.size(), is(1));
         // scriptタグ出力用のスクリプトが追加される
-        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"button[name='button_name1']\").onclick = window.nablarch_submit;"));
+        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"form[name='test_form1'] button[name='button_name1']\").onclick = window.nablarch_submit;"));
 
         // onclickあり、suppressCallNablarchSubmitはfalse
         attributes = new HtmlAttributes();

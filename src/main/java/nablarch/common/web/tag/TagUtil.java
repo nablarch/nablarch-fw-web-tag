@@ -817,6 +817,9 @@ public final class TagUtil {
         FormContext formContext = getFormContext(pageContext);
         StringBuilder javaScript = new StringBuilder();
         javaScript.append("document.querySelector(\"");
+        javaScript.append("form[name='");
+        javaScript.append(formContext.getName());
+        javaScript.append("'] ");
         javaScript.append(tagName);
         javaScript.append("[name='");
         javaScript.append(attributes.get(HtmlAttribute.NAME));

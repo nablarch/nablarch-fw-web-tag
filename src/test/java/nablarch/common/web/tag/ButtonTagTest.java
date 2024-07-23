@@ -227,7 +227,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
     @Test
     public void testInputPageForHasCspNonce() throws Exception {
 
-        FormContext formContext = TagTestUtil.createFormContext();
+        FormContext formContext = TagTestUtil.createFormContextByName("test_form1");
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
         pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
@@ -257,7 +257,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         assertThat(info.getAction(), is(SubmissionInfo.SubmissionAction.TRANSITION));
         List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
         assertThat(inlineSubmissionScripts.size(), is(1));
-        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"button[name='name_test']\").onclick = window.nablarch_submit;"));
+        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"form[name='test_form1'] button[name='name_test']\").onclick = window.nablarch_submit;"));
     }
 
     /**

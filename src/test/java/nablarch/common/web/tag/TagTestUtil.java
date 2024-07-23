@@ -39,13 +39,22 @@ class TagTestUtil {
     }
 
     static FormContext createFormContext() {
-        return createFormContext("post");
+        return createFormContextByMethod("post");
     }
 
-    static FormContext createFormContext(String method) {
+    static FormContext createFormContextByMethod(String method) {
+        return createFormContext(method, "test_form_name" + formCount++);
+    }
+
+    static FormContext createFormContextByName(String name) {
+        formCount++;
+        return createFormContext("post", name);
+    }
+
+    static FormContext createFormContext(String method, String name) {
         HtmlAttributes formAttrs = new HtmlAttributes();
         formAttrs.put(HtmlAttribute.METHOD, method);
-        return new FormContext("test_form_name" + formCount++);
+        return new FormContext(name);
     }
 
     static String getOutput(PageContext pageContext) {

@@ -237,7 +237,7 @@ public class SubmitLinkTagTest extends TagTestSupport<SubmitLinkTag> {
     @Test
     public void testInputPageForHasCspNonce() throws Exception {
         TagTestUtil.setUpDefaultConfig();
-        FormContext formContext = TagTestUtil.createFormContext();
+        FormContext formContext = TagTestUtil.createFormContextByName("test_form1");
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
         pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
@@ -268,7 +268,7 @@ public class SubmitLinkTagTest extends TagTestSupport<SubmitLinkTag> {
         assertThat(info.getAction(), is(SubmissionAction.TRANSITION));
         assertThat(formContext.getInlineSubmissionScripts().size(), is(1));
         List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
-        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"a[name='name_test']\").onclick = window.nablarch_submit;"));
+        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"form[name='test_form1'] a[name='name_test']\").onclick = window.nablarch_submit;"));
 
     }
 
