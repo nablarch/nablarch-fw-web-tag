@@ -119,8 +119,8 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
         assertThat(info.isAllowDoubleSubmission(), is(true));
         assertThat(info.getAction(), is(SubmissionAction.POPUP));
         assertThat(info.getPopupOption(), is("width=400, height=300"));
-        assertThat(formContext.getInlineSubmissionScripts().size(), is(1));
         List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
+        assertThat(inlineSubmissionScripts.size(), is(1));
         assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"input[name='name_test']\").onclick = window.nablarch_submit;"));
     }
 
@@ -228,6 +228,7 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
         assertThat(info.isAllowDoubleSubmission(), is(true));
         assertThat(info.getAction(), is(SubmissionAction.POPUP));
         assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
         // CSP対応用のnonceを含めている場合
@@ -405,6 +406,7 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
         assertThat(info.isAllowDoubleSubmission(), is(true));
         assertThat(info.getAction(), is(SubmissionAction.POPUP));
         assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
         // CSP対応用のnonceを含めている場合

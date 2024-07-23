@@ -293,8 +293,8 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         assertThat(info.getName(), is("name_test"));
         assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
         assertThat(info.getAction(), is(SubmissionAction.TRANSITION));
-        assertThat(formContext.getInlineSubmissionScripts().size(), is(1));
         List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
+        assertThat(inlineSubmissionScripts.size(), is(1));
         assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"input[name='name_test']\").onclick = window.nablarch_submit;"));
     }
 
@@ -538,6 +538,7 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         assertThat(info.getName(), is("name_test"));
         assertThat(info.getUri(), is("./R12345" + nablarch.test.support.web.WebTestUtil.ENCODE_URL_SUFFIX));
         assertThat(info.getAction(), is(SubmissionAction.TRANSITION));
+        // スクリプトは生成されない
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
         // CSP対応用のnonceを含めている場合
@@ -678,6 +679,7 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         assertThat(info.getName(), is("name_test"));
         assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
         assertThat(info.getAction(), is(SubmissionAction.TRANSITION));
+        // スクリプトは生成されない
         assertThat(formContext.getInputNames().isEmpty(), is(true));
 
         // CSP対応用のnonceを含めている場合

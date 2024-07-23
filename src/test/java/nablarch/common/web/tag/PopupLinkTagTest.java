@@ -102,8 +102,8 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
         assertThat(info.isAllowDoubleSubmission(), is(true));
         assertThat(info.getAction(), is(SubmissionAction.POPUP));
         assertThat(info.getPopupOption(), is("width=400, height=300"));
-        assertThat(formContext.getInlineSubmissionScripts().size(), is(1));
         List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
+        assertThat(inlineSubmissionScripts.size(), is(1));
         assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"a[name='name_test']\").onclick = window.nablarch_submit;"));
     }
 
@@ -210,6 +210,295 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
         assertThat(info.getAction(), is(SubmissionAction.POPUP));
         // デフォルトのwindowOptionが設定されていること。
         assertThat(info.getPopupOption(), is("width=500, height=400"));
+    }
+
+    /**
+     * onclick属性を指定した時に、CSPのnonceの有無に関わらず指定した属性値がそのまま出力されることを確認する。
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInputPageForOnclick() throws Exception {
+        TagTestUtil.setUpDefaultConfig();
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // a
+        target.setName("name_test");
+        target.setOnclick("onclick_test");
+
+        target.setPopupWindowName("popup");
+
+        // nablarch
+        target.setUri("./R12345");
+        target.setPopupOption("width=400, height=300");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"onclick_test\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        /* CSP対応用のnonceを含めている場合 */
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        // nonce
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"onclick_test\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        /* suppressCallNablarchSubmitをtrueにした場合 */
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // nablarch
+        target.setSuppressCallNablarchSubmit(true);
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"onclick_test\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        /* suppressCallNablarchSubmitをtrueにした場合（CSP対応用のnonceを含めている） */
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        // nonce
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        // nablarch
+        target.setSuppressCallNablarchSubmit(true);
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"onclick_test\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+    }
+
+    /**
+     * SuppressCallNablarchSubmit属性に{@code true}を指定した時に、CSPのnonceの有無に関わらず
+     * サブミット用のスクリプトが出力されなくなることを確認する。
+     */
+    @Test
+    public void testInputPageForSuppressCallNablarchSubmit() throws Exception {
+        TagTestUtil.setUpDefaultConfig();
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // a
+        target.setName("name_test");
+
+        target.setPopupWindowName("popup");
+
+        // nablarch
+        target.setUri("./R12345");
+        target.setPopupOption("width=400, height=300");
+        target.setSuppressCallNablarchSubmit(true);
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        String actual = TagTestUtil.getOutput(pageContext);
+        String expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        SubmissionInfo info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        /* CSP対応用のnonceを含めている場合 */
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        // nonce
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        /* onclickを指定した場合はそのまま出力される */
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        // a
+        target.setOnclick("onclick_test");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"onclick_test\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        /* onclickを指定した場合はそのまま出力される（CSP対応用のnonceを含めている） */
+
+        TagTestUtil.clearOutput(pageContext);
+        formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+        // nonce
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+
+        // a
+        target.setOnclick("onclick_test");
+
+        assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
+        assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
+
+        actual = TagTestUtil.getOutput(pageContext);
+        expected = Builder.lines(
+                "<a",
+                "name=\"name_test\"",
+                "href=\"./R12345" + WebTestUtil.ENCODE_URL_SUFFIX + "\"",
+                "onclick=\"onclick_test\"></a>"
+        ).replace(Builder.LS, " ");
+        TagTestUtil.assertTag(actual, expected, " ");
+
+        assertFalse(formContext.getInputNames().contains("name_test"));
+
+        assertThat(formContext.getSubmissionInfoList().size(), is(1));
+        info = formContext.getSubmissionInfoList().get(0);
+        assertThat(info.getName(), is("name_test"));
+        assertThat(info.getUri(), is("./R12345" + WebTestUtil.ENCODE_URL_SUFFIX));
+        assertThat(info.isAllowDoubleSubmission(), is(true));
+        assertThat(info.getAction(), is(SubmissionAction.POPUP));
+        assertThat(info.getPopupOption(), is("width=400, height=300"));
+        // スクリプトは生成されない
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
     }
 
     /**
