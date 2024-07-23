@@ -1,11 +1,11 @@
 package nablarch.common.web.tag;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,14 +29,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
-
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
-
-import org.hamcrest.Matchers;
 
 import nablarch.common.permission.BasicPermission;
 import nablarch.common.permission.Permission;
@@ -51,13 +48,14 @@ import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.Builder;
 import nablarch.core.util.FileUtil;
 import nablarch.core.util.FormatSpec;
+import nablarch.fw.ExecutionContext;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.MockHttpRequest;
 import nablarch.fw.web.servlet.WebFrontController;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
 import nablarch.test.support.web.servlet.MockServletContext;
 import nablarch.test.support.web.servlet.MockServletFilterConfig;
-
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -1747,4 +1745,141 @@ public class TagUtilTest {
         assertThat(TagUtil.formatValue(pageContext, name, spec("decimal{#}"), "abc"), is("abc"));
     }
 
+    /**
+     * CSPのnonceがリクエストスコープに存在するか確認するテスト
+     */
+    @Test
+    public void testHasCspNonce() {
+        assertThat(TagUtil.hasCspNonce(pageContext), is(false));
+
+        String nonce = "abcde";
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
+
+        assertThat(TagUtil.hasCspNonce(pageContext), is(true));
+    }
+
+    /**
+     * CSPのnonceがリクエストスコープあれば取得できるか確認するテスト
+     */
+    @Test
+    public void testGetCspNonce() {
+        assertThat(TagUtil.getCspNonce(pageContext), nullValue());
+
+        String nonce = "abcde";
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
+
+        assertThat(TagUtil.getCspNonce(pageContext), is(nonce));
+    }
+
+    /**
+     * scriptタグを生成するテスト。CSPのnonceがリクエストスコープにあるかどうかで生成結果が変わる。
+     */
+    @Test
+    public void testCreateScriptTag() {
+        String script = "console.log('hello');";
+
+        // nonceがない場合
+        String expected = Builder.lines(
+                "<script type=\"text/javascript\">",
+                "<!--",
+                "console.log('hello');",
+                "-->",
+                "</script>"
+        );
+
+        assertThat(TagUtil.createScriptTag(pageContext, script), is(expected));
+
+        // nonceを設定した場合
+        String nonce = "abcde";
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
+
+        expected = Builder.lines(
+                        "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
+                        "<!--",
+                        "console.log('hello');",
+                        "-->",
+                        "</script>"
+                );
+
+        assertThat(TagUtil.createScriptTag(pageContext, script), is(expected));
+    }
+
+    @Test
+    public void testRegisterOnclickForSubmission() {
+        FormContext formContext = TagTestUtil.createFormContext();
+        TagUtil.setFormContext(pageContext, formContext);
+
+        String name = "button_name1";
+
+        /* nonceなしの場合 */
+        // onclickなし、suppressCallNablarchSubmitはfalse
+        HtmlAttributes attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, false);
+        // デフォルトのonclick関数が設定される
+        assertThat(
+                (String) attributes.get(HtmlAttribute.ONCLICK),
+                is("return window." + ExecutionContext.FW_PREFIX + "submit(event, this);")
+        );
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // onclickあり、suppressCallNablarchSubmitはfalse
+        attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        attributes.put(HtmlAttribute.ONCLICK, "onclick_test");
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, false);
+        assertThat((String) attributes.get(HtmlAttribute.ONCLICK), is("onclick_test"));
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // onclickなし、suppressCallNablarchSubmitはtrue
+        attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, true);
+        assertThat((String) attributes.get(HtmlAttribute.ONCLICK), nullValue());
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        // onclickあり、suppressCallNablarchSubmitはfalse
+        attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        attributes.put(HtmlAttribute.ONCLICK, "onclick_test");
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, true);
+        assertThat((String) attributes.get(HtmlAttribute.ONCLICK), is("onclick_test"));
+        assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
+
+        /* nonceありの場合 */
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+
+        // onclickなし、suppressCallNablarchSubmitはfalse
+        attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, false);
+        assertThat((String) attributes.get(HtmlAttribute.ONCLICK), nullValue());
+        List<String> inlineSubmissionScripts = formContext.getInlineSubmissionScripts();
+        assertThat(inlineSubmissionScripts.size(), is(1));
+        // scriptタグ出力用のスクリプトが追加される
+        assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"button[name='button_name1']\").onclick = window.nablarch_submit;"));
+
+        // onclickあり、suppressCallNablarchSubmitはfalse
+        attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        attributes.put(HtmlAttribute.ONCLICK, "onclick_test");
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, false);
+        assertThat((String) attributes.get(HtmlAttribute.ONCLICK), is("onclick_test"));
+        assertThat(formContext.getSubmissionInfoList().isEmpty(), is(true));
+
+        // onclickなし、suppressCallNablarchSubmitはtrue
+        attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, true);
+        assertThat((String) attributes.get(HtmlAttribute.ONCLICK), nullValue());
+        assertThat(formContext.getSubmissionInfoList().isEmpty(), is(true));
+
+        // onclickあり、suppressCallNablarchSubmitはfalse
+        attributes = new HtmlAttributes();
+        attributes.put(HtmlAttribute.NAME, name);
+        attributes.put(HtmlAttribute.ONCLICK, "onclick_test");
+        TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, true);
+        assertThat((String) attributes.get(HtmlAttribute.ONCLICK), is("onclick_test"));
+        assertThat(formContext.getSubmissionInfoList().isEmpty(), is(true));
+    }
 }

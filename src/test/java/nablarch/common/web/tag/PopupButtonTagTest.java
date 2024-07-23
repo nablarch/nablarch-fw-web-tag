@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.handler.WebTestUtil;
@@ -71,7 +72,7 @@ public class PopupButtonTagTest extends TagTestSupport<PopupButtonTag> {
         FormContext formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // button
         target.setName("name_test");
@@ -253,7 +254,7 @@ public class PopupButtonTagTest extends TagTestSupport<PopupButtonTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -318,7 +319,7 @@ public class PopupButtonTagTest extends TagTestSupport<PopupButtonTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // nablarch
         target.setSuppressCallNablarchSubmit(true);
@@ -401,7 +402,7 @@ public class PopupButtonTagTest extends TagTestSupport<PopupButtonTag> {
         formContext = TagTestUtil.createFormContext();
                TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -465,7 +466,7 @@ public class PopupButtonTagTest extends TagTestSupport<PopupButtonTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // button
         target.setOnclick("onclick_test");

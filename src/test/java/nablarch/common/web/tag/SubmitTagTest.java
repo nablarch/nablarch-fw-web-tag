@@ -262,7 +262,7 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         FormContext formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // input
         target.setName("name_test");
@@ -547,7 +547,7 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -610,7 +610,7 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // nablarch
         target.setSuppressCallNablarchSubmit(true);
@@ -689,7 +689,7 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -751,7 +751,7 @@ public class SubmitTagTest extends TagTestSupport<SubmitTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde");
+        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
