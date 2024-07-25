@@ -16,6 +16,7 @@ import nablarch.common.permission.Permission;
 import nablarch.common.permission.PermissionUtil;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.Builder;
+import nablarch.fw.web.handler.SecureHandler;
 import nablarch.test.support.web.WebTestUtil;
 import org.junit.Test;
 
@@ -230,7 +231,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         FormContext formContext = TagTestUtil.createFormContextByName("test_form1");
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // button
         target.setName("name_test");
@@ -481,7 +482,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         TagTestUtil.clearOutput(pageContext);
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -539,7 +540,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         TagTestUtil.clearOutput(pageContext);
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // nablarch
         target.setSuppressDefaultSubmit(true);
@@ -611,7 +612,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -668,7 +669,7 @@ public class ButtonTagTest extends TagTestSupport<ButtonTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));

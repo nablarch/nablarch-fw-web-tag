@@ -44,6 +44,7 @@ import nablarch.core.validation.ValidationResultMessage;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.handler.KeitaiAccessHandler;
+import nablarch.fw.web.handler.SecureHandler;
 
 /**
  * カスタムタグの作成を助けるユーティリティ。
@@ -283,7 +284,7 @@ public final class TagUtil {
      * @return リクエストスコープに格納されているnonce
      */
     public static String getCspNonce(PageContext pageContext) {
-        return (String) getSingleValueOnScope(pageContext, CustomTagConfig.CSP_NONCE_KEY);
+        return (String) getSingleValueOnScope(pageContext, SecureHandler.CSP_NONCE_KEY);
     }
 
     /**

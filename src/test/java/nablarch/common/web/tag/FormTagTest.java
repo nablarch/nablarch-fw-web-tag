@@ -22,6 +22,7 @@ import nablarch.common.web.hiddenencryption.HiddenEncryptionUtil;
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 import nablarch.core.util.Builder;
 import nablarch.fw.web.handler.KeitaiAccessHandler;
+import nablarch.fw.web.handler.SecureHandler;
 import nablarch.test.support.web.servlet.MockServletRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -2496,7 +2497,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         String nonce = "abcde";
 
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, nonce);
 
         target.setName("my_form1");
 

@@ -51,6 +51,7 @@ import nablarch.core.util.FormatSpec;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.MockHttpRequest;
+import nablarch.fw.web.handler.SecureHandler;
 import nablarch.fw.web.servlet.WebFrontController;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
 import nablarch.test.support.web.servlet.MockServletContext;
@@ -1753,7 +1754,7 @@ public class TagUtilTest {
         assertThat(TagUtil.hasCspNonce(pageContext), is(false));
 
         String nonce = "abcde";
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
 
         assertThat(TagUtil.hasCspNonce(pageContext), is(true));
     }
@@ -1766,7 +1767,7 @@ public class TagUtilTest {
         assertThat(TagUtil.getCspNonce(pageContext), nullValue());
 
         String nonce = "abcde";
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
 
         assertThat(TagUtil.getCspNonce(pageContext), is(nonce));
     }
@@ -1791,7 +1792,7 @@ public class TagUtilTest {
 
         // nonceを設定した場合
         String nonce = "abcde";
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, nonce, PageContext.REQUEST_SCOPE);
 
         expected = Builder.lines(
                         "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
@@ -1847,7 +1848,7 @@ public class TagUtilTest {
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
         /* nonceありの場合 */
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // onclickなし、suppressDefaultSubmitはfalse
         attributes = new HtmlAttributes();

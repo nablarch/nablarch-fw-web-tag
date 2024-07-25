@@ -13,6 +13,7 @@ import javax.servlet.jsp.tagext.Tag;
 import nablarch.common.web.handler.WebTestUtil;
 import nablarch.common.web.tag.SubmissionInfo.SubmissionAction;
 import nablarch.core.util.Builder;
+import nablarch.fw.web.handler.SecureHandler;
 import org.junit.Test;
 
 /**
@@ -72,7 +73,7 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
         FormContext formContext = TagTestUtil.createFormContextByName("test_form1");
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // a
         target.setName("name_test");
@@ -264,7 +265,7 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -329,7 +330,7 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // nablarch
         target.setSuppressDefaultSubmit(true);
@@ -408,7 +409,7 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -472,7 +473,7 @@ public class PopupLinkTagTest extends TagTestSupport<PopupLinkTag> {
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
         // nonce
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // a
         target.setOnclick("onclick_test");

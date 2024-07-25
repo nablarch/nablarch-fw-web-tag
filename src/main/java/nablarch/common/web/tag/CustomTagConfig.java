@@ -18,11 +18,6 @@ import static nablarch.fw.ExecutionContext.FW_PREFIX;
  * @author Kiyohito Itoh
  */
 public class CustomTagConfig {
-
-    /** 生成したCSPのnonceをリクエストスコープに格納する際に使用するキー */
-    public static final String CSP_NONCE_KEY = SecureHandler.CSP_NONCE_KEY;
-
-
     /** errorタグと入力項目タグのerrorCss属性のデフォルト値 */
     private String errorCss = FW_PREFIX + "error";
     

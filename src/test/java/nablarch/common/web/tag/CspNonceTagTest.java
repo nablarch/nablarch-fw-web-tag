@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
+import nablarch.fw.web.handler.SecureHandler;
 import org.junit.Test;
 
 /**
@@ -39,7 +40,7 @@ public class CspNonceTagTest extends TagTestSupport<CspNonceTag> {
      */
     @Test
     public void hasCspNonce() throws JspException {
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -59,7 +60,7 @@ public class CspNonceTagTest extends TagTestSupport<CspNonceTag> {
     public void hasCspNonceSourceFormat() throws JspException {
         target.setSourceFormat(true);
 
-        pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
+        pageContext.setAttribute(SecureHandler.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         assertThat(target.doStartTag(), is(Tag.SKIP_BODY));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
