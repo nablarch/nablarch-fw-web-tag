@@ -262,14 +262,14 @@ public class DownloadSubmitTagTest extends TagTestSupport<DownloadSubmitTag> {
         // スクリプトは生成されない
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
-        /* suppressCallNablarchSubmitをtrueにした場合 */
+        /* suppressDefaultSubmitをtrueにした場合 */
 
         TagTestUtil.clearOutput(pageContext);
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
 
         // nablarch
-        target.setSuppressCallNablarchSubmit(true);
+        target.setSuppressDefaultSubmit(true);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -296,7 +296,7 @@ public class DownloadSubmitTagTest extends TagTestSupport<DownloadSubmitTag> {
         // スクリプトは生成されない
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
-        /* suppressCallNablarchSubmitをtrueにした場合（CSP対応用のnonceを含めている） */
+        /* suppressDefaultSubmitをtrueにした場合（CSP対応用のnonceを含めている） */
 
         TagTestUtil.clearOutput(pageContext);
         formContext = TagTestUtil.createFormContext();
@@ -305,7 +305,7 @@ public class DownloadSubmitTagTest extends TagTestSupport<DownloadSubmitTag> {
         pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
         // nablarch
-        target.setSuppressCallNablarchSubmit(true);
+        target.setSuppressDefaultSubmit(true);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -357,7 +357,7 @@ public class DownloadSubmitTagTest extends TagTestSupport<DownloadSubmitTag> {
 
         // nablarch
         target.setUri("./R12345");
-        target.setSuppressCallNablarchSubmit(true);
+        target.setSuppressDefaultSubmit(true);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));

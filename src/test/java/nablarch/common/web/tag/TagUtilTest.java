@@ -1812,7 +1812,7 @@ public class TagUtilTest {
         String name = "button_name1";
 
         /* nonceなしの場合 */
-        // onclickなし、suppressCallNablarchSubmitはfalse
+        // onclickなし、suppressDefaultSubmitはfalse
         HtmlAttributes attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, false);
@@ -1823,7 +1823,7 @@ public class TagUtilTest {
         );
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
-        // onclickあり、suppressCallNablarchSubmitはfalse
+        // onclickあり、suppressDefaultSubmitはfalse
         attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         attributes.put(HtmlAttribute.ONCLICK, "onclick_test");
@@ -1831,14 +1831,14 @@ public class TagUtilTest {
         assertThat((String) attributes.get(HtmlAttribute.ONCLICK), is("onclick_test"));
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
-        // onclickなし、suppressCallNablarchSubmitはtrue
+        // onclickなし、suppressDefaultSubmitはtrue
         attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, true);
         assertThat((String) attributes.get(HtmlAttribute.ONCLICK), nullValue());
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
-        // onclickあり、suppressCallNablarchSubmitはfalse
+        // onclickあり、suppressDefaultSubmitはfalse
         attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         attributes.put(HtmlAttribute.ONCLICK, "onclick_test");
@@ -1849,7 +1849,7 @@ public class TagUtilTest {
         /* nonceありの場合 */
         pageContext.setAttribute(CustomTagConfig.CSP_NONCE_KEY, "abcde", PageContext.REQUEST_SCOPE);
 
-        // onclickなし、suppressCallNablarchSubmitはfalse
+        // onclickなし、suppressDefaultSubmitはfalse
         attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, false);
@@ -1859,7 +1859,7 @@ public class TagUtilTest {
         // scriptタグ出力用のスクリプトが追加される
         assertThat(inlineSubmissionScripts.get(0), is("document.querySelector(\"form[name='test_form1'] button[name='button_name1']\").onclick = window.nablarch_submit;"));
 
-        // onclickあり、suppressCallNablarchSubmitはfalse
+        // onclickあり、suppressDefaultSubmitはfalse
         attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         attributes.put(HtmlAttribute.ONCLICK, "onclick_test");
@@ -1867,14 +1867,14 @@ public class TagUtilTest {
         assertThat((String) attributes.get(HtmlAttribute.ONCLICK), is("onclick_test"));
         assertThat(formContext.getSubmissionInfoList().isEmpty(), is(true));
 
-        // onclickなし、suppressCallNablarchSubmitはtrue
+        // onclickなし、suppressDefaultSubmitはtrue
         attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         TagUtil.registerOnclickForSubmission(pageContext, "button", attributes, true);
         assertThat((String) attributes.get(HtmlAttribute.ONCLICK), nullValue());
         assertThat(formContext.getSubmissionInfoList().isEmpty(), is(true));
 
-        // onclickあり、suppressCallNablarchSubmitはfalse
+        // onclickあり、suppressDefaultSubmitはfalse
         attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.NAME, name);
         attributes.put(HtmlAttribute.ONCLICK, "onclick_test");

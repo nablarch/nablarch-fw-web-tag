@@ -767,20 +767,20 @@ public final class TagUtil {
      * ・CSP対応用のnonceが保存されていない場合
      * 　・対象のタグのonclick属性としてイベントハンドラを出力する
      *
-     * なお、いずれの場合も属性にonclickが指定されている場合、または{@code suppressCallNablarchSubmit}プロパティが
+     * なお、いずれの場合も属性にonclickが指定されている場合、または{@code suppressDefaultSubmit}プロパティが
      * {@code true}の場合はスクリプトを生成しない。
      * </pre>
      *
      * @param pageContext ページコンテキスト
      * @param tagName クリック対象のタグ名
      * @param attributes 属性
-     * @param suppressCallNablarchSubmit Nablarchのsubmit関数の呼び出しを抑制するか否か。{@code true}の場合は抑制する
+     * @param suppressDefaultSubmit Nablarchのデフォルトのsubmit関数呼び出しを抑制するか否か。{@code true}の場合は抑制する
      */
-    public static void registerOnclickForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
+    public static void registerOnclickForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressDefaultSubmit) {
         if (hasCspNonce(pageContext)) {
-            registerOnclickScriptForSubmission(pageContext, tagName, attributes, suppressCallNablarchSubmit);
+            registerOnclickScriptForSubmission(pageContext, tagName, attributes, suppressDefaultSubmit);
         } else {
-            editOnclickAttributeForSubmission(pageContext, attributes, suppressCallNablarchSubmit);
+            editOnclickAttributeForSubmission(pageContext, attributes, suppressDefaultSubmit);
         }
     }
 
@@ -788,15 +788,15 @@ public final class TagUtil {
      * クリック時に動作するスクリプトと、{@link FormTag}が出力するスクリプトと同じタイミングで
      * 出力するようにフォームコンテキストに登録する。
      *
-     * onclick属性が編集されている場合、または{@code suppressCallNablarchSubmit}プロパティが{@code true}の
+     * onclick属性が編集されている場合、または{@code suppressDefaultSubmit}プロパティが{@code true}の
      * 場合は登録しない。
      *
      * @param pageContext ページコンテキスト
      * @param tagName クリック対象のタグ名
      * @param attributes 属性
-     * @param suppressCallNablarchSubmit Nablarchのsubmit関数の呼び出しを抑制するか否か。{@code true}の場合は抑制する
+     * @param suppressDefaultSubmit Nablarchのデフォルトのsubmit関数呼び出しを抑制するか否か。{@code true}の場合は抑制する
      */
-    private static void registerOnclickScriptForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
+    private static void registerOnclickScriptForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressDefaultSubmit) {
         if (!jsSupported(pageContext)) {
             return;
         }
@@ -807,8 +807,8 @@ public final class TagUtil {
             return;
         }
 
-        if (suppressCallNablarchSubmit) {
-            // Nablarchのsubmit関数の呼び出し出力が抑制されている場合は、スクリプトを登録しない
+        if (suppressDefaultSubmit) {
+            // Nablarchのデフォルトのsubmit関数呼び出しが抑制されている場合は、スクリプトを登録しない
             return;
         }
 
@@ -832,13 +832,13 @@ public final class TagUtil {
 
     /**
      * サブミット制御のためにonclick属性を編集する。<br>
-     * onclick属性が編集されている場合は、または{@code suppressCallNablarchSubmit}プロパティが{@code true}の
+     * onclick属性が編集されている場合は、または{@code suppressDefaultSubmit}プロパティが{@code true}の
      * 場合は編集しない。
      * @param pageContext ページコンテキスト
      * @param attributes 属性
-     * @param suppressCallNablarchSubmit Nablarchのsubmit関数の呼び出しを抑制するか否か。{@code true}の場合は抑制する
+     * @param suppressDefaultSubmit デフォルトのsubmit関数呼び出しを抑制するか否か。{@code true}の場合は抑制する
      */
-    private static void editOnclickAttributeForSubmission(PageContext pageContext, HtmlAttributes attributes, boolean suppressCallNablarchSubmit) {
+    private static void editOnclickAttributeForSubmission(PageContext pageContext, HtmlAttributes attributes, boolean suppressDefaultSubmit) {
         if (!jsSupported(pageContext)) {
             return;
         }
@@ -848,8 +848,8 @@ public final class TagUtil {
             return;
         }
 
-        if (suppressCallNablarchSubmit) {
-            // Nablarchのsubmit関数の呼び出し出力が抑制されている場合は、スクリプトを登録しない
+        if (suppressDefaultSubmit) {
+            // Nablarchのデフォルトのsubmit関数呼び出しを抑制されている場合は、スクリプトを登録しない
             return;
         }
 

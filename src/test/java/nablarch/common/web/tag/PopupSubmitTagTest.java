@@ -268,14 +268,14 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
         // スクリプトは生成されない
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
-        // suppressCallNablarchSubmitをtrueにした場合
+        // suppressDefaultSubmitをtrueにした場合
         TagTestUtil.clearOutput(pageContext);
         TagTestUtil.setUpDefaultConfig();
         formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
 
         // nablarch
-        target.setSuppressCallNablarchSubmit(true);
+        target.setSuppressDefaultSubmit(true);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
@@ -304,7 +304,7 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
         // スクリプトは生成されない
         assertThat(formContext.getInlineSubmissionScripts().isEmpty(), is(true));
 
-        // suppressCallNablarchSubmitをtrueにした場合（CSP）
+        // suppressDefaultSubmitをtrueにした場合（CSP）
         TagTestUtil.clearOutput(pageContext);
         TagTestUtil.setUpDefaultConfig();
         formContext = TagTestUtil.createFormContext();
@@ -382,7 +382,7 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
         // nablarch
         target.setUri("./R12345");
         target.setPopupOption("width=400, height=300");
-        target.setSuppressCallNablarchSubmit(true);
+        target.setSuppressDefaultSubmit(true);
 
         assertThat(target.doStartTag(), is(Tag.EVAL_BODY_INCLUDE));
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));

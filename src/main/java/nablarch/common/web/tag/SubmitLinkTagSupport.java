@@ -23,8 +23,8 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
     /** {@link BodyContent} */
     private BodyContent bodyContent;
 
-    /** カスタムタグが生成するsubmit関数の出力を抑制するか否か。抑制する場合は{@code true} */
-    private boolean suppressCallNablarchSubmit = false;
+    /** カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か。抑制する場合は{@code true} */
+    private boolean suppressDefaultSubmit = false;
 
     /**
      * サブミット先のURIを設定する。
@@ -43,13 +43,13 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
     }
 
     /**
-     * カスタムタグが生成するsubmit関数の出力を抑制するか否かを設定する。
+     * カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否かを設定する。
      * 抑制する場合は{@code true}。
      *
-     * @param suppressCallNablarchSubmit カスタムタグが生成するsubmit関数の出力を抑制するか否か
+     * @param suppressDefaultSubmit カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か
      */
-    public void setSuppressCallNablarchSubmit(boolean suppressCallNablarchSubmit) {
-        this.suppressCallNablarchSubmit = suppressCallNablarchSubmit;
+    public void setSuppressDefaultSubmit(boolean suppressDefaultSubmit) {
+        this.suppressDefaultSubmit = suppressDefaultSubmit;
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
         setSubmissionInfoToFormContext(requestId, encodedUri, displayMethodResult);
 
         // サブミット情報を追加した後にスクリプトの生成を行う
-        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), suppressCallNablarchSubmit);
+        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), suppressDefaultSubmit);
 
         switch (displayMethodResult) {
         case DISABLED:
