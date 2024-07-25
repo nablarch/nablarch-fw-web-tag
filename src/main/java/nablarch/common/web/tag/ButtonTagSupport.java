@@ -23,7 +23,7 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
     private Boolean secure = null;
 
     /** カスタムタグが生成するsubmit関数の出力を抑制するか否か。抑制する場合は{@code true} */
-    private Boolean suppressCallNablarchSubmit = null;
+    private boolean suppressCallNablarchSubmit = false;
 
     /**
      * サブミット先のURIを設定する。
@@ -47,7 +47,7 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
      *
      * @param suppressCallNablarchSubmit カスタムタグが生成するsubmit関数の出力を抑制するか否か
      */
-    public void setSuppressCallNablarchSubmit(Boolean suppressCallNablarchSubmit) {
+    public void setSuppressCallNablarchSubmit(boolean suppressCallNablarchSubmit) {
         this.suppressCallNablarchSubmit = suppressCallNablarchSubmit;
     }
 
@@ -127,7 +127,7 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
         setSubmissionInfoToFormContext(requestId, encodedUri, displayMethodResult);
 
         // サブミット情報を追加した後にスクリプトの生成を行う
-        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), Boolean.TRUE.equals(suppressCallNablarchSubmit));
+        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), suppressCallNablarchSubmit);
 
         if (DisplayMethod.DISABLED == displayMethodResult) {
             getAttributes().put(HtmlAttribute.DISABLED, true);
