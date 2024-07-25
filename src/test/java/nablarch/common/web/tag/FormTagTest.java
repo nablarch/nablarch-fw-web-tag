@@ -3,15 +3,22 @@ package nablarch.common.web.tag;
 import static nablarch.fw.ExecutionContext.FW_PREFIX;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.jsp.tagext.Tag;
 
 import nablarch.common.web.WebConfig;
@@ -2340,7 +2347,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
         assertTagOutputAndClearOutput(
                 "",
-                // nonceが付与されている
+                // nonceなし
                 "<script type=\"text/javascript\">",
                 "<!--",
                 SUBMIT_FUNCTION,
@@ -2388,9 +2395,26 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
+        Set<Integer> skipIndices = new HashSet<Integer>();
+        skipIndices.add(1);
+
+        // nablarch_hiddenの中身をアサーション（HashMapにより構築されているので順序が安定しないため）
+        String output = TagTestUtil.getOutput(pageContext);
+        String nablarchHiddenActual = output.split(TagUtil.getCustomTagConfig().getLineSeparator())[1];
+        Pattern nablarchHiddenPattern = Pattern.compile("<input type=\"hidden\" name=\"nablarch_hidden\" value=\"(.+)\" />");
+        Matcher m = nablarchHiddenPattern.matcher(nablarchHiddenActual);
+
+        assertThat(m.find(), is(true));
+        assertThat(
+                Arrays.asList(m.group(1).split("\\|")),
+                containsInAnyOrder("nablarch_hidden_submit_my_form1_button1=", "nablarch_hidden_submit_my_form1_download_link1=", "nablarch_hidden_submit_my_form1_popup_submit1=")
+        );
+
         assertTagOutputAndClearOutput(
+                skipIndices,
                 "",
-                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form1_popup_submit1=|nablarch_hidden_submit_my_form1_download_link1=|nablarch_hidden_submit_my_form1_button1=\" />",
+                // nablarch_hiddenは順序が安定しないのでここではスキップ
+                "** nablarch_hiddenは前段で正規表現にて確認 **",
                 "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
                 "<script type=\"text/javascript\">",
                 "<!--",
@@ -2402,7 +2426,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "-->",
                 "</script>",
                 "</form>",
-                // nonceが付与されている
+                // nonceなし
                 "<script type=\"text/javascript\">",
                 "<!--",
                 "nablarch_submission_info.endMark.my_form1 = true;",
@@ -2462,9 +2486,23 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
         assertThat(formTag2.doEndTag(), is(Tag.EVAL_PAGE));
 
+        // nablarch_hiddenの中身をアサーション（HashMapにより構築されているので順序が安定しないため）
+        output = TagTestUtil.getOutput(pageContext);
+        nablarchHiddenActual = output.split(TagUtil.getCustomTagConfig().getLineSeparator())[1];
+        nablarchHiddenPattern = Pattern.compile("<input type=\"hidden\" name=\"nablarch_hidden\" value=\"(.+)\" />");
+        m = nablarchHiddenPattern.matcher(nablarchHiddenActual);
+
+        assertThat(m.find(), is(true));
+        assertThat(
+                Arrays.asList(m.group(1).split("\\|")),
+                containsInAnyOrder("nablarch_hidden_submit_my_form2_download_button1=", "nablarch_hidden_submit_my_form2_popup_link1=", "nablarch_hidden_submit_my_form2_submit1=")
+        );
+
         assertTagOutputAndClearOutput(
+                skipIndices,
                 "",
-                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form2_submit1=|nablarch_hidden_submit_my_form2_download_button1=|nablarch_hidden_submit_my_form2_popup_link1=\" />",
+                // nablarch_hiddenは順序が安定しないのでここではスキップ
+                "** nablarch_hiddenは前段で正規表現にて確認 **",
                 "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
                 "<script type=\"text/javascript\">",
                 "<!--",
@@ -2476,7 +2514,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
                 "-->",
                 "</script>",
                 "</form>",
-                // nonceが付与されている
+                // nonceなし
                 "<script type=\"text/javascript\">",
                 "<!--",
                 "nablarch_submission_info.endMark.my_form2 = true;",
@@ -2550,9 +2588,20 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
+        Set<Integer> skipIndices = new HashSet<Integer>();
+        skipIndices.add(1);
+
+        // nablarch_hiddenの中身をアサーション（HashMapにより構築されているので順序が安定しないため）
+        String output = TagTestUtil.getOutput(pageContext);
+        String nablarchHiddenActual = output.split(TagUtil.getCustomTagConfig().getLineSeparator())[1];
+        Pattern nablarchHiddenPattern = Pattern.compile("<input type=\"hidden\" name=\"nablarch_hidden\" value=\"(.+)\" />");
+        Matcher m = nablarchHiddenPattern.matcher(nablarchHiddenActual);
+
         assertTagOutputAndClearOutput(
+                skipIndices,
                 "",
-                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form1_popup_submit1=|nablarch_hidden_submit_my_form1_download_link1=|nablarch_hidden_submit_my_form1_button1=\" />",
+                // nablarch_hiddenは順序が安定しないのでここではスキップ
+                "** nablarch_hiddenは前段で正規表現にて確認 **",
                 "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
                 "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
                 "<!--",
@@ -2627,9 +2676,23 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
         assertThat(formTag2.doEndTag(), is(Tag.EVAL_PAGE));
 
+        // nablarch_hiddenの中身をアサーション（HashMapにより構築されているので順序が安定しないため）
+        output = TagTestUtil.getOutput(pageContext);
+        nablarchHiddenActual = output.split(TagUtil.getCustomTagConfig().getLineSeparator())[1];
+        nablarchHiddenPattern = Pattern.compile("<input type=\"hidden\" name=\"nablarch_hidden\" value=\"(.+)\" />");
+        m = nablarchHiddenPattern.matcher(nablarchHiddenActual);
+
+        assertThat(m.find(), is(true));
+        assertThat(
+                Arrays.asList(m.group(1).split("\\|")),
+                containsInAnyOrder("nablarch_hidden_submit_my_form2_download_button1=", "nablarch_hidden_submit_my_form2_popup_link1=", "nablarch_hidden_submit_my_form2_submit1=")
+        );
+
         assertTagOutputAndClearOutput(
+                skipIndices,
                 "",
-                "<input type=\"hidden\" name=\"nablarch_hidden\" value=\"nablarch_hidden_submit_my_form2_submit1=|nablarch_hidden_submit_my_form2_download_button1=|nablarch_hidden_submit_my_form2_popup_link1=\" />",
+                // nablarch_hiddenは順序が安定しないのでここではスキップ
+                "** nablarch_hiddenは前段で正規表現にて確認 **",
                 "<input type=\"hidden\" name=\"nablarch_submit\" value=\"\" />",
                 "<script type=\"text/javascript\" nonce=\"" + nonce + "\">",
                 "<!--",
@@ -2656,13 +2719,22 @@ public class FormTagTest extends TagTestSupport<FormTag> {
         );
     }
 
-    private final void assertTagOutputAndClearOutput(String... expectedArray) {
+    private void assertTagOutputAndClearOutput(String... expectedArray) {
+        assertTagOutputAndClearOutput(Collections.<Integer>emptySet(), expectedArray);
+    }
+
+    private void assertTagOutputAndClearOutput(Set<Integer> skipIndices, String... expectedArray) {
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         String actual = TagTestUtil.getOutput(pageContext);
         String[] splitActual = actual.split(ls);
         String[] splitExpected = Builder.lines(expectedArray).split(Builder.LS);
 
         for (int i = 0; i < splitActual.length; i++) {
+            if (skipIndices.contains(i)) {
+                // equalsで比較できないものはスキップ
+                continue;
+            }
+
             TagTestUtil.assertTag(splitActual[i], splitExpected[i], " ");
         }
 
