@@ -12,7 +12,7 @@ public class ScriptTag extends HtmlTagSupport {
     
     /** URIをhttpsにするか否か */
     private Boolean secure = null;
-    
+
     /**
      * URIをhttpsにするか否かを設定する。
      * @param secure httpsにする場合はtrue、しない場合はfalse。
@@ -95,10 +95,15 @@ public class ScriptTag extends HtmlTagSupport {
         if (hasSrc) {
             TagUtil.overrideUriAttribute(pageContext, getAttributes(), HtmlAttribute.SRC, secure);
         }
+
+
+        if (TagUtil.hasCspNonce(pageContext)) {
+            attributes.put(HtmlAttribute.NONCE, TagUtil.getCspNonce(pageContext));
+        }
         
         StringBuilder sb = new StringBuilder();
         sb.append(TagUtil.createStartTag("script", getAttributes()));
-        
+
         if (!hasSrc) {
             CustomTagConfig config = TagUtil.getCustomTagConfig();
             sb.append(config.getLineSeparator())

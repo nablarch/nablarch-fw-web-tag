@@ -254,7 +254,10 @@ public enum HtmlAttribute {
     AUTOFOCUS,
 
     /** placeholder属性 */
-    PLACEHOLDER;
+    PLACEHOLDER,
+
+    /** nonce属性 */
+    NONCE;
 
     /**
      * XHTMLの属性名を取得する。
