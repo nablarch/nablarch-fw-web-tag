@@ -776,7 +776,7 @@ public class FormTag extends GenericAttributesTagSupport {
                  // HTMLタグのイベントハンドラに直接設定する実装からscriptタグに移した際に
                  // 後方互換を保つためにeventから対象の要素を取得する
             "    if (element == null) {",
-            "        element = event.target;",
+            "        element = event.currentTarget;",
             "    }",
 
             "    var isAnchor = element.tagName.match(/a/i);",
