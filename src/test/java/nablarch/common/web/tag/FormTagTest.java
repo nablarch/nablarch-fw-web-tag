@@ -52,7 +52,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
             // サブミット時に呼ばれる関数
             "function $fwPrefix$submit(event, element) {",
             "    if (element == null) {",
-            "        element = event.target;",
+            "        element = event.currentTarget;",
             "    }",
 
             "    var isAnchor = element.tagName.match(/a/i);",
