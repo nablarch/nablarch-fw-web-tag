@@ -51,7 +51,7 @@ public class FormTagTest extends TagTestSupport<FormTag> {
 
             // サブミット時に呼ばれる関数
             "function $fwPrefix$submit(event, element) {",
-            "    if (element == null) {",
+            "    if (element == undefined || element == null) {",
             "        element = event.currentTarget;",
             "    }",
 
