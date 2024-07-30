@@ -775,7 +775,7 @@ public class FormTag extends GenericAttributesTagSupport {
 
                  // HTMLタグのイベントハンドラに直接設定する実装からscriptタグに移した際に
                  // 後方互換を保つためにeventから対象の要素を取得する
-            "    if (element == undefined || element == null) {",
+            "    if (element == null) {",
             "        element = event.currentTarget;",
             "    }",
 
