@@ -824,7 +824,7 @@ public final class TagUtil {
         javaScript.append("'] ");
         javaScript.append(tagName);
         javaScript.append("[name='");
-        javaScript.append((String) attributes.get(HtmlAttribute.NAME));
+        javaScript.append(attributes.<String>get(HtmlAttribute.NAME));
         // 通常addEventListenerを使うところだが、従来の実装がonclick属性に直接設定するものだったため、
         // 動作を近いものにするためにonclickプロパティを使用している
         javaScript.append("']\").onclick = window.");
