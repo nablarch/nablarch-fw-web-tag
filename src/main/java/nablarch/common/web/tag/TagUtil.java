@@ -45,6 +45,7 @@ import nablarch.core.validation.ValidationResultMessage;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.web.HttpRequest;
 import nablarch.fw.web.handler.KeitaiAccessHandler;
+import nablarch.fw.web.handler.SecureHandler;
 
 /**
  * カスタムタグの作成を助けるユーティリティ。
@@ -224,16 +225,35 @@ public final class TagUtil {
      * }
      * </pre>
      *
+     * <p>
+     * また、セキュアハンドラでnonceが生成されていた場合は、scriptタグにnonce属性を自動で付加する。
+     * </p>
+     *
+     * <pre>
+     * {@literal
+     * <script type="text/javascript" nonce="[セキュアハンドラで生成したnonce]">
+     * //<![CDATA[
+     *     (ここに指定されたJavaScriptがくる)
+     * //]]>
+     * </script>
+     * }
+     * </pre>
+     *
+     * @param pageContext ページコンテキスト
      * @param javaScript scriptタグのボディに指定するJavaScript
      * @return scriptタグ
      */
-    public static String createScriptTag(String javaScript) {
+    public static String createScriptTag(PageContext pageContext, String javaScript) {
 
         CustomTagConfig config = getCustomTagConfig();
         String ls = config.getLineSeparator();
 
         HtmlAttributes attributes = new HtmlAttributes();
         attributes.put(HtmlAttribute.TYPE, "text/javascript");
+
+        if (hasCspNonce(pageContext)) {
+            attributes.put(HtmlAttribute.NONCE, getCspNonce(pageContext));
+        }
 
         return new StringBuilder()
                 .append(createStartTag("script", attributes))
@@ -245,6 +265,27 @@ public final class TagUtil {
                 .append(config.getScriptBodySuffix())
                 .append(ls)
                 .append(createEndTag("script")).toString();
+    }
+
+    /**
+     * リクエストスコープにCSP対応用のnonceが保存されているか否か確認する。
+     * nonceが保存されている場合、{@code true}を返却する。
+     *
+     * @param pageContext ページコンテキスト
+     * @return リクエストスコープにCSP対応用のnonceが保存されている場合{@code true}
+     */
+    public static boolean hasCspNonce(PageContext pageContext) {
+        return StringUtil.hasValue(getCspNonce(pageContext));
+    }
+
+    /**
+     * リクエストスコープに格納されているnonceを取得する。取得できなかった場合は{@code null}を返却する
+     *
+     * @param pageContext ページコンテキスト
+     * @return リクエストスコープに格納されているnonce
+     */
+    public static String getCspNonce(PageContext pageContext) {
+        return (String) getSingleValueOnScope(pageContext, SecureHandler.CSP_NONCE_KEY);
     }
 
     /**
@@ -700,7 +741,7 @@ public final class TagUtil {
                 return CURRENT_PATH_RELATIVE_PATH;
             }
         }
-    };
+    }
 
     /**
      * 言語対応のリソースパスを取得する。
@@ -716,19 +757,104 @@ public final class TagUtil {
     }
 
     /**
+     * クリック時のサブミット情報を登録し、JavaScriptを生成する。
+     * {@link TagUtil#setSubmissionInfoToFormContext} を使ったサブミット情報登録後に呼び出すこと。
+     *
+     * <pre></pre>
+     * リクエストスコープにCSP対応用のnonceが保存されているか否かで動作が変わる。
+     *
+     * ・CSP対応用のnonceが保存されていた場合
+     * 　・{@link FormTag}が生成するscriptタグの一部として出力する
+     * 　・本メソッド実行時には出力せずフォームコンテキストへの登録のみとし、{@link FormTag}の処理でためこんだスクリプトを一括で出力する
+     * ・CSP対応用のnonceが保存されていない場合
+     * 　・対象のタグのonclick属性としてイベントハンドラを出力する
+     *
+     * なお、いずれの場合も属性にonclickが指定されている場合、または{@code suppressDefaultSubmit}プロパティが
+     * {@code true}の場合はスクリプトを生成しない。
+     * </pre>
+     *
+     * @param pageContext ページコンテキスト
+     * @param tagName クリック対象のタグ名
+     * @param attributes 属性
+     * @param suppressDefaultSubmit Nablarchのデフォルトのsubmit関数呼び出しを抑制するか否か。{@code true}の場合は抑制する
+     */
+    public static void registerOnclickForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressDefaultSubmit) {
+        if (hasCspNonce(pageContext)) {
+            registerOnclickScriptForSubmission(pageContext, tagName, attributes, suppressDefaultSubmit);
+        } else {
+            editOnclickAttributeForSubmission(pageContext, attributes, suppressDefaultSubmit);
+        }
+    }
+
+    /**
+     * クリック時に動作するスクリプトと、{@link FormTag}が出力するスクリプトと同じタイミングで
+     * 出力するようにフォームコンテキストに登録する。
+     *
+     * onclick属性が編集されている場合、または{@code suppressDefaultSubmit}プロパティが{@code true}の
+     * 場合は登録しない。
+     *
+     * @param pageContext ページコンテキスト
+     * @param tagName クリック対象のタグ名
+     * @param attributes 属性
+     * @param suppressDefaultSubmit Nablarchのデフォルトのsubmit関数呼び出しを抑制するか否か。{@code true}の場合は抑制する
+     */
+    private static void registerOnclickScriptForSubmission(PageContext pageContext, String tagName, HtmlAttributes attributes, boolean suppressDefaultSubmit) {
+        if (!jsSupported(pageContext)) {
+            return;
+        }
+
+        String onclick = attributes.get(HtmlAttribute.ONCLICK);
+        if (!StringUtil.isNullOrEmpty(onclick)) {
+            // onclick属性が指定されていた場合はスクリプトを登録しない
+            return;
+        }
+
+        if (suppressDefaultSubmit) {
+            // Nablarchのデフォルトのsubmit関数呼び出しが抑制されている場合は、スクリプトを登録しない
+            return;
+        }
+
+        CustomTagConfig customTagConfig = TagUtil.getCustomTagConfig();
+        String ls = customTagConfig.getLineSeparator();
+        FormContext formContext = getFormContext(pageContext);
+        StringBuilder javaScript = new StringBuilder();
+        javaScript.append("document.querySelector(\"");
+        javaScript.append("form[name='");
+        javaScript.append(formContext.getName());
+        javaScript.append("'] ");
+        javaScript.append(tagName);
+        javaScript.append("[name='");
+        javaScript.append((String) attributes.get(HtmlAttribute.NAME));
+        // 通常addEventListenerを使うところだが、従来の実装がonclick属性に直接設定するものだったため、
+        // 動作を近いものにするためにonclickプロパティを使用している
+        javaScript.append("']\").onclick = window.");
+        javaScript.append(ExecutionContext.FW_PREFIX + "submit;");
+        formContext.addInlineSubmissionScript(javaScript.toString());
+    }
+
+    /**
      * サブミット制御のためにonclick属性を編集する。<br>
-     * onclick属性が編集されている場合は編集しない。
+     * onclick属性が編集されている場合は、または{@code suppressDefaultSubmit}プロパティが{@code true}の
+     * 場合は編集しない。
      * @param pageContext ページコンテキスト
      * @param attributes 属性
+     * @param suppressDefaultSubmit デフォルトのsubmit関数呼び出しを抑制するか否か。{@code true}の場合は抑制する
      */
-    public static void editOnclickAttributeForSubmission(PageContext pageContext, HtmlAttributes attributes) {
+    private static void editOnclickAttributeForSubmission(PageContext pageContext, HtmlAttributes attributes, boolean suppressDefaultSubmit) {
         if (!jsSupported(pageContext)) {
             return;
         }
         String onclick = attributes.get(HtmlAttribute.ONCLICK);
         if (!StringUtil.isNullOrEmpty(onclick)) {
+            // onclick属性が指定されていた場合はスクリプトを登録しない
             return;
         }
+
+        if (suppressDefaultSubmit) {
+            // Nablarchのデフォルトのsubmit関数呼び出しを抑制されている場合は、スクリプトを登録しない
+            return;
+        }
+
         attributes.put(HtmlAttribute.ONCLICK, ONCLICK_FOR_SUBMISSION);
     }
 
