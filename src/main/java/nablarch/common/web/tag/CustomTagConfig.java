@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import nablarch.core.util.StringUtil;
+import nablarch.fw.web.handler.SecureHandler;
 import nablarch.fw.web.i18n.DirectoryBasedResourcePathRule;
 import nablarch.fw.web.i18n.ResourcePathRule;
 
@@ -17,7 +18,6 @@ import static nablarch.fw.ExecutionContext.FW_PREFIX;
  * @author Kiyohito Itoh
  */
 public class CustomTagConfig {
-    
     /** errorタグと入力項目タグのerrorCss属性のデフォルト値 */
     private String errorCss = FW_PREFIX + "error";
     

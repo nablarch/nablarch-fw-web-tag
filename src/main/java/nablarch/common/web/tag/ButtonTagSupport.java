@@ -22,6 +22,9 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
     /** URIをhttpsにするか否か */
     private Boolean secure = null;
 
+    /** カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か。抑制する場合は{@code true} */
+    private boolean suppressDefaultSubmit = false;
+
     /**
      * サブミット先のURIを設定する。
      * @param uri サブミット先のURI
@@ -36,6 +39,16 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
      */
     public void setSecure(Boolean secure) {
         this.secure = secure;
+    }
+
+    /**
+     * カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否かを設定する。
+     * 抑制する場合は{@code true}。
+     *
+     * @param suppressDefaultSubmit カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か
+     */
+    public void setSuppressDefaultSubmit(boolean suppressDefaultSubmit) {
+        this.suppressDefaultSubmit = suppressDefaultSubmit;
     }
 
     /**
@@ -104,20 +117,25 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
      * </pre>
      */
     public int doStartTag() throws JspException {
-
         checkChildElementsOfForm();
+
+        String tagName = "button";
         String requestId = WebRequestUtil.getRequestId(uri);
         String encodedUri = TagUtil.encodeUri(pageContext, uri, secure);
-        TagUtil.editOnclickAttributeForSubmission(pageContext, getAttributes());
+
         DisplayMethod displayMethodResult = TagUtil.getDisplayMethod(requestId, displayMethod);
         setSubmissionInfoToFormContext(requestId, encodedUri, displayMethodResult);
+
+        // サブミット情報を追加した後にスクリプトの生成を行う
+        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), suppressDefaultSubmit);
 
         if (DisplayMethod.DISABLED == displayMethodResult) {
             getAttributes().put(HtmlAttribute.DISABLED, true);
         } else if (DisplayMethod.NODISPLAY == displayMethodResult) {
             return SKIP_BODY;
         }
-        TagUtil.print(pageContext, TagUtil.createStartTag("button", getAttributes()));
+
+        TagUtil.print(pageContext, TagUtil.createStartTag(tagName, getAttributes()));
 
         return EVAL_BODY_INCLUDE;
     }

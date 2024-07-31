@@ -586,7 +586,7 @@ public class FormTag extends GenericAttributesTagSupport {
         }
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         if (isFirstForm()) {
-            TagUtil.print(pageContext, ls + TagUtil.createScriptTag(getSubmitFunction()));
+            TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, getSubmitFunction()));
         }
     }
 
@@ -603,6 +603,19 @@ public class FormTag extends GenericAttributesTagSupport {
 
         StringBuilder javaScript = new StringBuilder();
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
+
+        FormContext formContext = TagUtil.getFormContext(pageContext);
+
+        // サブミット用のスクリプトが登録されていた場合は、合わせて出力する。
+        // CSP対応のため、HTMLタグの属性に直接出力するのではなくscriptタグ内に含める。
+        List<String> inlineOnclickSubmissionScripts = formContext.getInlineSubmissionScripts();
+        if (!inlineOnclickSubmissionScripts.isEmpty()) {
+            for (String script : inlineOnclickSubmissionScripts) {
+                javaScript.append(ls).append(script);
+            }
+
+            javaScript.append(ls).append(ls);
+        }
 
         String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
         
@@ -645,7 +658,7 @@ public class FormTag extends GenericAttributesTagSupport {
         }
         javaScript.append("};");
         
-        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(javaScript.toString()));
+        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, javaScript.toString()));
     }
 
     /**
@@ -663,7 +676,7 @@ public class FormTag extends GenericAttributesTagSupport {
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
         javaScript.append(SUBMISSION_END_MARK_PREFIX).append(".").append(formName).append(" = true;");
-        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(javaScript.toString()));
+        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, javaScript.toString()));
     }
 
     /**
@@ -761,6 +774,12 @@ public class FormTag extends GenericAttributesTagSupport {
             
             // サブミット時に呼ばれる関数
             "function $fwPrefix$submit(event, element) {",
+
+                 // HTMLタグのイベントハンドラに直接設定する実装からscriptタグに移した際に
+                 // 後方互換を保つためにeventから対象の要素を取得する
+            "    if (element == null) {",
+            "        element = event.currentTarget;",
+            "    }",
 
             "    var isAnchor = element.tagName.match(/a/i);",
 

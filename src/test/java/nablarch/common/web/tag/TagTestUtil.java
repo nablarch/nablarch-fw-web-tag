@@ -31,7 +31,7 @@ import org.junit.Before;
  * @author Kiyohito Itoh
  */
 class TagTestUtil {
-
+    /** 作成した{@link nablarch.common.web.tag.FormContext}の数で、nameを自動付与する際の一部として利用する */
     private static int formCount = 0;
 
     @Before
@@ -39,13 +39,24 @@ class TagTestUtil {
     }
 
     static FormContext createFormContext() {
-        return createFormContext("post");
+        return createFormContextByMethod("post");
     }
 
-    static FormContext createFormContext(String method) {
+    static FormContext createFormContextByMethod(String method) {
+        return createFormContext(method, "test_form_name" + formCount++);
+    }
+
+    static FormContext createFormContextByName(String name) {
+        // このファクトリメソッドではformCountの値はnameに含めないが、
+        // FormContext自体は作成するのでその数を記録する意味でインクリメントしておく
+        formCount++;
+        return createFormContext("post", name);
+    }
+
+    static FormContext createFormContext(String method, String name) {
         HtmlAttributes formAttrs = new HtmlAttributes();
         formAttrs.put(HtmlAttribute.METHOD, method);
-        return new FormContext("test_form_name" + formCount++);
+        return new FormContext(name);
     }
 
     static String getOutput(PageContext pageContext) {
