@@ -53,6 +53,9 @@ public class FormTagTest extends TagTestSupport<FormTag> {
             "function $fwPrefix$submit(event, element) {",
             "    if (element == null) {",
             "        element = event.currentTarget;",
+            "        if (element == null) {",
+            "            element = event.target;",
+            "        }",
             "    }",
 
             "    var isAnchor = element.tagName.match(/a/i);",

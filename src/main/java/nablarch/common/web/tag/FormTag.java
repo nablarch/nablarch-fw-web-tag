@@ -777,6 +777,11 @@ public class FormTag extends GenericAttributesTagSupport {
                  // 後方互換を保つためにeventから対象の要素を取得する
             "    if (element == null) {",
             "        element = event.currentTarget;",
+                     // eventにcurrentTargetが設定されていない場合はtargetから取得する。
+                     // jQueryによるイベント発火($(...).click()など)を行った場合はこのケースになる
+            "        if (element == null) {",
+            "            element = event.target;",
+            "        }",
             "    }",
 
             "    var isAnchor = element.tagName.match(/a/i);",
