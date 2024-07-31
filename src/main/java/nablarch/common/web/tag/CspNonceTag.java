@@ -9,14 +9,14 @@ public class CspNonceTag extends HtmlTagSupport {
     /**
      * nonceを出力する際に nonce- をprefixとして付与するか否か。ポリシーのsrcとして使用することを想定
      */
-    private Boolean sourceFormat = false;
+    private boolean sourceFormat = false;
 
     /**
      * nonceを出力する際に nonce- をprefixとして付与するか否か
      *
      * @return nonceを出力する際に nonce- をprefixとして付与するか否か
      */
-    public Boolean getSourceFormat() {
+    public boolean getSourceFormat() {
         return sourceFormat;
     }
 
@@ -26,7 +26,7 @@ public class CspNonceTag extends HtmlTagSupport {
      *
      * @param sourceFormat nonceを出力する際に nonce- をprefixとして付与するか否か
      */
-    public void setSourceFormat(Boolean sourceFormat) {
+    public void setSourceFormat(boolean sourceFormat) {
         this.sourceFormat = sourceFormat;
     }
 
@@ -42,7 +42,7 @@ public class CspNonceTag extends HtmlTagSupport {
         if (TagUtil.hasCspNonce(pageContext)) {
             String outputNonce;
 
-            if (sourceFormat != null && sourceFormat) {
+            if (sourceFormat) {
                 outputNonce = "nonce-" + TagUtil.getCspNonce(pageContext);
             } else {
                 outputNonce = TagUtil.getCspNonce(pageContext);
