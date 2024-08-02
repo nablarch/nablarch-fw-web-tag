@@ -100,6 +100,7 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
      * ここで非活性とは、リンクを解除してラベルのみを表示することである。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         if (!TagUtil.jsSupported(pageContext)) {
            throw new JspException(
@@ -170,6 +171,7 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
      * 閉じタグを出力する。
      * </pre>
      */
+    @Override
     public int doEndTag() throws JspException {
         DisplayMethod displayMethod = TagUtil.getFormContext(pageContext)
                                               .getCurrentSubmissionInfo()
