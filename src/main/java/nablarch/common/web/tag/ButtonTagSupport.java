@@ -116,6 +116,7 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
      * 認可や開閉局の状態に応じて、タグの表示方法を切り替える。切り替え方法は非表示、非活性、通常表示のいずれかである。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         checkChildElementsOfForm();
 
@@ -154,6 +155,7 @@ public abstract class ButtonTagSupport extends FocusAttributesTagSupport {
      * 閉じタグを出力する。
      * </pre>
      */
+    @Override
     public int doEndTag() throws JspException {
         DisplayMethod displayMethodResult = TagUtil.getFormContext(pageContext)
                                                    .getCurrentSubmissionInfo()
