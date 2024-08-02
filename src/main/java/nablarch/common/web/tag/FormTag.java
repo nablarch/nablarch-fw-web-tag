@@ -608,22 +608,23 @@ public class FormTag extends GenericAttributesTagSupport {
 
         // サブミット用のスクリプトが登録されていた場合は、合わせて出力する。
         // CSP対応のため、HTMLタグの属性に直接出力するのではなくscriptタグ内に含める。
-        appendInlineOnclickSubmissionScripts(formContext, javaScript);
+        javaScript.append(createInlineOnclickSubmissionScripts(formContext));
 
         // サブミッション情報のスクリプトを追加する
-        appendSubmissionInfoScripts(formContext, attributes, javaScript);
+        javaScript.append(createSubmissionInfoScripts(formContext, attributes));
         
         TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, javaScript.toString()));
     }
 
     /**
-     * {@link FormContext}内にサブミット用のスクリプトが登録されていた場合、引数の{@code javaScript}に
-     * スクリプトを追加する。
+     * {@link FormContext}内にサブミット用のスクリプトが登録されていた場合、スクリプトをまとめて返却する。
      *
      * @param formContext {@link FormContext}
-     * @param javaScript スクリプトを追加する{@link StringBuilder}
+     * @return まとめたサブミット用のスクリプト
      */
-    private void appendInlineOnclickSubmissionScripts(FormContext formContext, StringBuilder javaScript) {
+    private String createInlineOnclickSubmissionScripts(FormContext formContext) {
+        StringBuilder javaScript = new StringBuilder();
+
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
 
         List<String> inlineOnclickSubmissionScripts = formContext.getInlineSubmissionScripts();
@@ -634,17 +635,19 @@ public class FormTag extends GenericAttributesTagSupport {
 
             javaScript.append(ls).append(ls);
         }
+
+        return javaScript.toString();
     }
 
     /**
-     * {@link FormContext}内のサブミッション情報からスクリプトを生成し、{@code javaScript}に
-     * 追加する。
+     * {@link FormContext}内のサブミッション情報からスクリプトを生成して返却する。
      *
      * @param formContext {@link FormContext}
      * @param attributes 属性
-     * @param javaScript スクリプト追加対象
      */
-    private void appendSubmissionInfoScripts(FormContext formContext, HtmlAttributes attributes, StringBuilder javaScript) {
+    private String createSubmissionInfoScripts(FormContext formContext, HtmlAttributes attributes) {
+        StringBuilder javaScript = new StringBuilder();
+
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
 
@@ -686,6 +689,8 @@ public class FormTag extends GenericAttributesTagSupport {
             javaScript.append(ls);
         }
         javaScript.append("};");
+
+        return javaScript.toString();
     }
 
     /**
