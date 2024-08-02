@@ -136,6 +136,7 @@ public abstract class SubmitTagSupport extends InputTagSupport {
      *   リクエストパラメータに差し替えられる。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         checkChildElementsOfForm();
 
@@ -210,6 +211,7 @@ public abstract class SubmitTagSupport extends InputTagSupport {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int doEndTag() throws JspException {
         TagUtil.getFormContext(pageContext).setCurrentSubmissionInfo(null);
         return EVAL_PAGE;
