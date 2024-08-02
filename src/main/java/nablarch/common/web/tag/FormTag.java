@@ -645,6 +645,7 @@ public class FormTag extends GenericAttributesTagSupport {
      *
      * @param formContext {@link FormContext}
      * @param attributes 属性
+     * @return 生成したスクリプト
      */
     private String createSubmissionInfoScripts(FormContext formContext, HtmlAttributes attributes) {
         StringBuilder javaScript = new StringBuilder();
