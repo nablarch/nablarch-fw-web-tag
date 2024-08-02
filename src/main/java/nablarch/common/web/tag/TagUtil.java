@@ -814,7 +814,6 @@ public final class TagUtil {
         }
 
         CustomTagConfig customTagConfig = TagUtil.getCustomTagConfig();
-        String ls = customTagConfig.getLineSeparator();
         FormContext formContext = getFormContext(pageContext);
         StringBuilder javaScript = new StringBuilder();
         javaScript.append("document.querySelector(\"");
