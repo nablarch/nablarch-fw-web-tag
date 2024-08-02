@@ -359,11 +359,11 @@ public class PopupSubmitTagTest extends TagTestSupport<PopupSubmitTag> {
     }
 
     /**
-     * SuppressCallNablarchSubmit属性に{@code true}を指定した時に、CSPのnonceの有無に関わらず
+     * suppressDefaultSubmit属性に{@code true}を指定した時に、CSPのnonceの有無に関わらず
      * サブミット用のスクリプトが出力されなくなることを確認する。
      */
     @Test
-    public void testInputPageForSuppressCallNablarchSubmit() throws Exception {
+    public void testInputPageForSuppressDefaultSubmit() throws Exception {
         TagTestUtil.setUpDefaultConfig();
         FormContext formContext = TagTestUtil.createFormContext();
         TagUtil.setFormContext(pageContext, formContext);
