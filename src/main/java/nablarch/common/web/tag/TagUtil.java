@@ -813,7 +813,6 @@ public final class TagUtil {
             return;
         }
 
-        CustomTagConfig customTagConfig = TagUtil.getCustomTagConfig();
         FormContext formContext = getFormContext(pageContext);
         StringBuilder javaScript = new StringBuilder();
         javaScript.append("document.querySelector(\"");
