@@ -12,7 +12,7 @@ public class ScriptTag extends HtmlTagSupport {
     
     /** URIをhttpsにするか否か */
     private Boolean secure = null;
-    
+
     /**
      * URIをhttpsにするか否かを設定する。
      * @param secure httpsにする場合はtrue、しない場合はfalse。
@@ -25,6 +25,7 @@ public class ScriptTag extends HtmlTagSupport {
      * XHTMLのid属性を設定する。
      * @param id XHTMLのid属性
      */
+    @Override
     public void setId(String id) {
         getAttributes().put(HtmlAttribute.ID, id);
     }
@@ -84,6 +85,7 @@ public class ScriptTag extends HtmlTagSupport {
      * 絶対URLでない場合は言語対応のリソースパスに変換する。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         if (!TagUtil.jsSupported(pageContext)) {
             return SKIP_BODY;
@@ -95,10 +97,15 @@ public class ScriptTag extends HtmlTagSupport {
         if (hasSrc) {
             TagUtil.overrideUriAttribute(pageContext, getAttributes(), HtmlAttribute.SRC, secure);
         }
+
+
+        if (TagUtil.hasCspNonce(pageContext)) {
+            attributes.put(HtmlAttribute.NONCE, TagUtil.getCspNonce(pageContext));
+        }
         
         StringBuilder sb = new StringBuilder();
         sb.append(TagUtil.createStartTag("script", getAttributes()));
-        
+
         if (!hasSrc) {
             CustomTagConfig config = TagUtil.getCustomTagConfig();
             sb.append(config.getLineSeparator())
@@ -116,6 +123,7 @@ public class ScriptTag extends HtmlTagSupport {
      * 閉じタグを出力する。
      * </pre>
      */
+    @Override
     public int doEndTag() throws JspException {
         if (!TagUtil.jsSupported(pageContext)) {
             return EVAL_PAGE;

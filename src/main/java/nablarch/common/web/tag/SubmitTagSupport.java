@@ -24,6 +24,9 @@ public abstract class SubmitTagSupport extends InputTagSupport {
     
     /** URIをhttpsにするか否か */
     private Boolean secure = null;
+
+    /** カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か。抑制する場合は{@code true} */
+    private boolean suppressDefaultSubmit = false;
     
     /**
      * サブミット先のURIを設定する。
@@ -39,6 +42,16 @@ public abstract class SubmitTagSupport extends InputTagSupport {
      */
     public void setSecure(Boolean secure) {
         this.secure = secure;
+    }
+
+    /**
+     * カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否かを設定する。
+     * 抑制する場合は{@code true}。
+     *
+     * @param suppressDefaultSubmit カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か
+     */
+    public void setSuppressDefaultSubmit(boolean suppressDefaultSubmit) {
+        this.suppressDefaultSubmit = suppressDefaultSubmit;
     }
 
     /**
@@ -123,15 +136,20 @@ public abstract class SubmitTagSupport extends InputTagSupport {
      *   リクエストパラメータに差し替えられる。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         checkChildElementsOfForm();
+
+        String tagName = "input";
         String requestId = WebRequestUtil.getRequestId(uri);
         String encodedUri = TagUtil.encodeUri(pageContext, uri, secure);
         String submitName = getAttributes().get(HtmlAttribute.NAME);
 
-        TagUtil.editOnclickAttributeForSubmission(pageContext, getAttributes());
         DisplayMethod displayMethodResult = TagUtil.getDisplayMethod(requestId, displayMethod);
         setSubmissionInfoToFormContext(requestId, encodedUri, displayMethodResult);
+
+        // サブミット情報を追加した後にスクリプトの生成を行う
+        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), suppressDefaultSubmit);
 
         if (DisplayMethod.DISABLED == displayMethodResult) {
             getAttributes().put(HtmlAttribute.DISABLED, true);
@@ -156,7 +174,7 @@ public abstract class SubmitTagSupport extends InputTagSupport {
             );
         }
 
-        TagUtil.print(pageContext, TagUtil.createTagWithoutBody("input", getAttributes()));
+        TagUtil.print(pageContext, TagUtil.createTagWithoutBody(tagName, getAttributes()));
         return EVAL_BODY_INCLUDE;
     }
 
@@ -193,6 +211,7 @@ public abstract class SubmitTagSupport extends InputTagSupport {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int doEndTag() throws JspException {
         TagUtil.getFormContext(pageContext).setCurrentSubmissionInfo(null);
         return EVAL_PAGE;

@@ -23,6 +23,9 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
     /** {@link BodyContent} */
     private BodyContent bodyContent;
 
+    /** カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か。抑制する場合は{@code true} */
+    private boolean suppressDefaultSubmit = false;
+
     /**
      * サブミット先のURIを設定する。
      * @param uri サブミット先のURI
@@ -37,6 +40,16 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
      */
     public void setSecure(Boolean secure) {
         this.secure = secure;
+    }
+
+    /**
+     * カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否かを設定する。
+     * 抑制する場合は{@code true}。
+     *
+     * @param suppressDefaultSubmit カスタムタグが生成するデフォルトのsubmit関数呼び出しを抑制するか否か
+     */
+    public void setSuppressDefaultSubmit(boolean suppressDefaultSubmit) {
+        this.suppressDefaultSubmit = suppressDefaultSubmit;
     }
 
     /**
@@ -87,6 +100,7 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
      * ここで非活性とは、リンクを解除してラベルのみを表示することである。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         if (!TagUtil.jsSupported(pageContext)) {
            throw new JspException(
@@ -97,6 +111,8 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
         }
 
         checkChildElementsOfForm();
+
+        String tagName = "a";
         String requestId = WebRequestUtil.getRequestId(uri);
         if (requestId == null) {
             // サブミット制御では、リクエストIDがnullになるuriを許容しない。
@@ -107,9 +123,11 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
         }
         String encodedUri = TagUtil.encodeUri(pageContext, uri, secure);
         getAttributes().put(HtmlAttribute.HREF, encodedUri);
-        TagUtil.editOnclickAttributeForSubmission(pageContext, getAttributes());
         DisplayMethod displayMethodResult = TagUtil.getDisplayMethod(requestId, displayMethod);
         setSubmissionInfoToFormContext(requestId, encodedUri, displayMethodResult);
+
+        // サブミット情報を追加した後にスクリプトの生成を行う
+        TagUtil.registerOnclickForSubmission(pageContext, tagName, getAttributes(), suppressDefaultSubmit);
 
         switch (displayMethodResult) {
         case DISABLED:
@@ -119,7 +137,7 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
         case NODISPLAY:
             return SKIP_BODY;
         default:
-            TagUtil.print(pageContext, TagUtil.createStartTag("a", getAttributes()));
+            TagUtil.print(pageContext, TagUtil.createStartTag(tagName, getAttributes()));
             return EVAL_BODY_INCLUDE;
         }
     }
@@ -153,6 +171,7 @@ public abstract class SubmitLinkTagSupport extends FocusAttributesTagSupport imp
      * 閉じタグを出力する。
      * </pre>
      */
+    @Override
     public int doEndTag() throws JspException {
         DisplayMethod displayMethod = TagUtil.getFormContext(pageContext)
                                               .getCurrentSubmissionInfo()
