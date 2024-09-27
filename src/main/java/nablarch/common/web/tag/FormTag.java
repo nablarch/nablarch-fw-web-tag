@@ -13,7 +13,6 @@ import java.util.Set;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.jsp.JspException;
 import jakarta.servlet.jsp.PageContext;
-
 import nablarch.common.util.WebRequestUtil;
 import nablarch.common.web.WebConfig;
 import nablarch.common.web.WebConfigFinder;
@@ -185,6 +184,7 @@ public class FormTag extends GenericAttributesTagSupport {
      * 属性はHTMLエスケープして出力する。
      * </pre>
      */
+    @Override
     public int doStartTag() throws JspException {
         
         if (getAttributes().get(HtmlAttribute.METHOD) == null) {
@@ -263,6 +263,7 @@ public class FormTag extends GenericAttributesTagSupport {
      * ただし、method属性がgetかつ{@link CustomTagConfig}のuseGetRequestがtrueの場合は、上記処理は行わずに閉じタグのみを出力して処理を終了する。
      * </pre>
      */
+    @Override
     public int doEndTag() throws JspException {
         
         if (isGetRequest()) {
@@ -586,7 +587,7 @@ public class FormTag extends GenericAttributesTagSupport {
         }
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         if (isFirstForm()) {
-            TagUtil.print(pageContext, ls + TagUtil.createScriptTag(getSubmitFunction()));
+            TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, getSubmitFunction()));
         }
     }
 
@@ -604,10 +605,56 @@ public class FormTag extends GenericAttributesTagSupport {
         StringBuilder javaScript = new StringBuilder();
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
 
-        String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
+        FormContext formContext = TagUtil.getFormContext(pageContext);
+
+        // サブミット用のスクリプトが登録されていた場合は、合わせて出力する。
+        // CSP対応のため、HTMLタグの属性に直接出力するのではなくscriptタグ内に含める。
+        javaScript.append(createInlineOnclickSubmissionScripts(formContext));
+
+        // サブミッション情報のスクリプトを追加する
+        javaScript.append(createSubmissionInfoScripts(formContext, attributes));
         
+        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, javaScript.toString()));
+    }
+
+    /**
+     * {@link FormContext}内にサブミット用のスクリプトが登録されていた場合、スクリプトをまとめて返却する。
+     *
+     * @param formContext {@link FormContext}
+     * @return まとめたサブミット用のスクリプト
+     */
+    private String createInlineOnclickSubmissionScripts(FormContext formContext) {
+        StringBuilder javaScript = new StringBuilder();
+
+        String ls = TagUtil.getCustomTagConfig().getLineSeparator();
+
+        List<String> inlineOnclickSubmissionScripts = formContext.getInlineSubmissionScripts();
+        if (!inlineOnclickSubmissionScripts.isEmpty()) {
+            for (String script : inlineOnclickSubmissionScripts) {
+                javaScript.append(ls).append(script);
+            }
+
+            javaScript.append(ls).append(ls);
+        }
+
+        return javaScript.toString();
+    }
+
+    /**
+     * {@link FormContext}内のサブミッション情報からスクリプトを生成して返却する。
+     *
+     * @param formContext {@link FormContext}
+     * @param attributes 属性
+     * @return 生成したスクリプト
+     */
+    private String createSubmissionInfoScripts(FormContext formContext, HtmlAttributes attributes) {
+        StringBuilder javaScript = new StringBuilder();
+
+        String ls = TagUtil.getCustomTagConfig().getLineSeparator();
+        String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
+
         javaScript.append(SUBMISSION_INFO_VAR).append(".").append(formName).append(" = {").append(ls);
-        List<SubmissionInfo> infoList = TagUtil.getFormContext(pageContext).getSubmissionInfoList();
+        List<SubmissionInfo> infoList = formContext.getSubmissionInfoList();
         for (int i = 0; i < infoList.size(); i++) {
             SubmissionInfo info = infoList.get(i);
             String hash;
@@ -616,13 +663,13 @@ public class FormTag extends GenericAttributesTagSupport {
                 String popupWindowName = info.getPopupWindowName();
                 String popupOption = info.getPopupOption();
                 hash = String.format(POPUP_SUBMISSION_INFO_HASH,
-                                     info.getName(),
-                                     info.getUri(),
-                                     info.isAllowDoubleSubmission(),
-                                     submissionAction.name(),
-                                     popupWindowName != null ? "\"" + popupWindowName + "\"" : null,
-                                     popupOption != null ? popupOption : "",
-                                     createChangeParamNamesHash(info.getChangeParamNames()));
+                        info.getName(),
+                        info.getUri(),
+                        info.isAllowDoubleSubmission(),
+                        submissionAction.name(),
+                        popupWindowName != null ? "\"" + popupWindowName + "\"" : null,
+                        popupOption != null ? popupOption : "",
+                        createChangeParamNamesHash(info.getChangeParamNames()));
             } else if (SubmissionAction.DOWNLOAD == submissionAction) {
                 hash = String.format(DOWNLOAD_SUBMISSION_INFO_HASH,
                         info.getName(),
@@ -632,10 +679,10 @@ public class FormTag extends GenericAttributesTagSupport {
                         createChangeParamNamesHash(info.getChangeParamNames()));
             } else {
                 hash = String.format(SUBMISSION_INFO_HASH,
-                                     info.getName(),
-                                     info.getUri(),
-                                     info.isAllowDoubleSubmission(),
-                                     submissionAction.name());
+                        info.getName(),
+                        info.getUri(),
+                        info.isAllowDoubleSubmission(),
+                        submissionAction.name());
             }
             javaScript.append(hash);
             if (i != infoList.size() - 1) {
@@ -644,8 +691,8 @@ public class FormTag extends GenericAttributesTagSupport {
             javaScript.append(ls);
         }
         javaScript.append("};");
-        
-        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(javaScript.toString()));
+
+        return javaScript.toString();
     }
 
     /**
@@ -663,7 +710,7 @@ public class FormTag extends GenericAttributesTagSupport {
         String ls = TagUtil.getCustomTagConfig().getLineSeparator();
         String formName = TagUtil.escapeHtml(attributes.get(HtmlAttribute.NAME), false);
         javaScript.append(SUBMISSION_END_MARK_PREFIX).append(".").append(formName).append(" = true;");
-        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(javaScript.toString()));
+        TagUtil.print(pageContext, ls + TagUtil.createScriptTag(pageContext, javaScript.toString()));
     }
 
     /**
@@ -761,6 +808,17 @@ public class FormTag extends GenericAttributesTagSupport {
             
             // サブミット時に呼ばれる関数
             "function $fwPrefix$submit(event, element) {",
+
+                 // HTMLタグのイベントハンドラに直接設定する実装からscriptタグに移した際に
+                 // 後方互換を保つためにeventから対象の要素を取得する
+            "    if (element == null) {",
+            "        element = event.currentTarget;",
+                     // eventにcurrentTargetが設定されていない場合はtargetから取得する。
+                     // jQueryによるイベント発火($(...).click()など)を行った場合はこのケースになる
+            "        if (element == null) {",
+            "            element = event.target;",
+            "        }",
+            "    }",
 
             "    var isAnchor = element.tagName.match(/a/i);",
 

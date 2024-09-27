@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import nablarch.common.web.WebConfig;
-import nablarch.common.web.handler.MockPageContext;
 import nablarch.common.web.token.TokenGenerator;
 import nablarch.core.repository.ObjectLoader;
 import nablarch.core.repository.SystemRepository;

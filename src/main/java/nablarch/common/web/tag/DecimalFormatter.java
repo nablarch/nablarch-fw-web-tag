@@ -3,7 +3,6 @@ package nablarch.common.web.tag;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 import jakarta.servlet.jsp.PageContext;
 
