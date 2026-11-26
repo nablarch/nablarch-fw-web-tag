@@ -146,7 +146,8 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
         actual = TagTestUtil.getOutput(pageContext);
-        expected = "2010年7月";
+        // 日本語ロケールの MMM は CLDR ロケールデータでは "7月" となるため、パターンの "月" と合わせて "7月月" になる
+        expected = "2010年7月月";
         TagTestUtil.assertTag(actual, expected, " ");
     }
     
@@ -176,7 +177,7 @@ public class WriteTagTest extends TagTestSupport<WriteTag> {
         assertThat(target.doEndTag(), is(Tag.EVAL_PAGE));
 
         actual = TagTestUtil.getOutput(pageContext);
-        expected = "2011年9月28日(水)";
+        expected = "2011年9月月28日(水)";
         TagTestUtil.assertTag(actual, expected, " ");
     }
     

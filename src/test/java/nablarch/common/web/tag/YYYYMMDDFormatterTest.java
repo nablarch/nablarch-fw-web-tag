@@ -142,6 +142,9 @@ public class YYYYMMDDFormatterTest {
      */
     @Test
     public void testFormat_error() {
+        // 実行環境のデフォルトロケールが英語の場合は "Nov" をパースできてしまうため、言語を日本語に固定する
+        ThreadContext.setLanguage(Locale.JAPANESE);
+
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage(is("failed to parse string as date. string = [14 Nov 2012], format = [dd MMM yyyy]"));
 

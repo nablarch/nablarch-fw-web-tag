@@ -303,11 +303,12 @@ public class TagUtilTest {
 
         assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{||Europe/Madrid}"), date), is("2010:08:11 12:10:59"));
 
-        assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{yyyy年MMM月d日(E) a hh:mm|ja|America/New_York}"), date), is("2010年8月11日(水) 午前 06:10"));
-        assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{yyyy年MMM月d日(E) a hh:mm|ja_JP|Asia/Tokyo}"), date), is("2010年8月11日(水) 午後 07:10"));
+        // 日本語ロケールの MMM は CLDR ロケールデータでは "8月" となるため、パターンの "月" と合わせて "8月月" になる
+        assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{yyyy年MMM月d日(E) a hh:mm|ja|America/New_York}"), date), is("2010年8月月11日(水) 午前 06:10"));
+        assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{yyyy年MMM月d日(E) a hh:mm|ja_JP|Asia/Tokyo}"), date), is("2010年8月月11日(水) 午後 07:10"));
 
         ThreadContext.setLanguage(Locale.JAPANESE);
-        assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{yyyy年MMM月d日(E) a hh:mm||Asia/Tokyo}"), date), is("2010年8月11日(水) 午後 07:10"));
+        assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{yyyy年MMM月d日(E) a hh:mm||Asia/Tokyo}"), date), is("2010年8月月11日(水) 午後 07:10"));
         ThreadContext.setLanguage(Locale.ENGLISH);
         assertThat(TagUtil.formatValue(pageContext, name, spec("dateTime{yyyy年MMM月d日(E) a hh:mm||Asia/Tokyo}"), date), is("2010年Aug月11日(Wed) PM 07:10"));
 
@@ -342,7 +343,7 @@ public class TagUtilTest {
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{yyyy/M/d}"), value), is("2011/9/28"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{M/d/yyyy}"), value), is("9/28/2011"));
         assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{MMM/d/yyyy|en}"), value), is("Sep/28/2011"));
-        assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{yyyy年MMM月d日(E)|ja_JP|Asia/Tokyo}"), value), is("2011年9月28日(水)"));
+        assertThat(TagUtil.formatValue(pageContext, name, spec("yyyymmdd{yyyy年MMM月d日(E)|ja_JP|Asia/Tokyo}"), value), is("2011年9月月28日(水)"));
 
 
 
@@ -413,9 +414,9 @@ public class TagUtilTest {
         ThreadContext.clear();
 
         Date date = new SimpleDateFormat("yyyyMMdd").parse("20161231");
-        assertThat(TagUtil.formatDate(date, "dd MMM yyyy"), is("31 12 2016"));
-        assertThat(TagUtil.formatDate(date, "dd MMM yyyy|"), is("31 12 2016"));
-        assertThat(TagUtil.formatDate(date, "dd MMM yyyy||"), is("31 12 2016"));
+        assertThat(TagUtil.formatDate(date, "dd MMM yyyy"), is("31 12月 2016"));
+        assertThat(TagUtil.formatDate(date, "dd MMM yyyy|"), is("31 12月 2016"));
+        assertThat(TagUtil.formatDate(date, "dd MMM yyyy||"), is("31 12月 2016"));
     }
 
     /**
@@ -456,9 +457,9 @@ public class TagUtilTest {
         ThreadContext.clear();
 
         Date date = new SimpleDateFormat("yyyyMMddhhmmss").parse("20161231123456");
-        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss"), is("31 12 2016 12:34:56"));
-        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss|"), is("31 12 2016 12:34:56"));
-        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss||"), is("31 12 2016 12:34:56"));
+        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss"), is("31 12月 2016 12:34:56"));
+        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss|"), is("31 12月 2016 12:34:56"));
+        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss||"), is("31 12月 2016 12:34:56"));
     }
 
     /**
@@ -490,7 +491,7 @@ public class TagUtilTest {
         assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss|en"), is("31 Dec 2016 12:34:56"));
         assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss|en|"), is("31 Dec 2016 12:34:56"));
         assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss|en|Brazil/East"), is("30 Dec 2016 01:34:56"));
-        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss||Brazil/East"), is("30 12 2016 01:34:56"));
+        assertThat(TagUtil.formatDateTime(date, "dd MMM yyyy hh:mm:ss||Brazil/East"), is("30 12月 2016 01:34:56"));
     }
 
     private FormatSpec spec(String format) {

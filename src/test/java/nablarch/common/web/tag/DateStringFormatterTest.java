@@ -74,7 +74,7 @@ public class DateStringFormatterTest {
 
         assertEquals("2012/10/10", formatter.format(context, "dateImput", "20121010", "yyyy/MM/dd"));
         assertEquals("2012/10/10", formatter.format(context, "dateImput", "2012/10/10", "yyyy/MM/dd"));
-        assertEquals("14 11 2012", formatter.format(context, "dateImput", "14 11 2012", "dd MMM yyyy"));
+        assertEquals("14 11月 2012", formatter.format(context, "dateImput", "14 11月 2012", "dd MMM yyyy"));
         assertEquals("14 Nov 2012", formatter.format(context, "dateImput", "14 Nov 2012", "dd MMM yyyy|en"));
         assertEquals("14 Nov 2012", formatter.format(context, "dateImput", "14Nov2012", "dd MMM yyyy|en"));
         assertEquals("14 Nov 2012", formatter.format(context, "dateImput", "20121114", "dd MMM yyyy|en"));
